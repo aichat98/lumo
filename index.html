@@ -1,0 +1,1807 @@
+<html>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>페르소나 생성기</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: "돋움", Dotum, Arial, sans-serif;
+            background-color: #008080;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 20px;
+            box-sizing: border-box;
+            font-size: 12px;
+            color: #000000;
+            position: relative;
+            overflow-x: hidden;
+            -ms-overflow-style: none; 
+            scrollbar-width: none;  
+        }
+        body::-webkit-scrollbar {
+            display: none; 
+        }
+
+        .app-wrapper {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+            margin-top: 0;
+        }
+
+        .desktop-icons-area {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 10px;
+            z-index: 5;
+            padding: 5px;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .desktop-icon-button {
+            width: auto;
+            min-width: 70px;
+            text-align: center;
+            color: #FFFFFF;
+            cursor: pointer;
+            user-select: none;
+            background: none;
+            border: none;
+            padding: 5px 0;
+            font-family: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .desktop-icon-button:hover .icon-label,
+        .desktop-icon-button:focus .icon-label {
+            background-color: #000080;
+            outline: 1px dotted #FFFFFF;
+        }
+        .desktop-icon-button:active .icon-image,
+        .desktop-icon-button:active .lucide-icon {
+            transform: translateY(1px);
+        }
+
+        .desktop-icon-button .icon-image {
+            font-size: 28px;
+            line-height: 1;
+            margin-bottom: 3px;
+            display: block;
+        }
+        .desktop-icon-button .lucide-icon {
+            width: 28px; height: 28px;
+            margin: 0 auto 3px; display: block; color: #FFFFFF;
+        }
+        .desktop-icon-button .icon-label {
+            font-size: 11px; padding: 1px 3px; display: inline-block;
+            border-radius: 2px; word-break: keep-all; max-width: 100%;
+        }
+
+        .window {
+            background-color: #C0C0C0; border: 1px solid;
+            border-color: #FFFFFF #808080 #808080 #FFFFFF;
+            box-shadow: 1px 1px 0px #000000; padding: 2px; margin-bottom: 15px;
+            width: 100%;
+        }
+
+        .title-bar {
+            background-color: #000080; color: #FFFFFF; padding: 3px 5px; font-weight: bold;
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 2px; user-select: none; cursor: default;
+        }
+        .title-bar-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .title-bar-controls { display: flex; gap: 2px; }
+        .title-bar-button {
+            background-color: #C0C0C0; color: #000000; width: 16px; height: 14px;
+            border: 1px solid; border-color: #FFFFFF #808080 #808080 #FFFFFF;
+            box-shadow: 1px 1px 0px #000000 inset; display: flex; align-items: center;
+            justify-content: center; font-size: 10px; line-height: 10px;
+            font-weight: bold; padding: 0; cursor: default;
+        }
+        .title-bar-button:active { border-color: #808080 #FFFFFF #FFFFFF #808080; box-shadow: -1px -1px 0px #000000 inset; }
+
+        .window-content { background-color: #FFFFFF; padding: 10px; border: 1px solid #808080; }
+        .window-content-settings { background-color: #C0C0C0; padding: 10px; border: none; }
+
+        .lucide {
+            display: inline-block; vertical-align: middle; stroke-linecap: round;
+            stroke-linejoin: round; stroke-width: 2; stroke: currentColor; fill: none;
+        }
+
+        .input, .select, .textarea {
+            padding: 3px; border: 1px solid;
+            border-color: #808080 #C0C0C0 #C0C0C0 #808080;
+            font-size: 12px;
+            box-sizing: border-box; background-color: #FFFFFF; color: #000000;
+            box-shadow: inset 1px 1px 0 #C0C0C0, inset -1px -1px 0 #FFFFFF;
+            font-family: "돋움", Dotum, Arial, sans-serif; 
+        }
+        .input:focus, .select:focus, .textarea:focus { outline: 1px dotted #000000; outline-offset: -1px; }
+        .select {
+            appearance: none; -webkit-appearance: none; -moz-appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M4%206l4%204%204-4z%22/%3E%3C/svg%3E');
+            background-repeat: no-repeat; background-position: right 5px center;
+            background-color: #FFFFFF; padding-right: 20px; 
+            margin-bottom: 0;
+        }
+        .textarea { resize: none; overflow-y: hidden; min-height: 60px; width: 100%; margin-bottom: 5px; line-height: 1.5; box-sizing: border-box; transition: height 0.1s ease-out;}
+        #persona-card-content-wrapper { display: flex; justify-content: space-between; align-items: flex-start; }
+        .char-info-left { flex-grow: 1; }
+        .char-info-right { text-align: right; margin-left: 10px; flex-shrink: 0; max-width: 40%;}
+        #char-valueSystem-display { font-size: 1.5em; font-weight: bold; margin: 0 0 2px 0; color: #BABABA; line-height: 1.1;}
+        #char-personality-tags-display { font-size: 0.85em; color: #BABABA; word-break: keep-all; line-height: 1.3;}
+
+
+        .card-header-info-line { margin: 0 0 2px 0; font-size: 12px; line-height: 1.4; }
+        .card-race-emoji { font-size: 18px; }
+
+        .appearance-info-wrapper {
+             border: 1px solid #808080;
+             padding: 8px;
+             margin-top: 5px;
+        }
+        .appearance-info-wrapper h3 { font-weight: bold; color: #000000; margin-top: 0; margin-bottom: 8px; font-size: 12px; }
+        .appearance-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 5px; font-size: 12px; }
+        .appearance-item { display: flex; align-items: center; gap: 5px; }
+        .appearance-item > span:first-child:not(.appearance-item-value):not(.color-swatch) {
+            flex-shrink: 0; width: 20px; text-align: center; display: inline-block;
+        }
+        .appearance-item-value { flex-grow: 1; word-break: keep-all; }
+        .color-swatch { width: 14px; height: 14px; border: 1px solid #000000; flex-shrink: 0; }
+
+        .traits-toggle-button {
+            width: 100%; display: flex; align-items: center; justify-content: space-between;
+            background-color: #C0C0C0; border: 1px solid; border-color: #FFFFFF #808080 #808080 #FFFFFF;
+            padding: 5px; cursor: pointer; font-size: 12px; box-shadow: 1px 1px 0px #000000;
+            margin-top: 10px;
+        }
+        .traits-toggle-button:active { border-color: #808080 #FFFFFF #FFFFFF #808080; box-shadow: -1px -1px 0px #000000; padding: 6px 4px 4px 6px; }
+        .traits-toggle-button span { font-weight: normal; color: #000000; }
+        .traits-toggle-button .lucide { color: #000000; width: 16px; height: 16px; }
+        .traits-content { background-color: #FFFFFF; padding: 10px; display: none; border: 1px solid; border-color: #808080 #FFFFFF #FFFFFF #FFFFFF; }
+        .traits-content.show { display: block; }
+
+        .settings-panel-content {
+            display: none; flex-direction: column; gap: 5px;
+            max-height: 380px; overflow-y: auto; padding-right: 5px;
+            -ms-overflow-style: none; 
+            scrollbar-width: none;  
+        }
+        .settings-panel-content::-webkit-scrollbar {
+            display: none;
+        }
+        .settings-panel-content.show { display: flex; }
+        
+        .setting-item-group {
+            display: flex;
+            flex-wrap: wrap; 
+            gap: 10px; 
+            align-items: center; 
+            margin-bottom: 3px;
+            width: 100%;
+        }
+        .setting-item {
+            display: flex;
+            align-items: center;
+            gap: 3px; 
+            min-width: 0; 
+        }
+        .setting-item label {
+            font-size: 12px; font-weight: normal; color: #000000;
+            white-space: nowrap; margin-right: 2px;
+            min-width: 50px; 
+            text-align: right;
+            flex-shrink: 0; 
+        }
+
+        .setting-item .input,
+        .setting-item .input-with-random,
+        .setting-item .color-picker-group {
+            flex-grow: 1; 
+            margin-bottom: 0;
+            min-width: 0; 
+            display: flex; 
+        }
+        
+        .setting-item > .input {
+             width: 100%; 
+        }
+
+        .setting-item-group.one-item .setting-item {
+            flex-basis: 100%;
+            flex-grow: 1;
+        }
+        .setting-item-group.three-items .setting-item {
+            flex-basis: calc((100% - 20px) / 3 - 1px); 
+            flex-grow: 1;
+        }
+        
+        .setting-item-group.two-items .setting-item {
+            flex-basis: calc((100% - 10px) / 2 - 1px); 
+            flex-grow: 1;
+        }
+
+
+        .color-picker-group { align-items: center; gap: 5px; position: relative; } 
+        .color-picker-swatch-display { width: 20px; height: 20px; border: 1px solid #000000; cursor: pointer; flex-shrink: 0; }
+        .native-color-input { position: absolute; top: 0; left: 0; width: 20px; height: 20px; opacity: 0; cursor: pointer; border: none; padding: 0; z-index: 1; }
+
+        .input-with-random {
+            align-items: center;
+            gap: 3px;
+            flex-grow: 1; 
+            width: 100%; 
+        }
+        .input-with-random .input, 
+        .input-with-random .select {
+            flex-grow: 1; 
+            margin-bottom: 0;
+            width: 100%; 
+            box-sizing: border-box;
+            min-width: 0; 
+        }
+        .random-btn, .random-btn-color {
+            background: none; border: none; box-shadow: none; color: #000000;
+            padding: 0; font-size: 16px; cursor: pointer; line-height: 1;
+            min-width: auto; height: auto; display: inline-flex;
+            align-items: center; justify-content: center; flex-shrink: 0;
+            vertical-align: middle;
+        }
+        .random-btn:active, .random-btn-color:active { transform: translateY(1px); }
+        .random-btn-color { margin-left: 3px; }
+
+        #details-content-area { margin-top: 5px; padding:10px; background-color: #FFFFFF; border: 1px solid #808080; }
+        #details-content-area .setting-item label { min-width: 60px; } 
+        .detail-separator { border: 0; height: 1px; background: #808080; margin: 10px 0; }
+        .detail-adult-label { font-size: 12px; font-weight: bold; color: #c00000; text-align: left; margin-bottom: 5px; display: block; }
+
+        .status-bar {
+            border: 1px solid; border-color: #808080 #FFFFFF #FFFFFF #808080;
+            padding: 2px 5px; font-size: 11px; margin-top: 2px; min-height: 14px;
+            background-color: #C0C0C0; user-select: none;
+        }
+
+        .popup-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.4);
+            display: none; justify-content: center; align-items: center;
+            z-index: 1000;
+            -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px);
+            transition: opacity 0.2s ease-in-out, backdrop-filter 0.2s ease-in-out;
+            opacity: 0;
+        }
+        .popup-overlay.show { display: flex; opacity: 1; }
+        .notepad-window {
+            width: 90%; max-width: 450px; max-height: 80vh;
+            display: flex; flex-direction: column; z-index: 1001;
+        }
+        .notepad-window .window-content {
+            flex-grow: 1; overflow-y: auto; white-space: pre-wrap;
+            font-family: "굴림", Gulim, sans-serif; font-size: 12px; line-height: 1.5;
+            -ms-overflow-style: none; 
+            scrollbar-width: none;
+        }
+        .notepad-window .window-content::-webkit-scrollbar {
+            display: none;
+        }
+        .notepad-window .title-bar-button.close-notepad { cursor: pointer; }
+
+        @media (max-width: 500px) {
+            body { padding: 10px; }
+            .app-wrapper { margin-top: 0; }
+            .desktop-icons-area {
+                position: static; transform: none; left: auto;
+                flex-direction: row; justify-content: space-around;
+                margin-bottom: 10px; width: 100%; gap: 5px;
+                flex-wrap: nowrap;
+            }
+            .desktop-icon-button { width: auto; min-width: 60px; }
+            .desktop-icon-button .icon-image, .desktop-icon-button .lucide-icon { font-size: 24px; width: 24px; height: 24px; }
+            .desktop-icon-button .icon-label { font-size: 10px; }
+
+            .input, .select, .textarea, .appearance-info-wrapper h3, .card-header-info-line, .traits-toggle-button span, .setting-item label { font-size: 11px; }
+            .traits-toggle-button .lucide { width: 14px; height: 14px; }
+            .title-bar { padding: 2px 4px; }
+            .title-bar-button { width: 14px; height: 12px; font-size: 9px; line-height: 9px; }
+            
+            .setting-item label { min-width: 40px; }
+            #details-content-area .setting-item label { min-width: 50px; }
+            
+            .setting-item-group .setting-item {
+                 flex-basis: calc((100% - 10px) / 2 - 1px); 
+                 flex-grow: 1;
+            }
+            .setting-item-group.one-item .setting-item,
+            #details-content-area .setting-item-group.three-items .setting-item { 
+                flex-basis: 100%;
+            }
+             #settings-panel-content > .setting-item-group.three-items .setting-item { 
+                 flex-basis: calc((100% - 20px) / 3 - 1px);
+                 flex-grow: 1;
+            }
+            
+#persona-card-content-wrapper { 
+                display: flex;
+                flex-direction: column;
+                align-items: stretch; 
+            }
+            .char-info-left {
+            }
+            .char-info-right { 
+                text-align: right; 
+                margin-left: 0; 
+                margin-top: 8px;
+                max-width: 100%;
+                align-self: flex-end; 
+                /* order: -1; */ /* 만약 왼쪽 정보보다 위에 보이게 하고 싶다면 주석 해제 */
+            }
+        }
+
+        @keyframes slide-in-from-top { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .animate-slide-in { animation: slide-in-from-top 0.2s ease-out; }
+    </style>
+</head>
+<body>
+    <div class="app-wrapper" id="app-container">
+        <div class="desktop-icons-area">
+            <button class="desktop-icon-button" id="desktop-generate-button">
+                <span class="icon-image">🎲</span>
+                <span class="icon-label">랜덤생성.exe</span>
+            </button>
+            <button class="desktop-icon-button" id="desktop-copy-button">
+                <span class="icon-image">📋</span>
+                <span class="icon-label">복사하기.bat</span>
+            </button>
+            <button class="desktop-icon-button" id="desktop-settings-button">
+                <span class="icon-image">⚙️</span>
+                <span class="icon-label">설정.ini</span>
+            </button>
+            <button class="desktop-icon-button" id="desktop-save-image-button">
+                <span class="icon-image">🖼️</span>
+                <span class="icon-label">이미지저장.png</span>
+            </button>
+             <button class="desktop-icon-button" id="desktop-readme-button">
+                <span class="icon-image">📄</span>
+                <span class="icon-label">README.TXT</span>
+            </button>
+        </div>
+
+        <div class="window" id="persona-main-window">
+            <div class="title-bar">
+                <span class="title-bar-text" id="window-title-card"></span>
+                <div class="title-bar-controls">
+                    <div class="title-bar-button">_</div>
+                    <div class="title-bar-button">□</div>
+                    <div class="title-bar-button">X</div>
+                </div>
+            </div>
+            <div class="window-content">
+                <div id="persona-card-content-wrapper">
+                    <div class="char-info-left">
+                        <p class="card-header-info-line">
+                            <b>이름:</b> <span id="char-name-display"></span>
+                        </p>
+                        <p class="card-header-info-line">
+                            <b>정보:</b> <span id="char-age-display"></span>세 • <span id="char-gender-display"></span>
+                            <span id="char-height-info-line-display" style="display:none;"> • <span id="char-height-display"></span>cm</span>
+                            | <span id="char-race-emoji-display"></span> <span id="char-race-display"></span>
+                        </p>
+                        <p class="card-header-info-line">
+                            <b>세계:</b> <span id="char-world-emoji-display"></span> <span id="char-world-display"></span> - <span id="char-job-display"></span>
+                        </p>
+                        <p class="card-header-info-line" id="char-mbti-info-line-display" style="display:none;">
+                            <b>MBTI:</b> <span id="char-mbti-display"></span>
+                        </p>
+                    </div>
+                    <div class="char-info-right">
+                        <h2 id="char-valueSystem-display"></h2>
+                        <div id="char-personality-tags-display"></div>
+                    </div>
+                </div>
+                
+                <div class="appearance-info-wrapper">
+                    <h3>외모 정보</h3>
+                    <div class="appearance-grid">
+                        <div class="appearance-item">
+                            <span>💇‍♀️</span>
+                            <span class="appearance-item-value" id="char-hairStyle-display"></span>
+                        </div>
+                        <div class="appearance-item">
+                            <span>🎨</span>
+                            <div class="color-swatch" id="char-hairColor-swatch"></div>
+                            <span class="appearance-item-value" id="char-hairColor-text"></span>
+                        </div>
+                        <div class="appearance-item">
+                            <span>👕</span>
+                            <span class="appearance-item-value" id="char-clothing-display"></span>
+                        </div>
+                        <div class="appearance-item">
+                            <span>👀</span> 
+                            <div class="color-swatch" id="char-eyeColor-swatch"></div>
+                            <span class="appearance-item-value" id="char-eyeColor-text"></span>
+                        </div>
+                        <div class="appearance-item">
+                            <span>💎</span>
+                            <span class="appearance-item-value" id="char-accessory-display"></span>
+                        </div>
+                        <div class="appearance-item">
+                            <span>🖐️</span>
+                            <div class="color-swatch" id="char-skinColor-swatch"></div>
+                            <span class="appearance-item-value" id="char-skinColor-text"></span>
+                        </div>
+                        <div class="appearance-item" id="char-appearanceFeature-info-line-display" style="display:none;">
+                            <span>✨</span>
+                            <span class="appearance-item-value" id="char-appearanceFeature-display"></span>
+                        </div>
+                    </div>
+                </div>
+                <button id="toggle-traits-button" class="traits-toggle-button">
+                    <span>🌟 특징 보기/편집</span>
+                    <svg id="traits-chevron" viewBox="0 0 24 24" class="lucide"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+
+                <div id="traits-content-area" class="traits-content">
+                    <textarea id="char-traits-input" placeholder="캐릭터의 특징, 성격, 배경 등을 자유롭게 작성해주세요..." class="textarea"></textarea>
+                </div>
+            </div>
+            <div class="status-bar" id="card-status-bar"></div>
+        </div>
+
+        <div class="window" id="settings-window" style="display:none;">
+            <div class="title-bar">
+                <span class="title-bar-text">캐릭터 설정</span>
+                 <div class="title-bar-controls">
+                    <div class="title-bar-button">_</div>
+                    <div class="title-bar-button">□</div>
+                    <div class="title-bar-button">X</div>
+                </div>
+            </div>
+            <div class="window-content-settings">
+                <div id="settings-panel-content" class="settings-panel-content">
+                    <div class="setting-item-group three-items">
+                        <div class="setting-item"><label for="char-name-input">이름:</label><input type="text" id="char-name-input" class="input"></div>
+                        <div class="setting-item"><label for="char-age-input">나이:</label><input type="number" id="char-age-input" class="input" min="0"></div>
+                        <div class="setting-item"><label for="char-height-input">키(cm):</label><input type="number" id="char-height-input" class="input" min="0"></div>
+                    </div>
+                    <div class="setting-item-group two-items">
+                        <div class="setting-item">
+                            <label for="char-gender-select">성별:</label>
+                            <div class="input-with-random">
+                                <select id="char-gender-select" class="select">
+                                    <option value="남성">남성</option>
+                                    <option value="여성">여성</option>
+                                    <option value="기타">기타</option>
+                                </select>
+                                <button type="button" class="random-btn" data-target="gender" title="랜덤 성별">🎲</button>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <label for="char-mbti-select">MBTI:</label>
+                            <div class="input-with-random">
+                                <select id="char-mbti-select" class="select"></select>
+                                <button type="button" class="random-btn" data-target="mbti" title="랜덤 MBTI">🎲</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="setting-item-group two-items">
+                        <div class="setting-item">
+                            <label for="char-world-select">세계:</label>
+                            <div class="input-with-random">
+                                <select id="char-world-select" class="select"></select>
+                                <button type="button" class="random-btn" data-target="world" title="랜덤 세계관">🎲</button>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <label for="char-race-select">종족:</label>
+                            <div class="input-with-random">
+                                <select id="char-race-select" class="select"></select>
+                                <button type="button" class="random-btn" data-target="race" title="랜덤 종족">🎲</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="setting-item-group two-items">
+                        <div class="setting-item">
+                            <label for="char-job-select">직업:</label>
+                            <div class="input-with-random">
+                                <select id="char-job-select" class="select"></select>
+                                <button type="button" class="random-btn" data-target="job" title="랜덤 직업">🎲</button>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <label for="char-hairStyle-select">헤어:</label>
+                            <div class="input-with-random">
+                                <select id="char-hairStyle-select" class="select"></select>
+                                <button type="button" class="random-btn" data-target="hairStyle" title="랜덤 헤어스타일">🎲</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="setting-item-group two-items">
+                        <div class="setting-item">
+                            <label for="char-topwear-select">상의:</label>
+                            <div class="input-with-random">
+                                <select id="char-topwear-select" class="select"></select>
+                                <button type="button" class="random-btn" data-target="topwear" title="랜덤 상의">🎲</button>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <label for="char-bottomwear-select">하의:</label>
+                            <div class="input-with-random">
+                                <select id="char-bottomwear-select" class="select"></select>
+                                <button type="button" class="random-btn" data-target="bottomwear" title="랜덤 하의">🎲</button>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="setting-item-group two-items">
+                        <div class="setting-item">
+                            <label for="char-accessory-select">꾸밈:</label>
+                            <div class="input-with-random">
+                                <select id="char-accessory-select" class="select"></select>
+                                <button type="button" class="random-btn" data-target="accessory" title="랜덤 액세서리">🎲</button>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <label for="char-appearanceFeature-select">외관:</label>
+                            <div class="input-with-random">
+                                <select id="char-appearanceFeature-select" class="select"></select>
+                                <button type="button" class="random-btn" data-target="appearanceFeature" title="랜덤 외관특징">🎲</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="setting-item-group three-items">
+                        <div class="setting-item">
+                            <label>머리색:</label>
+                            <div class="color-picker-group">
+                                <div id="hairColor-swatch-display" class="color-picker-swatch-display"></div>
+                                <input type="color" id="char-hairColor-native-input" class="native-color-input">
+                                <button type="button" class="random-btn-color" data-target="hairColor" title="랜덤 머리색">🎨</button>
+                            </div>
+                        </div>
+                         <div class="setting-item">
+                            <label>눈색:</label>
+                            <div class="color-picker-group">
+                                <div id="eyeColor-swatch-display" class="color-picker-swatch-display"></div>
+                                <input type="color" id="char-eyeColor-native-input" class="native-color-input">
+                                <button type="button" class="random-btn-color" data-target="eyeColor" title="랜덤 눈색">🎨</button>
+                            </div>
+                        </div>
+                         <div class="setting-item">
+                            <label>피부색:</label>
+                            <div class="color-picker-group">
+                                <div id="skinColor-swatch-display" class="color-picker-swatch-display"></div>
+                                <input type="color" id="char-skinColor-native-input" class="native-color-input">
+                                <button type="button" class="random-btn-color" data-target="skinColor" title="랜덤 피부색">🎨</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="toggle-details-button" class="traits-toggle-button">
+                        <span>🔍 자세히 보기/편집</span>
+                        <svg id="details-chevron" viewBox="0 0 24 24" class="lucide"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </button>
+
+                    <div id="details-content-area" class="traits-content">
+                        <div class="setting-item-group one-item">
+                             <div class="setting-item">
+                                <label for="char-valueSystem-select">가치관:</label>
+                                <div class="input-with-random">
+                                    <select id="char-valueSystem-select" class="select"></select>
+                                    <button type="button" class="random-btn" data-target="valueSystem" title="랜덤 가치관">🎲</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="setting-item-group three-items">
+                            <div class="setting-item">
+                                <label for="char-personality1-select">성격1:</label>
+                                <div class="input-with-random">
+                                    <select id="char-personality1-select" class="select"></select>
+                                    <button type="button" class="random-btn" data-target="personality1" title="랜덤 성격1">🎲</button>
+                                </div>
+                            </div>
+                            <div class="setting-item">
+                                <label for="char-personality2-select">성격2:</label>
+                                <div class="input-with-random">
+                                    <select id="char-personality2-select" class="select"></select>
+                                    <button type="button" class="random-btn" data-target="personality2" title="랜덤 성격2">🎲</button>
+                                </div>
+                            </div>
+                            <div class="setting-item">
+                                <label for="char-personality3-select">성격3:</label>
+                                <div class="input-with-random">
+                                    <select id="char-personality3-select" class="select"></select>
+                                    <button type="button" class="random-btn" data-target="personality3" title="랜덤 성격3">🎲</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="detail-separator">
+
+                        <div class="setting-item-group two-items">
+                            <div class="setting-item">
+                                <label for="char-trauma-select">트라우마:</label>
+                                <div class="input-with-random">
+                                    <select id="char-trauma-select" class="select"></select>
+                                    <button type="button" class="random-btn" data-target="trauma" title="랜덤 상처">🎲</button>
+                                </div>
+                            </div>
+                            <div class="setting-item">
+                                 <label for="char-complex-select">콤플렉스:</label>
+                                <div class="input-with-random">
+                                    <select id="char-complex-select" class="select"></select>
+                                    <button type="button" class="random-btn" data-target="complex" title="랜덤 약점">🎲</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr class="detail-separator">
+                        <span class="detail-adult-label">⚠️성인전용</span>
+                        <div class="setting-item-group two-items">
+                            <div class="setting-item">
+                                <label for="char-erogenousZone-select">성감대:</label>
+                                <div class="input-with-random">
+                                    <select id="char-erogenousZone-select" class="select"></select>
+                                    <button type="button" class="random-btn" data-target="erogenousZone" title="랜덤 성감대">🎲</button>
+                                </div>
+                            </div>
+                            <div class="setting-item">
+                                <label for="char-fetish-select">패티쉬:</label>
+                                <div class="input-with-random">
+                                    <select id="char-fetish-select" class="select"></select>
+                                    <button type="button" class="random-btn" data-target="fetish" title="랜덤 패티쉬">🎲</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="popup-overlay" id="notepad-overlay">
+        <div class="window notepad-window" id="notepad-window">
+            <div class="title-bar">
+                <span class="title-bar-text">README.TXT</span>
+                <div class="title-bar-controls">
+                    <div class="title-bar-button">_</div>
+                    <div class="title-bar-button">□</div>
+                    <button class="title-bar-button close-notepad" id="close-notepad-button">X</button>
+                </div>
+            </div>
+            <div class="window-content" id="notepad-content">
+<b>[사용 안내]</b>
+
+  🎲 <b>랜덤생성</b>: 캐릭터 정보를 무작위로 생성합니다. <span style="color: #bfbfbf;">(이름,나이,성별 제외)</span>
+  📋 <b>복사하기</b>: 현재 캐릭터 정보를 클립보드에 복사합니다.
+  ⚙️ <b>설정</b>: 캐릭터의 세부 항목을 직접 수정합니다.
+  🖼️ <b>이미지저장</b>: 현재 보이는 페르소나 정보창을 이미지로 저장합니다.
+  📄 README: 안내장
+
+- 생성된 정보는 자유롭게 활용 가능합니다.
+- 복사해서 로어북 <span style="color: #bfbfbf;">(유저노트)</span>에 붙여넣기 하면 색상코드도 정확히 인식합니다. 이때! 특징란 줄바꿈시 자동으로 '-'가 붙어서 출력됩니다.
+- '자세히 보기'의 [트라우마/콤플렉스] 내용은 '특징 편집' 란에 자동으로 반영됩니다.
+- [가치관/성격]은 정보창 우측 상단에 표시되며, 복사하기를 누르면 같이 출력됩니다.
+            </div>
+            <div class="status-bar">lumo.gg/u/chat</div>
+        </div>
+    </div>
+
+    <script>
+        const mbtiTypes = ['모름/미정', 'ISTJ', 'ISFJ', 'INFJ', 'INTJ', 'ISTP', 'ISFP', 'INFP', 'INTP', 'ESTP', 'ESFP', 'ENFP', 'ENTP', 'ESTJ', 'ESFJ', 'ENFJ', 'ENTJ'];
+        const valueSystems = ['선택안함', '가족', '개척', '결속', '겸손', '구원', '균형', '긍지', '낭만', '능력', '답습', '도전', '독립', '돈', '명예', '모험', '믿음', '변화', '복수', '보호', '사랑', '생존', '섬김', '성장', '소유', '수용', '숙명', '순응', '신념', '안정', '아름다움', '야망', '예술', '용서', '우정', '운명', '유희', '응보', '이기', '이타', '이해', '인내', '자긍심', '자기계발', '자비', '자유', '정의', '정직', '존경', '존중', '질서', '지혜', '지식', '진실', '책임', '창조', '탐구', '쾌락', '타협', '통제', '평등', '평화', '헌신', '혁신', '현실', '협력', '혼돈', '확신', '희망', '힘'];
+        const personalityTraits = ['선택안함', '가식적인', '감성적인', '감정적인', '강단있는', '강박적인', '개방적인', '거만한', '건방진', '겸손한', '계산적인', '계획적인', '고집 센', '관대한', '관찰력있는', '광적인', '괴팍한', '까칠한', '꼼꼼한', '꾸준한', '끈기있는', '나른한', '낙천적인', '냉정한', '냉소적인', '능글맞은', '능동적인', '능청스러운', '다정한', '다혈질인', '단순한', '단호한', '대담한', '덤벙대는', '도도한', '독단적인', '독선적인', '둔감한', '따뜻한', '리더십있는', '무뚝뚝한', '무심한', '무책임한', '문란한', '방어적인', '배려심깊은', '변덕스러운', '보수적인', '복합적인', '비관적인', '비굴한', '비밀스러운', '비사교적인', '사교적인', '상냥한', '섬세한', '소극적인', '소심한', '솔직한', '수다스러운', '수동적인', '수줍음많은', '순종적인', '순수한', '시니컬한', '시발데레', '신경질적인', '신비로운', '신중한', '쌀쌀맞은', '앙큼한', '애교많은', '야망있는', '얀데레', '약삭빠른', '어른스러운', '엉뚱한', '에너제틱한', '예민한', '예의바른', '오만한', '온화한', '외향적인', '요염한', '용감한', '우아한', '우유부단한', '우울한', '원칙적인', '유연한', '유쾌한', '유혹적인', '융통성있는', '음흉한', '응큼한', '의존적인', '의지가강한', '의심많은', '이기적인', '이성적인', '이타적인', '익살스러운', '인내심있는', '인색한', '잔망스러운', '잔인한', '장난기있는', '적극적인', '정직한', '조력자타입', '조용한', '주관적인', '주도적인', '즉흥적인', '지적인', '직설적인', '집요한', '집착적인', '짜증잘내는', '차분한', '차가운', '책임감있는', '천진난만한', '청순한', '초조한', '충동적인', '치밀한', '침착한', '츤데레', '쾌활한', '털털한', '퇴폐적인', '투덜대는', '퉁명스러운', '파괴적인', '편협한', '평화주의적인', '포용력있는', '폭력적인', '표현력있는', '피해의식있는', '헌신적인', '현실적인', '협조적인', '호탕한', '호기심많은', '활발한', '황당한', '효율적인', '후회잘하는', '허당끼있는', '허영심있는', '히스테릭한'];
+const complexExamples = ['없음', '외모 콤플렉스', '신체 콤플렉스(키/몸매 등)', '목소리 콤플렉스', '병약 체질 콤플렉스', '운동신경 부족 콤플렉스', '노안/동안 외모 콤플렉스', '지적 능력 열등감', '재능 부족 콤플렉스', '노력 무용론', '평범함 콤플렉스', '손재주 부족 콤플렉스', '길치/방향치 콤플렉스', '천재에 대한 질투심', '가난/경제력 콤플렉스', '학력 콤플렉스', '출신/가문 콤플렉스', '가정사 트라우마 (가정폭력, 방임, 학대 등)', '부모님 관련 콤플렉스', '형제자매 비교 콤플렉스', '출생 비밀 콤플렉스(입양/사생아 등)', '애정결핍', '(아동기) 유기/방임 트라우마', '타인 시선 강박', '완벽주의 강박', '주변의 과도한 기대에 대한 부담감', '결정장애/선택공포증', '자기비하 습관', '과거 잘못에 대한 죄책감', '수치심 유발 경험', '낮은 자존감', '가면 증후군 (Impostor Syndrome)', '감정표현 불능', '감정/욕구 억압으로 인한 내적 갈등', '과잉공감 피로', '분노조절장애', '의존성 성격', '회피성 성격', '편집증/강한 의심', '불면증/수면장애', '섭식장애 (거식증/폭식증 등)', '특정 공포증', '트라우마(PTSD - 외상 후 스트레스 장애)', '사고/재해 경험 트라우마 (교통사고, 화재, 자연재해, 익사 경험 등)', '전쟁/전투 경험 트라우마 (참전, 피난, 폭격 목격 등)', '납치/감금/인신매매 경험 트라우마', '고문/심문 피해 트라우마', '폭력 피해 경험(스토킹/학교폭력/집단따돌림/사이버불링 등)', '충격적인 사건 목격 트라우마 (타인의 죽음, 심각한 부상, 폭력 장면 목격 등)', '가까운 이의 갑작스러운 죽음/상실 트라우마 (애도 지연, 외상성 슬픔)', '생존자 죄책감 (Survivor\'s Guilt - 재난/사고/전쟁 등에서 살아남은 후의 죄책감)', '심각한 배신으로 인한 인간 불신 트라우마', '성적 트라우마/콤플렉스 (성폭력, 성희롱, 원치 않는 관계 경험 등)', '부분 기억상실 (해리성 기억상실)', '거짓말 습관과 죄책감', '유리멘탈/쉽게 상처받음', '나이 콤플렉스', '성격 콤플렉스(소심함 등)', '대인관계 어려움', '발표/주목 공포증', '사랑 못 받을 거란 두려움', '신체적 매력 부족에 대한 고민', '유기공포/버림받는 두려움', '타인 불신', '외로움/고립감', '연애 경험 부족/모태솔로', '내면화된 편견/혐오', '자신의 \'선함\' 또는 \'정의로움\'에 대한 강박/회의감', '메시아 콤플렉스/영웅심리에 대한 부담감', '성소수자로서의 고민', '전과 기록', '씻을 수 없는 과거 실수', '빚으로 인한 압박', '중독 경험(술/도박/약물 등)', '장애/만성질환으로 인한 고통', '특이체질/능력으로 인한 소외감', '숨겨야 할 비밀', '살인 경험(정당방위 포함)', '기타(직접입력)'];
+        const erogenousZoneExamples = ['없음', '목덜미', '귀', '귓불', '귀 뒤', '입술', '혀', '입천장', '쇄골', '가슴 전체', '유두', '유륜 주변', '명치', '배', '배꼽 주변', '아랫배', '옆구리', '등 전체', '척추 라인', '견갑골(날개뼈) 사이', '허리', '허리 잘록한 부분', '골반뼈 라인', '엉덩이', '엉덩이골 시작점', '꼬리뼈 부근', '허벅지 안쪽', '허벅지 바깥쪽', '허벅지 뒤쪽(햄스트링)', '무릎', '무릎 뒤(오금)', '종아리', '정강이뼈 라인', '발목', '아킬레스건', '발등', '발바닥(특히 움푹 파인 곳)', '발가락', '발가락 사이', '손가락', '손가락 사이', '손바닥', '손등', '손목 안쪽', '팔 안쪽', '팔 바깥쪽', '팔꿈치', '팔꿈치 안쪽 접히는 부분', '겨드랑이', '어깨', '어깨선', '목선', '턱선', '관자놀이', '이마', '미간', '눈썹뼈 라인', '눈꺼풀', '속눈썹 라인', '코끝', '콧등', '인중', '뺨', '두피', '정수리', '머리카락 경계선', '상처/흉터 주변', '점/모반 위', '피어싱/문신 주변', '인간형 이외 부위(예: 수인 꼬리 밑동 등)', '기타(직접입력)'];
+        const fetishExamples = ['없음', '제복 (Uniform)', '코스튬플레이 (Costume/Cosplay)', '목소리 (Voice, Acousticophilia)', '손 (Hand, Chirophilia)', '발 (Foot, Podophilia)', '눈빛 (Gaze)', '머리카락 (Hair, Trichophilia)', '특정신체부위 (Partialism)', '지배/복종 (BDSM, D/s)', '능욕/모욕 (Humiliation)', '속박/구속 (Bondage)', '고통(가학/피학) (Sadomasochism, Algolagnia)', '눈물 (Dacryphilia)', '땀/체취 (Sweat/Odor, Olfactophilia/Osmolagnia)', '수면/잠든모습 (Somnophilia)', '식탐/먹방 (Food/Eating, Sitolagnia/Feederism)', '노출증/관음증 (Exhibitionism/Voyeurism)', '위험/금기상황 (Risk/Taboo Play)', '금단의 관계 (Forbidden Relationship Play)', '지성/지적인모습 (Sapiosexuality)', '보호본능자극 (Nurturing Play)', '무력함/취약함 (Helplessness/Vulnerability Play)', '순종 (Submission)', '공포/두려움 (Fear Play, Phobophilia)', '상처/흉터 (Stigmatophilia, Scar Fetish)', '피어싱/문신 (Piercing/Tattoo)', '안경 (Glasses)', '스타킹/가터벨트 (Stockings/Garters)', '장갑 (Gloves)', '특정재질(가죽/라텍스/실크) (Material Fetish - Leather/Latex/Silk)', '특정냄새/향수 (Scent/Perfume, Olfactophilia)', '애원/구걸 (Begging)', '비밀공유 (Secret Sharing)', '임신 (Pregnancy, Maiesiophilia)', '임신시키기 (Impregnation, Procreaphilia)', '거대화/소인화 (Macrophilia/Microphilia)', '나이차이 (Age Difference, Chronophilia)', '인형/마네킹 (Doll/Mannequin, Agalmatophilia)', '로봇/AI (Robot/AI, Robophilia/Technophilia)', '수인/퍼리 (Furry/Anthro)', '변신/형태변화 (Transformation, TF)', '음식/액체 (Food/Liquid Play, WAM/Sploshing)', '신체개조 (Body Modification)', '특정단어/말투 (Logophilia, Dirty Talk)', '배뇨/오모라시 (Urolagnia/Omorashi, Watersports)', '배설/스캇 (Coprophilia/Scatology, Scat)', '절단신체 (Acrotomophilia, Amputee Fetish)', '포식/피식 (Vorarephilia, Vore)', '점액/슬라임 (Mucus/Slime)', '착유/모유 (Lactation/Milk)', '이성복장 (Cross-dressing/Transvestism)', '혈액/피 (Hematolagnia, Blood Play)', '질식/숨참기 (Erotic Asphyxiation/Breath Play)', '연령 플레이(퇴행/성장/기저귀) (Age Play, ABDL, Infantilism)', '근육 (Muscle, Sthenolagnia)', '체모/털 (Hairiness, Hirsutophilia)', '비만/살찜 (Fat Fetish, Feederism/Gainers)', '의료상황극 (Medical Play, Clinical Fetishism)', '강제상황극 (Consensual Non-Consent, CNC)', '동물귀/꼬리 (Kemonomimi/Animal Parts)', '곤충/벌레 (Formicophilia, Insect Play)', '거대공포 유발 (Megalophobia-themed Play)', '특정사물애 (Objectophilia)', '기타(직접입력)'];
+        const races = ['인간', '외계인', '동양인', '백인', '흑인', '혼혈', '알파', '오메가', '베타', '케이크', '포크', '센티넬', '에스퍼', '뱀파이어', '엘프', '하이엘프', '다크엘프', '천사', '타락천사', '악마', '데몬', '서큐버스', '인큐버스', '페어리', '월광족', '몽마', '퍼리', '수인', '수인(고양이)' ,'수인(강아지)', '수인(늑대)', '수인(여우)', '수인(토끼)', '수인(곰)', '수인(새)', '수인(표범)', '수인(사슴)', '수인(용)', '수인(호랑이)', '수인(뱀)', '수인(나비)', '수인(돌고래)', '인어', '세이렌', '드래곤(폴리모프)', '정령', '드라이어드', '님프', '나가', '라미아', '켄타우로스', '실프', '운디네', '샐러맨더', '노움(원소정령)', '드워프', '하플링', '티플링', '드래곤본', '오크', '고블린', '트롤', '오우거', '아스모데우스', '사이보그', '안드로이드', '골렘', '가고일', '유령', '리치', '슬라임(의인화)', '더스크웜', '하피', '미노타우로스', '거인', '아인', '키메라', '스핑크스', '만드라고라(의인화)', '그리핀', '히드라', '베히모스', '크라켄(의인화)'];
+        const hairStyles = ['대머리', '스킨헤드', '반삭', '아주짧은크롭컷', '숏컷', '픽시컷', '스파이키헤어', '크루컷', '아이비리그컷', '페이드컷', '언더컷', '투블럭', '모히칸', '숏보브컷', '단정한단발', '처피뱅', '숏샤기컷', '숏울프컷', '리젠트컷', '보브컷', '중단발', '레이어드중단발', '뻗침머리', '단발웨이브', '단발곱슬머리', '가르마펌', '옆으로넘긴머리', '애교머리', '섀기컷', '울프컷', '허쉬컷', '칼단발', '똑단발', '꽁지머리', '반묶음', '긴생머리', '긴웨이브헤어', '긴곱슬머리', '레이어드긴머리', '히메컷', '글램펌', '루즈펌', '물결펌', '아프로헤어', '드레드락', '콘로우', '포니테일', '하이포니테일', '로우포니테일', '번헤어', '만두머리', '시니용', '올림머리', '하나로땋은머리', '양갈래땋은머리', '벼머리', '더치브레이드', '피쉬테일브레이드', '올백', '시스루뱅', '풀뱅', '사이드뱅', '커튼뱅', '쉼표머리', '깃털장식헤어', '땋은올림머리', '비녀꽂은머리', '댕기머리', '상투머리', '가채', '화관쓴머리', '리본묶음머리', '헤어핀장식머리', '웨트헤어', '슬릭백언더컷', '퐁파두르', '사이드파트', '프린지컷', '멀릿헤어', '브레이드번', '박서브레이드', '크라운브레이드', '헤일로브레이드', '로우번', '미들번', '하이번', '스페이스번즈', '언밸런스컷', '투톤염색헤어', '브릿지헤어', '솜브레헤어', '발레아쥬헤어', '옴브레헤어'];
+        const accessories = ['없음', '안경', '선글라스', '고글', '모노클', '아이패치', '캡모자', '페도라', '베레모', '비니', '챙모자', '버킷햇', '두건', '반다나', '헤어밴드', '머리띠', '머리핀', '헤어핀(장식)', '화관', '티아라', '왕관', '스카프', '넥타이', '보타이', '목도리', '목걸이', '펜던트목걸이', '초커', '귀걸이', '이어커프', '귀찌', '팔찌', '뱅글팔찌', '암릿', '반지', '너클링', '손목시계', '회중시계', '백팩', '숄더백', '크로스백', '토트백', '클러치백', '파우치', '힙색', '여행가방', '검집', '총집(홀스터)', '화살통', '마법지팡이', '마도서', '부적묶음', '룬스톤주머니', '얼굴문신', '목문신', '팔문신', '쇄골문신', '등문신', '입술피어싱', '눈썹피어싱', '코피어싱', '혀피어싱', '귀피어싱(다수)', '배꼽피어싱', '헤드셋', '이어폰', '마스크(천/패션)', '가면(파티/가장)', '복면(닌자/도적)', '장갑(일반)', '가죽장갑', '레이스장갑', '건틀릿', '벨트', '체인벨트', '허리띠(장식용)', '코르셋(패션)', '넥워머', '각반', '레그워머', '발찌', '주머니칼', '배지/브로치', '견장/휘장', '이름표', '카메라', '악기(휴대용)', '공구벨트', '랜턴', '횃불', '두루마리문서', '양피지', '깃펜', '책', '노트', '우산', '양산', '부채(일반/전통)', '물통/수통', '지도', '나침반', '담배케이스', '파이프담배', '라이터', '수갑(장식용)', '인조수염', '코사지', '깃털장식', '보석함', '약초주머니', '향주머니', '술병(휴대용)', '호루라기', '단소/피리', '어깨견장', '완장', '가슴리본', '손수건(주머니장식)', '행커치프', '넥타이핀', '커프스버튼', '멜빵', '선캡', '니삭스', '오버니삭스', '발토시', '장미꽃(입에물거나)', '안경줄', '코뚜레(장식용)', '볼체인', '주사위', '타로카드', '마스크체인', '스마트워치', '블루투스이어폰', 'USB메모리목걸이', '전자담배', '교통카드목걸이', '사원증목걸이'];
+        const appearanceFeatures = ['없음', '눈밑점', '입가점', '코점', '미인점', '주근깨(얼굴전체)', '주근깨(코와볼)', '보조개(한쪽)', '보조개(양쪽)', '덧니', '송곳니돌출', '다크서클', '만성홍조', '오드아이', '파이아이', '역안', '날카로운눈매', '처진눈매', '삼백안', '사백안', '두꺼운입술', '얇은입술', '올라간입꼬리', '긴속눈썹', '눈가흉터(세로)', '볼흉터(가로)', '입가흉터(꿰맨자국)', '이마흉터', '목흉터', '손등/팔흉터', '화상자국(일부)', '얼굴문신(작게)', '목문신(전체)', '팔문신(화려하게)', '쇄골문신', '등문신(넓게)', '입술피어싱(링)', '눈썹피어싱(바벨)', '코피어싱(셉텀)', '혀피어싱(여러개)', '귀피어싱(다수)', '배꼽피어싱', '작은뿔(염소뿔형태)', '큰뿔(악마뿔형태)', '이마중앙뿔', '엘프귀(길고뾰족)', '뾰족귀(짧음)', '동물귀(해당수인)', '동물꼬리(해당수인)', '기계의안', '기계팔(일부)', '기계다리(일부)', '피부일부비늘', '피부일부갑주', '깃털장식(머리/몸)', '몸에서빛남(문양/특정부위)', '백반증(일부)', '손가락결손', '귀일부결손', '날개(작은/장식용)', '이마에문양', '눈물점', '아이라인짙음', '속쌍꺼풀', '겉쌍꺼풀', '무쌍꺼풀', '미간좁음/넓음', '광대뼈돌출', '사각턱', '브이라인턱', '입술피어싱(스네이크바이트)', '코피어싱(노스트릴)', '볼피어싱', '보조개피어싱', '혀밑피어싱', '인디언보조개', '눈꼬리주름(웃을때)', '이마주름(표정)', '미간주름(찡그릴때)', '목주름', '손가락문신', '발목문신', '피부톤불균형', '튼살(일부)', '켈로이드흉터', '점위치(특정부위상세)', '더듬이(곤충형수인)', '날개(곤충형수인)', '복안(곤충형수인)', '기계척추', '인공심장노출부', '바코드문신(목뒤)', '이레즈미문신', '트라이벌문신', '블랙워크문신', '컬러문신', '형광문신', '기타(직접입력)'];
+const defaultHairColors = ['#8B4513', '#000000', '#FFD700', '#FF4500', '#800080', '#008000', '#4169E1', '#DC143C', '#A9A9A9', '#FFC0CB', '#00FFFF', '#E6E6FA', '#F5F5DC', '#2F4F4F', '#FFFAF0', '#6A5ACD', '#FF69B4', '#7FFF00', '#D2691E', '#CD5C5C', '#C0C0C0', '#987654', '#E5E4E2', '#722F37', '#98FB98', '#B87333', '#B2BEB5', '#3A539B', '#C8A2C8', '#C4A484', '#6B8E23', '#4B0082', '#FF7F50', '#008080', '#B76E79', '#F08080', '#DEB887', '#D8BFD8', '#4682B4', '#FFF8DC'];
+        const defaultEyeColors = ['#4A4A4A', '#8B4513', '#008000', '#4169E1', '#800080', '#DC143C', '#FF4500', '#FFD700', '#A9A9A9', '#000000', '#F0E68C', '#778899', '#FF6347', '#20B2AA', '#DA70D6', '#FFEFD5', '#7FFFD4', '#FFBF00', '#50C878', '#B08D57', '#71797E', '#DAA520', '#B57EDC', '#FFB6C1', '#0F52BA', '#808000', '#E0115F', '#7DF9FF', '#CFB53B', '#967BB6', '#40E0D0', '#C3B091', '#FF00FF', '#87CEEB', '#CD7F32', '#FDEE00'];
+        const defaultSkinColors = ['#FFDFC4', '#FBE7D3', '#F7DBC1', '#F5CEB3', '#E7BC91', '#DDB07F', '#C6976B', '#A0744D', '#8A623E', '#6B4F2E', '#F3E5AB', '#E0C8A0', '#C9AE84', '#AD8A63', '#FCECD7', '#FFEBCD'];
+        const worlds = {
+  '현대': {
+    jobs: ['BJ', 'CEO', 'IT개발자', 'IT컨설턴트', 'MD', 'N잡러', 'PD', 'UIUX디자이너', '가게주인', '가사도우미', '가수', '간호사', '감정평가사', '강사', '건축가', '검사', '게임기획자', '경찰', '경호원', '고고학자', '공무원', '공연기획자', '공인중개사', '과학자', '관세사', '광고기획자', '교사', '교주', '교수', '구멍가게사장', '국가대표', '국회의원', '국정원요원', '군인', '그래픽디자이너', '기자', '네일아티스트', '노무사', '다방직원', '단역배우', '데이터분석가', '댄서', '도예가', '도서관사서', '동물조련사', '동화작가', '디지털마케터', '라디오DJ', '로비스트', '마사지사', '마술사', '마피아', '만화가', '메이크업아티스트', '모델', '목사', '무당', '무용가', '물리치료사', '미술교사', '미용사', '바리스타', '바텐더', '방송작가', '배달기사', '배우', '백수', '번역가', '변호사', '보석디자이너', '보험설계사', '복권방사장', '부동산중개인', '북디자이너', '비밀클럽매니저', '비서', '빅데이터전문가', '벨보이', '사립탐정', '사회운동가', '사회복지사', '사진작가', '사채업자', '상담사', '상점점원', '성우', '세무사', '소방관', '소설가', '소믈리에', '쇼콜라티에', '쇼호스트', '수의사', '스님', '스타일리스트', '스타트업대표', '승무원', '스포츠에이전트', '스포츠해설가', '시나리오작가', '시인', '신문기자', '신부', '심리상담사', '아나운서', '아로마테라피스트', '아이돌', '안무가', '이사', '애널리스트', '애견미용사', '약사', '언론인', '에디터', '여행가이드', '연습생', '연예부기자', '연예인매니저', '영상편집가', '영화감독', '요가강사', '요리사', '운동선수', '운전기사', '웹개발자', '웹기획자', '웹소설작가', '웹툰작가', '유튜버', '유치원교사', '은행원', '음반제작자', '음악교사', '음악치료사', '의사', '이모티콘작가', '인테리어디자이너', '일러스트레이터', '임상심리사', '임원', '작곡가', '작사가', '장례지도사', '재무설계사', '재벌', '제빵사', '정원사', '정치인', '조경사', '조련사', '조폭', '조직원', '조향사', '조종사', '죄수', '청소부', '체육교사', '출판사대표', '카운슬러', '카피라이터', '칼럼니스트', '컨설턴트', '코치', '큐레이터', '타로마스터', '타투이스트', '통역가', '파티시에', '펀드매니저', '편집디자이너', '편의점아르바이트생', '평론가', '프로게이머', '프로파일러', '플래너', '플로리스트', '학원강사', '학예사', '한의사', '항공관제사', '항해사', '해결사', '해양경찰', '해커', '헤드헌터', '헬스트레이너', '호텔리어', '화가', '환경운동가', '회계사', '회사원', '흥신소직원'],
+    clothing: {
+      spring_top: ['얇은긴팔티', '스트라이프셔츠', '실크블라우스', '캐시미어가디건', '니트베스트', '봄맨투맨', '봄후드집업', '옥스포드셔츠', '헨리넥티셔츠', '보트넥티셔츠', '벌룬소매블라우스', '레이스블라우스', '프릴블라우스', '시스루블라우스', '새틴셔츠', '데님셔츠', '크롭가디건', '봄바람막이', '얇은야상점퍼', '스웨이드자켓', '봄트렌치코트', '봄블레이저', '봄항공점퍼'],
+      spring_bottom: ['스키니진', '일자청바지', '부츠컷청바지', '면바지', '봄슬랙스', '봄와이드팬츠', '미디데님스커트', '롱데님스커트', '플리츠스커트', 'A라인스커트', 'H라인스커트', '새틴스커트', '린넨팬츠', '조거팬츠', '카고팬츠', '봄트레이닝바지', '치마바지'],
+      spring_onepiece_set: ['셔츠원피스', '플라워패턴원피스', '얇은니트원피스', '데님원피스', '트위드원피스', '랩원피스', '블라우스형원피스', '멜빵원피스', '긴팔점프수트', '캐주얼정장세트', '후드원피스(봄)'],
+      summer_top: ['프린팅반팔티', '무지반팔티', '민소매나시', '크롭탑', '오프숄더탑', '뷔스티에', '슬리브리스블라우스', '린넨셔츠', '린넨블라우스', '홀터넥탑', '탱크탑', '피케셔츠', '반팔셔츠', '쉬폰블라우스', '펀칭블라우스', '메쉬탑', '비키니탑', '래시가드상의', '튜브탑'],
+      summer_bottom: ['데님숏팬츠', '면숏팬츠', '핫팬츠', '5부팬츠', '린넨숏팬츠', '데님미니스커트', '면미니스커트', '테니스스커트', '랩스커트', '쉬폰롱스커트', '아이스진', '비키니팬티', '보드숏', '냉감소재바지', '밴딩팬츠', '돌핀팬츠'],
+      summer_onepiece_set: ['민소매원피스', '오프숄더원피스', '뷔스티에원피스', '린넨원피스', '맥시드레스', '비치원피스', '반팔점프수트', '민소매점프수트', '롬퍼', '슬립드레스', '원피스수영복', '모노키니'],
+      autumn_top: ['체크긴팔셔츠', '솔리드긴팔셔츠', '두꺼운블라우스', '기모맨투맨', '기모후드티', '기모후드집업', '니트스웨터', '터틀넥니트', 'V넥니트', '라운드넥니트', '골지니트', '가죽셔츠', '코듀로이셔츠', '플란넬셔츠', '두꺼운니트가디건', '앙고라니트', '모헤어니트', '스웨트셔츠', '가을바람막이', '가을야상점퍼', '퀼팅자켓'],
+      autumn_bottom: ['워싱진', '블랙진', '가을용슬랙스', '가을용와이드팬츠', '가죽스커트', '코듀로이스커트', '코듀로이팬츠', '체크스커트', '울스커트', '니트스커트', '두꺼운카고팬츠', '기모레깅스', '기모트레이닝바지', '가죽레깅스'],
+      autumn_onepiece_set: ['두꺼운니트원피스', '코듀로이원피스', '체크원피스', '가죽원피스', '벨벳원피스', '롱셔츠원피스', '후드원피스(가을)', '스웨터원피스', '가을정장세트'],
+      winter_top: ['기모긴팔티', '두꺼운스웨터', '캐시미어스웨터', '울니트', '폴라니트', '양털안감후드티', '플리스맨투맨', '발열내의상의', '히트텍상의', '두꺼운집업가디건', '퍼칼라니트', '꽈배기니트', '패딩조끼', '숏패딩점퍼', '롱패딩점퍼', '다운점퍼', '플리스집업자켓'],
+      winter_bottom: ['기모청바지', '기모슬랙스', '울팬츠', '두꺼운니트스커트', '패딩스커트', '기모안감가죽팬츠', '벨벳팬츠', '두꺼운기모레깅스', '방수방풍바지', '내복하의', '히트텍하의', '스키복바지'],
+      winter_onepiece_set: ['울니트원피스', '기모원피스', '두꺼운스웨터원피스', '모직원피스', '퍼트리밍원피스', '겨울정장세트', '스키복점프수트'],
+      special_top: ['정장블라우스', '정장셔츠', '턱시도셔츠', '이브닝드레스상체', '칵테일드레스상체', '웨딩드레스상체', '파티드레스상체', '경찰제복상의', '군인제복상의', '승무원제복상의', '의사가운', '요리사복상의', '정비복상의', '운동복상의(트레이닝)', '스포츠브라', '파자마상의', '잠옷가운', '유카타상의', '개량기모노상의', '생활한복저고리', '개량치파오상의', '아이돌무대의상상의', '힙합스타일상의', '펑크룩상의', '고스룩상의', '우주복상의', '잠수복상의', '레인코트상의', '환자복상의', '죄수복상의'],
+      special_bottom: ['정장스커트', '정장바지', '턱시도바지', '이브닝드레스하체', '칵테일드레스하체', '웨딩드레스하체', '파티드레스하체', '경찰제복하의', '군인제복하의', '승무원제복하의', '요리사복하의', '정비복하의', '운동복하의(트레이닝)', '요가레깅스', '파자마하의', '유카타하의', '개량기모노하의', '생활한복치마', '생활한복바지', '개량치파오하의', '아이돌무대의상하의', '힙합스타일바지', '펑크룩하의', '고스룩하의', '우주복하의', '잠수복하의', '레인코트하의', '환자복하의', '죄수복하의'],
+      special_onepiece_set: ['정장세트(여성)', '정장세트(남성)', '턱시도세트', '이브닝드레스', '칵테일드레스', '웨딩드레스', '파티드레스', '경찰제복세트', '군인제복세트', '승무원제복세트', '의사수술복세트', '요리사복세트', '정비복세트', '트레이닝복세트', '요가복세트', '파자마세트', '수영복(원피스)', '래시가드세트', '유카타세트', '개량기모노세트', '생활한복세트', '개량치파오세트', '아이돌무대의상세트', '펑크룩세트', '고스룩세트', '우주복세트', '잠수복세트', '레인코트세트', '환자복세트', '죄수복세트', '작업복점프수트']
+    }
+  },
+  '학원물': {
+    jobs: ['경비원', '과학선생님', '교감선생님', '교장선생님', '국어선생님', '급식조리사', '기간제교사', '날라리', '도덕선생님', '도서부원', '동아리담당교사', '동아리부장', '모범생', '문제아', '미술부원', '미술선생님', '방송부PD', '보건교사', '사서교사', '사진부원', '사회선생님', '상담교사', '생활지도부장', '선도부원', '수련회교관', '수위', '수학선생님', '스포츠강사', '양호선생님', '영어선생님', '연극부원', '운동부감독', '운동부매니저', '운동부주장', '운동부원', '음악부원', '음악선생님', '이사장', '이사장자녀', '일진', '임시교사', '전교회장', '전학생', '정보선생님', '체육관관리인', '체육선생님', '학생부장', '학생회임원', '학교밴드보컬', '행정실장', '행정실직원'],
+    clothing: {
+      school_spring_top: ['춘추복블라우스', '춘추복셔츠', '춘추복조끼', '교복가디건(봄가을)', '교복맨투맨'],
+      school_spring_bottom: ['춘추복스커트', '춘추복바지', '교복면바지'],
+      school_spring_onepiece_set: ['춘추복원피스교복', '교복점퍼스커트세트'],
+      school_summer_top: ['하복블라우스', '하복셔츠', '하복생활복티셔츠', '체육복반팔티'],
+      school_summer_bottom: ['하복스커트', '하복바지', '하복생활복반바지', '체육복반바지'],
+      school_summer_onepiece_set: ['하복원피스교복', '세일러복(여름)'],
+      school_autumn_top: ['동복블라우스', '동복셔츠', '동복조끼', '교복니트', '교복후드집업', '교복마이자켓'],
+      school_autumn_bottom: ['동복스커트', '동복바지', '기모교복바지', '교복체크스커트'],
+      school_autumn_onepiece_set: ['동복원피스교복', '교복코트형원피스'],
+      school_winter_top: ['동복코트', '동복패딩', '두꺼운교복가디건', '교복패딩조끼', '교복목폴라니트'],
+      school_winter_bottom: ['기모안감동복스커트', '기모안감동복바지', '교복겨울레깅스'],
+      school_winter_onepiece_set: ['겨울용교복원피스', '교복케이프코트세트'],
+      gym_top: ['학교체육복반팔', '학교체육복긴팔', '학교운동부유니폼상의'],
+      gym_bottom: ['학교체육복반바지', '학교체육복긴바지', '학교운동부유니폼하의'],
+      gym_onepiece_set: ['학교수영복', '학교운동부점프수트형유니폼'],
+      special_top: ['축제용코스튬상의', '연극부의상상의', '밴드부무대의상상의', '졸업가운상의'],
+      special_bottom: ['축제용코스튬하의', '연극부의상하의', '밴드부무대의상하의'],
+      special_onepiece_set: ['축제용코스튬원피스', '연극부드레스', '밴드부무대원피스', '졸업가운']
+    }
+  },
+  '특수설정버스': {
+    jobs: ['알파', '우성알파', '열성알파', '오메가', '우성오메가', '열성오메가', '베타', '센티넬', 'S급센티넬', 'A급센티넬', 'B급센티넬', 'C급센티넬', '가이드', 'S급가이드', 'A급가이드', 'B급가이드', 'C급가이드', '매칭된페어', '미등록센티넬', '미등록가이드', '폭주센티넬', '정신계가이드', '물리계센티넬', '케이크', '포크', '미각상실포크', '케이크혐오케이크', '위장케이크', '위장포크', '네임보유자', '네임미발현자', '운명의상대', '네임숨김', '피스틸', '스테먼', '만개한피스틸', '시든스테먼', '금단의교배종', '도미넌트', '서브미시브', '스위치'],
+    clothing: {
+      spring_top: ['페로몬차단소재셔츠', '각인상징문양티셔츠', '능력제어용장갑', '가벼운보호재킷'],
+      spring_bottom: ['페로몬억제기능바지', '활동편한카고팬츠', '신축성좋은레깅스'],
+      spring_onepiece_set: ['전신억제복(봄용)', '맞춤형능력강화슈트(봄용)'],
+      summer_top: ['통기성좋은억제티셔츠', '민소매전투조끼', '능력발현용반팔'],
+      summer_bottom: ['냉감소재훈련바지', '보호기능숏팬츠', '가벼운방어스커트'],
+      summer_onepiece_set: ['경량전투점프수트(여름)', '수중활동용특수슈트'],
+      autumn_top: ['두꺼운페로몬차단점퍼', '특수소재가죽자켓', '내구성강화후드티'],
+      autumn_bottom: ['강화섬유카고바지', '보온기능전투레깅스', '방어패널부착스커트'],
+      autumn_onepiece_set: ['다기능전술슈트(가을용)', '위장용특수활동복'],
+      winter_top: ['발열기능내장방어재킷', '극한지용특수코트', '에너지쉴드탑재상의'],
+      winter_bottom: ['방한방탄기능바지', '내부단열처리레깅스', '보온성극대화스커트'],
+      winter_onepiece_set: ['혹한기작전용전투복세트', '에너지코어보호슈트'],
+      special_top: ['형질발현축제예복상의', '능력자대회유니폼상의', '비밀집회용위장복상의'],
+      special_bottom: ['형질발현축제예복하의', '능력자대회유니폼하의', '비밀집회용위장복하의'],
+      special_onepiece_set: ['각성자공식예복', '특수임무용스텔스슈트', '버스세계관전용의례복']
+    }
+  },
+  '로맨스 판타지': {
+    jobs: ['가정교사', '거리악사', '건국의 공신', '검성(劍聖)', '고아', '공작', '공작부인', '공주', '광부', '구원자', '궁정마법사', '궁정연금술사', '궁정의원', '권력가의사생아', '귀부인', '귀족영애', '귀족영식', '근위대장', '기사', '기사단장', '길드원(상인/용병/도적 등)', '남작', '남작부인', '남부대공', '네크로맨서공작', '농노', '농부', '대공', '대마법사', '대신관', '대상인', '대장장이', '대현자(大賢者)', '도망친왕녀', '도서관사서', '독을다루는황후', '드래곤 슬레이어', '마검사', '마녀', '마도공학자', '마법검사', '마법도구점주인', '마법학교교수', '마법학교이사장', '마법학교학생', '마부', '마물 사냥꾼', '마탑관리인', '마탑주', '망국의왕족', '목수', '목동', '몰락귀족', '무역왕', '문지기', '백작', '백작부인', '백작영애', '백작영식', '북부대공', '빵집주인/제빵사', '사냥꾼', '사생아', '사제', '상단주', '상점점원', '서부총독', '세탁부', '성검의주인', '성기사', '성녀', '세드엔딩조연', '소드마스터', '소작농', '수석시녀', '수인족왕', '시녀', '시녀장', '시종', '시종장', '식당종업원', '신녀', '신탁받은자', '신흥귀족', '심부름꾼', '악녀', '악역영애', '암살길드수장', '약제사', '약초꾼', '어부', '여기사', '여관주인', '여관종업원', '엘프왕', '연금술사', '예언가', '오라클', '요리사', '용병', '용병왕', '유모', '음유시인', '의원조수', '이세계에서온성녀', '이단의 심판자', '인형술사', '자작', '자작부인', '자작영애', '자작영식', '잡화점주인', '장인이된노예', '재봉사', '전쟁영웅', '정령사', '정략결혼상대', '정원사', '주방보조', '준남작', '책방주인', '책속으로빙의한자', '책사', '천재마법사', '최강기사', '추방당한왕족', '치유사(민간)', '타락한성녀', '탐정', '폐위된황태자', '하녀', '하급관리', '하인', '행상인', '현상금 사냥꾼', '호위기사', '후작', '후작부인', '후작영애', '후작영식', '화가', '황녀', '황실기사단장', '황실마법사', '황태자', '황태자비', '황후', '황제', '회귀한악녀', '회귀한영웅', '흑막', '흑마법사'],
+    clothing: {
+      spring_top: ['로판풍실크블라우스', '자수튜닉', '코르셋탑', '레이스볼레로', '봄망토', '가벼운자켓'],
+      spring_bottom: ['풍성한드레스스커트', '승마바지', '레이어드페티코트', '자수놓인바지'],
+      spring_onepiece_set: ['봄꽃자수드레스', '궁정평상복원피스', '가벼운외출용드레스'],
+      summer_top: ['오프숄더드레스상의', '얇은면튜닉', '로판풍뷔스티에', '쉬폰블라우스'],
+      summer_bottom: ['가벼운면스커트', '통기성좋은바지', '숏팬츠형태하의(활동복)'],
+      summer_onepiece_set: ['여름정원파티드레스', '얇은소재의일상드레스', '민소매로판풍원피스'],
+      autumn_top: ['벨벳블라우스', '브로케이드조끼', '울혼방튜닉', '가죽코르셋', '가을용케이프'],
+      autumn_bottom: ['무거운실크스커트', '가죽바지', '코듀로이승마바지', '자수스커트'],
+      autumn_onepiece_set: ['가을연회용드레스', '두꺼운소재의외출복원피스', '헌팅룩점프수트'],
+      winter_top: ['모피트리밍드레스상의', '두꺼운울튜닉', '모피숄', '벨벳자켓(안감)', '겨울용망토'],
+      winter_bottom: ['누빔스커트', '안감댄바지', '모직승마바지', '두꺼운울스커트'],
+      winter_onepiece_set: ['겨울무도회드레스', '모피장식외투포함원피스', '방한용승마복세트'],
+      special_top: ['궁정예복상의', '기사경갑상의', '기사판금갑옷상의', '마법사로브상단', '사제복상의', '암살자복면상의', '연금술사가운상의', '왕족평상복상의', '시녀유니폼상의', '하녀작업복상의'],
+      special_bottom: ['궁정예복하의', '기사경갑하의', '기사판금갑옷하의', '마법사로브하단', '사제복하의', '암살자바지', '연금술사가운하단', '왕족평상복하의', '시녀유니폼스커트', '하녀작업복치마'],
+      special_onepiece_set: ['화려한무도회드레스', '대관식예복', '결혼식드레스', '기사단정복세트', '마법사의식용로브세트', '사제예복세트', '평민축제원피스', '여행자복장세트', '모험가길드유니폼', '비밀결사단복장']
+    }
+  },
+  '현대 판타지': {
+    jobs: ['A급헌터', 'B급헌터', 'C급헌터', 'D급헌터', 'E급헌터', 'F급헌터', 'S급헌터', 'SS급헌터', 'SSS급헌터', '가이드', '게이트관리국요원', '게이트키퍼', '고대유물감정사', '고스트헌터', '괴물사냥꾼', '그냥사람', '그림리퍼', '길드마스터', '길드운영진', '길드원', '능력자', '능력자학교교사', '능력자학교학생', '던전공략전문가', '데몬헌터', '데빌헌터', '도시주술사', '마나감응자', '마도구제작자', '마법감식반', '마법경찰', '마법물품상인', '마법소녀', '마수조련사', '몽마', '뱀파이어', '뱀파이어로드', '뱀파이어슬레이어', '뱀파이어헌터', '변신능력자', '비밀결사단원', '비밀조직요원', '사이킥', '서포터', '센티넬', '심령술사', '심령탐정', '아티팩트딜러', '아티팩트수집가', '악마', '악마계약자', '언데드사냥꾼', '에스퍼', '엑소시스트', '엔젤헌터', '엘리멘탈리스트', '요괴', '요정', '용병', '웨어울프', '위치', '위치헌터', '유물관리국요원', '음양사', '이능력범죄수사관', '이능력연구원', '인큐버스', '차원관리자', '차원상인', '차원여행자', '천사', '최상급헌터', '타로마스터', '탱커', '퇴마사', '특수사건전담반형사', '평행세계관리자', '힐러', '헌터', '헌터관리국장', '헌터양성소교관', '헌터전용의료진', '헌터협회장', '헌터협회직원'],
+    clothing: {
+      spring_top: ['헌터용가죽자켓', '이능력제어셔츠', '마법문양티셔츠', '퇴마사용얇은도포', '뱀파이어풍실크셔츠', '요괴풍캐주얼상의', '천사풍흰색블라우스', '악마풍검은가죽조끼'],
+      spring_bottom: ['강화섬유바지', '활동용카고팬츠', '마법진레깅스', '퇴마사용한복바지'],
+      spring_onepiece_set: ['헌터전투슈트(봄)', '이능력학교교복(봄)', '마법소녀변신복(봄)'],
+      summer_top: ['속건성헌터티셔츠', '민소매이능력슈트', '마법부여나시', '퇴마사용여름한복상의'],
+      summer_bottom: ['경량전투숏팬츠', '마력증폭스커트', '쿨링기능레깅스'],
+      summer_onepiece_set: ['여름용헌터슈트', '이능력학교하복', '마법소녀여름변신복'],
+      autumn_top: ['방탄기능헌터야상', '이능력억제코트', '두꺼운마법문양후드', '퇴마사용두루마기'],
+      autumn_bottom: ['내구성강화카고바지', '보온마법레깅스', '방어기능스커트'],
+      autumn_onepiece_set: ['가을용헌터정장', '이능력학교가을교복', '마법소녀가을변신복'],
+      winter_top: ['발열기능헌터패딩', '극한지용이능력자코트', '방한마법로브', '퇴마사용솜도포'],
+      winter_bottom: ['내한전투바지', '기모마법레깅스', '방한스커트'],
+      winter_onepiece_set: ['겨울용헌터방한복', '이능력학교동복', '마법소녀겨울변신복'],
+      special_top: ['S급헌터전용슈트상의', '길드마스터제복상의', '비밀조직유니폼상의', '엑소시스트제복상의', '뱀파이어귀족연회복상의', '천사장예복상의', '마계군주전투복상의'],
+      special_bottom: ['S급헌터전용슈트하의', '길드마스터제복하의', '비밀조직유니폼하의', '엑소시스트제복하의', '뱀파이어귀족연회복하의', '천사장예복하의', '마계군주전투복하의'],
+      special_onepiece_set: ['최상급헌터풀세트슈트', '능력자대회결승유니폼', '마법의식용예복', '차원관리자유니폼', '이종족대사공식의상']
+    }
+  },
+  '판타지': {
+    jobs: ['가이드(던전/오지)', '가죽세공사', '감시관', '경비병', '고대마법연구가', '고아', '곡예사', '골렘술사', '광부', '교사(마을학교 등)', '궁정광대', '궁정마법사', '궁정연금술사', '궁수', '권왕', '귀족', '기록관', '기사', '기사단 시종', '기사단장', '길거리 악사', '길드마스터', '나무꾼', '네크로맨서', '노예', '농노', '농부', '대장장이', '도공(陶工)', '도서관 사서', '도축업자', '드래곤', '드래곤나이트', '드래곤슬레이어', '드루이드', '등대지기', '룬마법사', '마검사', '마녀', '마도공학자', '마법검사', '마법물품상인', '마법상인', '마법학교교수', '마부', '마수조련사', '마탑 관리인', '마탑주', '마왕', '마족', '말 관리인', '모험가', '목수', '목동', '몽마', '무기상인', '무녀', '문지기', '물약상인', '민간치료사', '바드', '발키리', '방랑기사', '백마법사', '뱃사공', '보석세공사', '사냥꾼', '사령술사', '사육사', '사제', '상단주', '상인', '서기관', '서큐버스', '석공', '선원', '성기사', '성녀', '세금징수원', '소매치기', '소드마스터', '소작농', '소환사', '수인', '시녀(궁정 외)', '시민', '시종(궁정 외)', '식당종업원', '식료품상인', '신관', '신의사도', '심부름꾼', '암살자', '약제사', '양조업자', '어부', '엘프', '여관주인', '연금술사', '예언가', '오라클', '오크', '왕', '요리사', '용기사', '용병', '용병단장', '음유시인', '음양사', '의원(민간)', '이단심문관', '이종족', '인큐버스', '일리단', '자객', '자유농민', '잡화점주인', '장로', '장인', '재봉사', '전령', '전사', '정령사', '정복자', '점성술사', '제빵사', '족장', '주술사', '챔피언', '책사', '척후병', '천족', '촌장', '치유사', '탐험가', '타락성기사', '퇴마사', '파수꾼', '팔라딘', '평민', '페어리', '필경사', '하녀', '하인', '학교선생', '항해사', '행상인', '현상금사냥꾼', '현자', '호문쿨루스', '황제', '흑마법사', '흡혈귀'],
+    clothing: {
+      spring_top: ['판타지풍튜닉(봄용)', '가죽조끼(봄용)', '사슬갑옷상의(경량)', '봄용로브', '엘프식나뭇잎옷상의', '드워프식작업복상의(봄)', '오크식가죽조각옷상의'],
+      spring_bottom: ['판타지풍바지(봄용)', '가죽바지(봄용)', '천스커트(봄용)', '엘프식덩굴바지', '드워프식작업바지(봄)'],
+      spring_onepiece_set: ['여행자튜닉원피스(봄)', '봄축제용민속의상', '드루이드봄의식복'],
+      summer_top: ['판타지풍민소매튜닉', '경갑상의', '얇은로브', '엘프식실크옷상의', '드워프식민소매작업복', '오크식맨살가죽끈상의'],
+      summer_bottom: ['판타지풍숏팬츠형하의', '얇은천바지', '짧은스커트', '엘프식깃털장식하의'],
+      summer_onepiece_set: ['여름용모험가복장', '숲의요정드레스', '사막부족의상'],
+      autumn_top: ['판타지풍두꺼운튜닉', '중갑상의(부분)', '가죽코트', '방수방풍로브', '엘프식가죽옷상의', '드워프식털조끼', '오크식털가죽옷상의'],
+      autumn_bottom: ['판타지풍두꺼운바지', '강화가죽바지', '모직스커트', '엘프식전투바지'],
+      autumn_onepiece_set: ['가을사냥복세트', '추수감사절축제복', '마법학교가을교복(판타지)'],
+      winter_top: ['판타지풍두꺼운모피튜닉', '판금갑옷상의(전신)', '모피코트', '방한마법부여로브', '엘프식눈밭위장복상의', '드워프식방한작업복상의', '오크식두꺼운모피옷상의'],
+      winter_bottom: ['판타지풍방한바지', '모피덧댄가죽바지', '두꺼운울스커트', '엘프식설산등반바지'],
+      winter_onepiece_set: ['겨울전투용갑옷세트', '북부왕국방한복', '혹한기용마법사로브세트'],
+      special_top: ['왕실예복상의', '기사단정복상의', '사제복상의', '용병단조끼', '도적길드복면상의', '바드풍화려한셔츠', '네크로맨서해골장식로브', '드루이드자연친화적상의', '대마법사별자리로브', '암살자검은상의'],
+      special_bottom: ['왕실예복하의', '기사단정복하의', '사제복하의', '용병단바지', '도적길드검은바지', '바드풍자유로운바지', '네크로맨서어두운하의', '드루이드나무껍질하의', '대마법사긴로브하단', '암살자소리안나는바지'],
+      special_onepiece_set: ['국왕대관식예복', '성기사신성한갑옷세트', '고위사제예복세트', '엘프왕족드레스', '드워프왕실의복', '오크족장전투복', '다크엘프여왕드레스', '정령사정령계의복', '소환사의식용가운', '이세계용사풀템의상']
+    }
+  },
+  '역사/시대물': {
+    jobs: ['가객(歌客)', '가문의 후계자', '갖바치', '객식구', '객주', '검객', '격투가', '견습무관/문관', '결연자(의형제/의자매)', '고명딸/고명아들', '관기', '관노', '관료', '관찰사', '광대', '공녀(貢女)', '공방 장인', '공자(公子)', '공인(官營수공업자)', '공주', '과객(科客/과거준비생)', '과부/미망인', '군관', '군사(軍師)', '궁녀', '궁중악사', '궁중요리사', '궁중화가', '권세가 가신', '귀공자/귀공녀', '기녀(妓女)', '기생', '기수', '나장', '내관', '내시', '노비(사노비/공노비)', '농민', '다모(茶母)', '대군', '대감', '대갓집 도련님', '대갓집 아가씨', '대사헌', '대장장이', '데릴사위', '도공', '도련님', '도사(道士)', '도편수', '도화서 화원', '망나니', '망국의 왕족/귀족', '머슴', '몰락 양반가의 자제', '무관', '무녀', '무당', '무사', '문관', '문지기', '물장수', '미천한 출신 관리', '방물장수', '뱃사공', '백정', '병졸', '보부상', '복수를 꿈꾸는 자', '봉수꾼', '부마', '사관(史官)', '사또', '사대부', '사서(司書)', '산지기', '산적', '상궁', '상민(常民)', '상인', '색장(色掌/염색장인)', '서녀(庶女)', '서자(庶子)', '선비', '세자', '세자빈', '세작', '소저(小姐)', '소작농', '수공업자', '수도승', '수라간 나인', '수령(守令)', '수양딸/양자', '숨겨진 왕손/핏줄', '승려', '시녀', '시종', '식객', '신하', '실세가의 자제', '암행어사', '애기씨(양반가 미혼여성)', '약혼자/정혼자', '양반', '어민', '어의', '역관', '역졸', '염전일꾼', '옹주', '왈패', '왕', '왕비', '왕자', '외교관', '요리사(민간)', '유생(儒生)', '유모', '의금부도사', '의관', '의녀', '이방', '입궐한 규수', '자객', '잠녀(해녀)', '장군', '장인', '재상(宰相)', '재인(才人/광대류)', '전략가', '전의감 의원', '전쟁고아', '전쟁미망인', '전기수(이야기꾼)', '점술가', '정승(政丞)', '제관', '제사장', '종친(왕의 친척)', '좌수(향촌 자치기구 관리)', '중궁전 나인', '중인(中人)', '지필묵 장수', '진상품 관리', '책사', '책쾌(서적 중개인)', '천민(賤民)', '철학자', '첩보원', '촌장', '총애받는 후궁/신하', '퇴기(은퇴한 기생)', '파락호(집안 말아먹는 난봉꾼)', '판관', '판서', '포교', '포도대장', '포졸', '폐위된 왕족/귀족', '풍수사', '학자', '한량', '한약방 주인', '향리(鄕吏)', '행수(行首)', '호위무사', '홀아비', '화가(민간)', '화공(畫工)', '화랑', '화전민', '황제', '황후', '황태자', '후궁', '훈장'],
+    clothing: {
+      spring_top: ['한복저고리(봄용)', '도포(봄용)', '철릭(봄용)', '얇은두루마기', '유생복상의', '무관단령(봄)', '궁녀당의(봄)', '평민삼베저고리', '서양중세튜닉(봄)', '서양중세셔츠(봄)', '서양귀족블라우스(봄)'],
+      spring_bottom: ['한복바지(봄용)', '한복치마(봄용)', '유생복하의', '무관단령하의(봄)', '궁녀치마(봄)', '평민삼베바지', '서양중세호즈', '서양중세브리치즈', '서양귀족스커트(봄)'],
+      spring_onepiece_set: ['선비의봄나들이옷', '양반규수봄외출복', '서양중세기사평상복(봄)', '서양귀부인봄드레스'],
+      summer_top: ['한복적삼', '모시저고리', '반비(여름용)', '평민민소매상의', '서양중세리넨튜닉', '서양중세민소매셔츠', '서양귀족가벼운상의(여름)'],
+      summer_bottom: ['한복고쟁이', '모시치마', '짧은한복바지(일할때)', '평민반바지형하의', '서양중세리넨바지', '서양귀족가벼운스커트(여름)'],
+      summer_onepiece_set: ['여름용개량한복', '기생여름옷', '서양평민여름원피스', '서양귀족여름드레스'],
+      autumn_top: ['한복저고리(가을용)', '도포(가을용)', '두꺼운두루마기', '누비저고리', '무관단령(가을)', '궁녀당의(가을)', '평민두꺼운저고리', '서양중세울튜닉', '서양중세두꺼운셔츠', '서양귀족벨벳상의(가을)'],
+      autumn_bottom: ['한복바지(가을용)', '한복치마(가을용)', '누비바지', '무관단령하의(가을)', '궁녀겹치마', '평민두꺼운바지', '서양중세울호즈', '서양귀족두꺼운스커트(가을)'],
+      autumn_onepiece_set: ['선비의가을유람복', '양반규수가을외출복', '서양중세기사단복(가을)', '서양귀부인가을드레스'],
+      winter_top: ['한복솜저고리', '털배자', '두꺼운누비두루마기', '무관단령(겨울)', '궁녀모피토시', '평민솜누비저고리', '서양중세모피안감튜닉', '서양중세두꺼운울셔츠', '서양귀족모피숄'],
+      winter_bottom: ['한복솜바지', '한복솜치마', '누비겹바지', '무관단령하의(겨울)', '궁녀솜치마', '평민솜바지', '서양중세두꺼운울호즈', '서양귀족두꺼운울스커트'],
+      winter_onepiece_set: ['겨울용방한한복세트', '양반가겨울실내복', '서양중세기사겨울망토세트', '서양귀부인겨울드레스(모피장식)'],
+      special_top: ['왕의용포상의', '왕비의적의상의', '관료조복상의', '무관군복상의', '기생한복상의(화려한)', '무녀복상의', '사무라이갑옷상의', '닌자복면상의', '로마토가', '중세수도사로브상의', '르네상스풍더블릿', '빅토리아시대드레스상의'],
+      special_bottom: ['왕의용포하의', '왕비의적의하의', '관료조복하의', '무관군복하의', '기생한복치마(화려한)', '무녀복치마', '사무라이갑옷하의', '닌자바지', '중세수도사로브하의', '르네상스풍호즈', '빅토리아시대스커트'],
+      special_onepiece_set: ['왕의면복풀세트', '왕비의대례복풀세트', '조선시대혼례복세트', '장군전투갑옷세트', '기생예능공연복', '무녀의식용제복', '사무라이정장세트', '닌자야행복풀세트', '로마황제예복', '중세시대왕실드레스', '르네상스귀족연회복', '빅토리아시대이브닝드레스']
+    }
+  },
+  '무협': {
+    jobs: ['강호낭인', '검객', '검선', '결투가', '고수', '관료', '구파일방장문인', '군사', '권왕', '기인', '낭인', '녹림두목', '도사', '독왕', '마도인', '마도종주', '마교교주', '무관', '무림맹주', '문지기', '문파장문인', '방랑도사', '백도무림인', '사파무림인', '살수', '상인', '소림승', '수련생', '신선', '약방주인', '어의', '여협', '은둔고수', '의원', '이인', '점소이', '정파장문인', '제갈량후예', '제자', '주방장', '진법가', '책사', '천마', '철혈문주', '표국주', '표두', '표사', '학자', '협객', '호법', '호위무사', '화산파검객', '황궁무사', '흑도방주'],
+    clothing: {
+      spring_top: ['무협풍얇은도포자락', '무명수련복상의', '경장상의', '자수놓인비단옷상의', '여행용쾌자'],
+      spring_bottom: ['무사바지', '행전', '비단바지', '가벼운수련용바지'],
+      spring_onepiece_set: ['선비풍유람복세트', '여협봄나들이옷', '초보수련생도복'],
+      summer_top: ['민소매수련복상의', '통풍잘되는마의상의', '짧은소매도포', '삼베옷상의'],
+      summer_bottom: ['짧은수련용바지', '마바지', '통넓은바지'],
+      summer_onepiece_set: ['여름용경장세트', '하계수련도복', '강호인여름평상복'],
+      autumn_top: ['무협풍두루마기', '가죽조끼', '누빔장포', '면포겉옷', '두꺼운수련복상의'],
+      autumn_bottom: ['두꺼운무사바지', '가죽덧댄바지', '누빔바지', '활동편한면바지'],
+      autumn_onepiece_set: ['가을용무사행장세트', '문파정기수련복', '상단호위무사복'],
+      winter_top: ['누비도포', '털가죽겉옷', '방한용내의', '두꺼운면포장포', '솜넣은수련복상의'],
+      winter_bottom: ['솜바지', '가죽방한바지', '두꺼운면바지', '방한용행전'],
+      winter_onepiece_set: ['겨울용무사방한복세트', '설산수련용도복', '관군겨울제복'],
+      special_top: ['검객복면상의', '자객야행복상의', '문파장문인도포상의', '마교교주흑의상의', '황궁무사갑옷상의', '살수검은상의', '은둔고수삼베옷상의', '낭인해진옷상의', '표사단련복상의', '점소이간편복상의'],
+      special_bottom: ['검객바지', '자객야행복하의', '문파장문인도포하의', '마교교주흑의하의', '황궁무사갑옷하의', '살수검은바지', '은둔고수해진바지', '낭인여행바지', '표사단련복하의', '점소이작업바지'],
+      special_onepiece_set: ['일대종사풍도의세트', '절세미녀여협복세트', '정파연합맹주복', '사파지존마왕복', '비밀암살조직원복', '전설적인협객의상', '소림사승려복', '무당파도사복', '개방거지왕의상', '신선풍흰색도포세트']
+    }
+  },
+  'SF/사이버펑크': {
+    jobs: ['AI개발자', 'AI심리학자', '가상현실디자이너', '기업보안전문가', '기업용병', '기업해커', '기업총수', '넷다이버', '뉴로맨서', '데이터브로커', '드론레이서', '드론조종사', '로봇공학자', '리퍼닥', '메카닉', '메카파일럿', '바운티헌터', '반란군지도자', '사이보그', '사이킥솔저', '생명공학자', '스페이스마린', '안드로이드', '암시장딜러', '에너지연구원', '에스퍼', '우주개척자', '우주공학자', '우주비행사', '우주상인', '우주생물학자', '우주용병', '우주정거장관리자', '워프기술자', '유전자조작전문가', '의체기사', '정보감시국요원', '정보브로커', '정보상인', '초능력자', '크로노에이전트', '테라포머', '테크노메이지', '특수요원', '행성개척자', '행성관리자', '행성탐사원', '해커', '홀로그램엔터테이너'],
+    clothing: {
+      spring_top: ['미래형경량재킷', '스마트섬유셔츠', '네온라인티셔츠', '사이버펑크풍후드집업', '크롬도금조끼'],
+      spring_bottom: ['테크웨어카고팬츠', '반사소재레깅스', '강화섬유스키니진', '사이버네틱스커트'],
+      spring_onepiece_set: ['경량전투점프수트(봄)', '도시형위장활동복', '가상현실접속슈트(일상용)'],
+      summer_top: ['냉각기능민소매탑', '홀로그램프린팅반팔티', '통기성메쉬셔츠', '방수나노소재상의'],
+      summer_bottom: ['스마트온도조절숏팬츠', '경량방어스커트', '흡습속건레깅스'],
+      summer_onepiece_set: ['여름용탐사슈트', '해커용경량작업복', '해변용스마트수영복'],
+      autumn_top: ['방탄기능후드자켓', '두꺼운테크웨어셔츠', '발광패널점퍼', '인공가죽코트'],
+      autumn_bottom: ['내구성강화카고바지', '보온기능스마트팬츠', '미래형데님스커트'],
+      autumn_onepiece_set: ['가을용도시미션슈트', '장거리이동용여행복', '사이버닌자복'],
+      winter_top: ['발열기능내장코트', '극저온방호파카', '에너지쉴드탑재상의', '인공모피재킷'],
+      winter_bottom: ['단열기능강화팬츠', '스텔스기능방한바지', '보온부츠컷레깅스'],
+      winter_onepiece_set: ['혹한기용생존슈트', '우주정거장작업복세트', '겨울용비행슈트'],
+      special_top: ['기업CEO정장상의', '바운티헌터전투조끼', '해커용증강현실고글연동탑', '메카파일럿슈트상의', '안드로이드외피상의', '사이보그강화골격상의', '반란군지도자코트', '특수요원스텔스상의', '가상아이돌무대의상상의', '리퍼닥수술가운'],
+      special_bottom: ['기업CEO정장하의', '바운티헌터강화바지', '해커용장비벨트부착하의', '메카파일럿슈트하의', '안드로이드외피하의', '사이보그강화골격하의', '반란군지도자전투바지', '특수요원스텔스하의', '가상아이돌무대의상하의', '리퍼닥수술바지'],
+      special_onepiece_set: ['최첨단우주복세트', '메가코프임원용정장세트', '엘리트해커풀세트장비', '사이보그특수작전슈트', '안드로이드인간위장복', '특수부대강습복세트', '가상현실아바타의상', '유전자조작생명체구속복', '시간여행자특수복', '넷다이버전용슈트']
+    }
+  },
+  '스페이스 오페라': {
+    jobs: ['기계행성지배자', '밀수꾼', '반란군사령관', '사이오닉능력자', '성간상인', '우주괴도', '우주과학자', '우주귀족', '우주도박사', '우주무희', '우주생물학자', '우주용병단장', '우주전투기파일럿', '우주제독', '우주탐험가', '우주해적선장', '우주황제', '워프항법사', '은하연방대사', '은하연방요원', '정보브로커', '제국기사단장', '제국장교', '제다이기사', '행성총독', '현상금사냥꾼', '호위함함장', '황실암살자'],
+    clothing: {
+      spring_top: ['우주선내활동복상의(봄기후행성용)', '경량파일럿자켓', '연방아카데미유니폼상의(봄)', '외계행성탐사셔츠'],
+      spring_bottom: ['다기능카고바지(우주용)', '신축성활동팬츠', '연방아카데미유니폼하의(봄)'],
+      spring_onepiece_set: ['함선승무원유니폼(봄)', '외교행사용경장드레스', '탐사대원활동복세트'],
+      summer_top: ['혹성표면용냉각셔츠', '민소매함선작업복', '열대행성용반팔탐사복'],
+      summer_bottom: ['경량방열숏팬츠', '통기성스커트형하의(우주용)', '활동용레깅스'],
+      summer_onepiece_set: ['우주해변용스마트수영복', '경량비행슈트(여름)', '혹서기행성탐사복세트'],
+      autumn_top: ['우주항해용두꺼운자켓', '방사능차단기능셔츠', '기온변화대응형조끼'],
+      autumn_bottom: ['내구성강화우주복바지', '보온기능카고팬츠', '전투용강화스커트'],
+      autumn_onepiece_set: ['장거리항해용선원복', '가을기후행성용전투복', '우주상인여행복세트'],
+      winter_top: ['극한지행성용방한파카', '내부발열우주복상의', '에너지코트(우주용)'],
+      winter_bottom: ['혹한기용단열바지', '극저온환경용레깅스', '방한부츠컷팬츠'],
+      winter_onepiece_set: ['우주빙하탐사슈트', '겨울행성용생존복세트', '함선외부작업용방한복'],
+      special_top: ['은하황제예복상의', '제국함대제독정복상의', '반란군사령관전투복상의', '우주해적선장코트', '제다이로브상의', '사이오닉능력자특수복상의', '우주귀족연회복상의', '현상금사냥꾼갑옷상의', '외계종족전통의상상의', '우주무희공연복상의'],
+      special_bottom: ['은하황제예복하의', '제국함대제독정복하의', '반란군사령관전투복하의', '우주해적선장바지', '제다이로브하의', '사이오닉능력자특수복하의', '우주귀족연회복하의', '현상금사냥꾼강화바지', '외계종족전통의상하의', '우주무희공연복하의'],
+      special_onepiece_set: ['은하연방의회정장세트', '제국기사단풀플레이트아머', '최첨단우주전투슈트', '우주유목민전통의상세트', '고대외계문명유물로브', '성간무역길드대표복장', '우주괴도잠입슈트', '은하계최고현상금사냥꾼장비세트', '외계왕족혼례복', '전설적인우주탐험가유니폼']
+    }
+  },
+  '호러/오컬트': {
+    jobs: ['강령술사', '고고학자', '고대신의사제', '고스트헌터', '공포소설가', '괴물사냥꾼', '교주', '구마사제', '데몬슬레이어', '도시괴담수집가', '마도서연구가', '묘지기', '미스터리작가', '부두술사', '사이비교주', '사탄숭배자', '사교도', '심령사진작가', '심령학자', '악령연구가', '악마소환사', '오컬트동호회회장', '오컬트상점주인', '오컬트연구가', '점성술사', '저주받은가문의후예', '저주술사', '정신과의사', '초자연현상연구가', '초자연현상조사관', '퇴마사', '페노메논헌터', '흑마술사'],
+    clothing: {
+      spring_top: ['어두운색후드티', '낡은가죽조끼', '신비로운문양셔츠', '레이스장식고딕블라우스', '탐사가지자켓'],
+      spring_bottom: ['검은색스키니진', '찢어진청바지', '롱스커트(어두운색)', '활동편한카고팬츠'],
+      spring_onepiece_set: ['고딕풍레이스원피스', '어둠의의식용가운(봄)', '폐가탐험용점프수트'],
+      summer_top: ['검은색민소매티', '해골프린팅반팔티', '시스루소재블라우스', '오컬트문양나시'],
+      summer_bottom: ['검은색숏팬츠', '체인장식미니스커트', '통기성좋은레깅스'],
+      summer_onepiece_set: ['여름용고딕원피스', '심령스팟조사용경량복', '한여름밤의제의복'],
+      autumn_top: ['두꺼운검은색스웨터', '스터드장식가죽자켓', '벨벳소재고딕셔츠', '망토형코트'],
+      autumn_bottom: ['기모안감검은바지', '플란넬체크스커트(어두운톤)', '가죽레깅스'],
+      autumn_onepiece_set: ['가을용오컬트의식로브', '할로윈코스튬풍드레스', '괴물사냥꾼가을전투복'],
+      winter_top: ['검은색롱패딩', '모피칼라코트(고딕풍)', '두꺼운울소재망토', '해골패턴니트'],
+      winter_bottom: ['방한기능검은색바지', '기모안감롱스커트', '두꺼운울레깅스'],
+      winter_onepiece_set: ['겨울용흑마술사로브', '혹한기심령조사방한복', '사교집단겨울집회복'],
+      special_top: ['퇴마사제복상의', '강령술사의식용가운상의', '고대신사제예복상의', '괴물헌터특수조끼', '사이비교주설교복상의', '오컬트탐정트렌치코트', '심령학자연구복상의', '흑마법사어둠의로브', '고스트헌터장비상의', '저주받은가문문장셔츠'],
+      special_bottom: ['퇴마사제복하의', '강령술사의식용가운하의', '고대신사제예복하의', '괴물헌터강화바지', '사이비교주설교복하의', '오컬트탐정슬랙스', '심령학자연구복하의', '흑마법사어두운바지', '고스트헌터장비하의', '저주받은가문문장바지'],
+      special_onepiece_set: ['악마소환의식풀세트', '뱀파이어헌터정장스타일', '구마의식용사제복세트', '비밀오컬트결사단복', '고딕로리타드레스', '스팀펑크호러의상', '저주인형코스튬', '매드사이언티스트실험복', '유령신부웨딩드레스', '늑대인간사냥꾼전투복']
+    }
+  },
+  '포스트 아포칼립스': {
+    jobs: ['기술자', '돌연변이', '레이더두목', '리더', '무기상인', '메딕', '메카닉', '방랑기술자', '방랑상인', '방랑시인', '방랑자', '생존교관', '생존자', '스캐빈저', '스카우트', '약탈자', '오염구역전문가', '오염구역탐사원', '워로드', '의무병', '정착지건설자', '정착지경비대장', '정착지지도자', '정찰병', '커뮤니티관리자', '탐사대리더', '탐사대원', '트레이더', '파수꾼', '헌터'],
+    clothing: {
+      spring_top: ['낡은가죽조끼', '덧댄천조각셔츠', '방진마스크연결후드티', '경량방어재킷'],
+      spring_bottom: ['찢어진카고팬츠', '보호덧댄레깅스', '활동편한작업바지', '천조각스커트'],
+      spring_onepiece_set: ['생존자점프수트(봄)', '정찰대원활동복', '황무지여행자옷세트'],
+      summer_top: ['해진민소매티', '통기성메쉬상의', '자외선차단긴팔셔츠(얇은)', '먼지막이용두건결합상의'],
+      summer_bottom: ['짧은작업용숏팬츠', '경량방호스커트', '냉감소재레깅스'],
+      summer_onepiece_set: ['여름용생존슈트', '사막횡단용경량복', '방사능차단수영복(오염지역용)'],
+      autumn_top: ['두꺼운캔버스재킷', '누더기털조끼', '방수기능야상점퍼', '여러겹껴입은셔츠'],
+      autumn_bottom: ['강화섬유작업바지', '두꺼운가죽레깅스', '보온덧댄스커트'],
+      autumn_onepiece_set: ['가을용탐사복세트', '정착지경비병유니폼', '약탈자위장복'],
+      winter_top: ['해진방한파카', '인조모피덧댄코트', '여러겹의스웨터', '방풍기능두꺼운후드'],
+      winter_bottom: ['솜누빔방한바지', '두꺼운털가죽레깅스', '방한용덧바지'],
+      winter_onepiece_set: ['혹한기생존슈트풀세트', '겨울용정찰복세트', '방사능방호기능방한복'],
+      special_top: ['정착지리더코트', '워로드전투갑옷상의', '메딕수술복상의(오염환경용)', '기술자작업용조끼', '스캐빈저보호구상의', '헌터위장복상의', '돌연변이특수의상상의', '방랑상인여행복상의', '레이더두목가죽상의', '파수꾼망토'],
+      special_bottom: ['정착지리더바지', '워로드전투갑옷하의', '메딕수술복하의(오염환경용)', '기술자작업바지', '스캐빈저보호구하의', '헌터위장복하의', '돌연변이특수의상하의', '방랑상인여행복하의', '레이더두목가죽바지', '파수꾼바지'],
+      special_onepiece_set: ['최정예생존전문가풀세트', '오염구역탐사특수방호복', '전설적인방랑자코트세트', '돌연변이부족장전투복', '마지막도시수호대유니폼', '고철수집가작업복세트', '희망을전하는시인여행복', '신인류개척자탐험복', '방사능면역자특수복', '최후의인류생존키트포함의상']
+    }
+  },
+  '디스토피아': {
+    jobs: ['감시관', '기술관료', '기억조작원', '데이터밀매꾼', '레지스탕스리더', '반군', '반체제예술가', '블랙마켓상인', '비밀경찰', '사상경찰', '선동가', '시스템감시자', '시스템관리자', '언더그라운드해커', '정보검열관', '정보통제국요원', '정보통제관', '저항군', '지하운동가', '지하조직원', '최후의사서', '최후의예술가', '탈주자', '통제구역경비병', '프로파간다작가', '하층민노동자', '혁명가'],
+    clothing: {
+      spring_top: ['획일화된시민복상의(봄)', '감시드론회피용후드티', '저항군위장재킷', '데이터칩은닉셔츠'],
+      spring_bottom: ['통제구역작업바지', '내구성강화레깅스', '비밀메시지수납스커트'],
+      spring_onepiece_set: ['하층민노동복세트(봄)', '반체제집회용변장복', '정보밀매원활동복'],
+      summer_top: ['억압적분위기반팔셔츠', '통기성감시회피복', '메시지프린팅저항티셔츠'],
+      summer_bottom: ['경량작업숏팬츠', '활동편한스커트', '냉감소재레깅스'],
+      summer_onepiece_set: ['여름용시민배급복', '탈주용경량슈트', '금지구역잠입복'],
+      autumn_top: ['두꺼운회색시민복상의', '방수기능저항군코트', '스텔스기능후드점퍼'],
+      autumn_bottom: ['강화섬유작업바지', '보온레깅스', '다용도포켓스커트'],
+      autumn_onepiece_set: ['가을용노동자유니폼', '비밀경찰추적복', '시스템해커작업복'],
+      winter_top: ['방한용통제복상의', '두꺼운위장용파카', '발열기능내장코트'],
+      winter_bottom: ['혹한기작업용방한바지', '내부단열레깅스', '두꺼운천스커트'],
+      winter_onepiece_set: ['겨울용하층민방한복세트', '레지스탕스설원위장복', '감시탑경비병방한유니폼'],
+      special_top: ['정보통제국고위관료정복상의', '사상경찰특수제복상의', '레지스탕스리더코트', '언더그라운드해커후드', '반체제예술가퍼포먼스의상상의', '기억조작원유니폼상의', '블랙마켓상인위장복상의', '시스템관리자작업복상의', '프로파간다작가정장풍상의', '탈주자누더기상의'],
+      special_bottom: ['정보통제국고위관료정복하의', '사상경찰특수제복하의', '레지스탕스리더전투바지', '언더그라운드해커청바지', '반체제예술가퍼포먼스의상하의', '기억조작원유니폼하의', '블랙마켓상인위장복하의', '시스템관리자작업복하의', '프로파간다작가슬랙스', '탈주자해진바지'],
+      special_onepiece_set: ['최고권력자이브닝정장세트', '비밀경찰특수임무슈트', '혁명군지휘관전투복', '전설적인해커코스튬', '금지된예술공연의상', '기억소거집행관유니폼', '지하도시상인조합원복', '중앙통제시스템엔지니어복', '세뇌교육교사유니폼', '자유를갈망하는자상징복']
+    }
+  },
+  '스팀펑크': {
+    jobs: ['공중해적선장', '공학자', '괴짜과학자', '기관사', '기계공', '기계의수족제작자', '발명가', '비행선선장', '비행선조종사', '사립탐정', '시계탑관리인', '시계공', '신문기자', '자동인형마술사', '자동인형제작자', '점술기계관리자', '증기기관기술자', '톱니바퀴기술자', '탐험가', '태엽장치인형사'],
+    clothing: {
+      spring_top: ['톱니바퀴장식셔츠', '가죽코르셋조끼', '황동고글걸친파일럿캡모자', '프릴달린빅토리아풍블라우스', '작업용가죽에이프런상의'],
+      spring_bottom: ['주머니많은카고바지', '레이스겹겹이스커트', '승마바지형태팬츠', '기계장치벨트'],
+      spring_onepiece_set: ['탐험가점프수트(봄)', '비행선조종사유니폼(봄)', '발명가작업복드레스'],
+      summer_top: ['민소매기어프린팅티셔츠', '짧은소매정비공셔츠', '망사덧댄코르셋탑', '통기성좋은리넨블라우스'],
+      summer_bottom: ['짧은가죽숏팬츠', '기어패턴레깅스', '캉캉스타일미니스커트'],
+      summer_onepiece_set: ['여름용기관사작업복', '공중정원파티드레스', '태엽인형풍원피스'],
+      autumn_top: ['두꺼운트위드재킷', '벨벳조끼(자수장식)', '증기파이프문양스웨터', '가죽롱코트'],
+      autumn_bottom: ['코듀로이팬츠(기계공)', '울소재롱스커트(기어장식)', '강화섬유바지'],
+      autumn_onepiece_set: ['가을용탐정코트세트', '시계탑관리인작업복', '자동인형박람회드레스'],
+      winter_top: ['모피칼라비행사점퍼', '두꺼운울소재코트(황동단추)', '증기기관방한복상의', '기계식보온조끼'],
+      winter_bottom: ['내부발열기능바지', '두꺼운가죽방한팬츠', '누빔롱스커트'],
+      winter_onepiece_set: ['극한지탐사용증기슈트', '겨울비행선선장코트세트', '태엽장치겨울축제의상'],
+      special_top: ['비행선선장제복코트', '괴짜발명가실험가운상의', '자동인형드레스상의', '기계공작업복상의(공구벨트)', '사립탐정트렌치코트', '공중해적선장가죽상의', '시계공정밀작업용셔츠', '증기기관기술자작업복상의', '톱니바퀴예술가작업복상의', '신문기자조끼셔츠'],
+      special_bottom: ['비행선선장제복바지', '괴짜발명가실험가운하의', '자동인형드레스하의', '기계공작업복하의', '사립탐정정장바지', '공중해적선장가죽바지', '시계공작업바지', '증기기관기술자작업바지', '톱니바퀴예술가작업바지', '신문기자바지'],
+      special_onepiece_set: ['최고의스팀펑크발명가정장세트', '전설적인공중해적선장풀세트', '살아있는자동인형이브닝드레스', '증기도시시장공식예복', '비밀결사단기계화전투복', '시간여행자스팀펑크의상', '기계마술쇼공연복', '고성능증기기관파일럿슈트', '톱니바퀴와태엽장식웨딩드레스', '스팀펑크패션쇼모델의상']
+    }
+  },
+  '서부극': {
+    jobs: ['개척민', '결투가', '금광꾼', '마부', '무법자', '목사', '목장주', '미군기병대', '바텐더', '보안관', '사진사', '선교사', '술집마담', '술집주인', '악당두목', '역마차경호원', '역마차운전수', '인디언용병', '인디언추장', '카우보이', '총잡이', '현상금사냥꾼', '호텔주인', '황야의방랑자'],
+    clothing: {
+      spring_top: ['데님셔츠(서부)', '체크무늬플란넬셔츠', '가죽조끼(서부)', '프릴장식블라우스(개척민여성)', '인디언풍자수셔츠'],
+      spring_bottom: ['청바지(서부)', '캔버스천바지', '롱스커트(개척민여성)', '가죽챕스', '인디언풍가죽바지'],
+      spring_onepiece_set: ['카우보이작업복세트', '개척민여성원피스(봄)', '역마차마부의상'],
+      summer_top: ['얇은면셔츠(서부)', '민소매가죽조끼', '자수놓인반팔블라우스', '통기성좋은인디언상의'],
+      summer_bottom: ['짧은데님숏팬츠(서부)', '가벼운천스커트', '리넨바지(서부)'],
+      summer_onepiece_set: ['여름용목장작업복', '술집마담여름드레스', '인디언여름축제의상'],
+      autumn_top: ['두꺼운데님재킷', '울소재서부셔츠', '가죽판초', '코듀로이조끼'],
+      autumn_bottom: ['두꺼운청바지(서부)', '가죽바지(내구성)', '플란넬안감스커트'],
+      autumn_onepiece_set: ['가을용카우보이코트세트', '현상금사냥꾼가을복장', '추수감사절개척민의상'],
+      winter_top: ['양털안감데님코트', '두꺼운울판초', '모피덧댄가죽재킷', '방한용버팔로코트'],
+      winter_bottom: ['기모안감청바지(서부)', '두꺼운가죽방한바지', '울소재롱스커트(겹쳐입기)'],
+      winter_onepiece_set: ['혹한기용카우보이방한복', '설산개척민모피세트', '겨울역마차경호원복장'],
+      special_top: ['보안관조끼셔츠', '무법자검은색더스터코트', '현상금사냥꾼가죽자켓', '카우보이프린지셔츠', '술집마담코르셋드레스상의', '인디언추장깃털장식상의', '미군기병대제복상의', '금광꾼작업복상의', '선교사수수한상의', '목장주가죽조끼'],
+      special_bottom: ['보안관청바지', '무법자검은색바지', '현상금사냥꾼강화바지', '카우보이챕스청바지', '술집마담롱스커트', '인디언추장가죽바지', '미군기병대제복하의', '금광꾼작업바지', '선교사수수한바지', '목장주캔버스바지'],
+      special_onepiece_set: ['전설적인총잡이풀세트의상', '악명높은갱단두목코트세트', '와일드빌히콕스타일정장', '애니오클리풍공연복', '인디언전사전통복장세트', '골드러시대부호연회복', '서부극결혼식신부드레스', '역마차강도위장복', '평화로운마을목사예배복', '대규모목장파티의상']
+    }
+  }
+};
+        const characterData = {
+            name: '캐릭터 이름', age: 25, height: 170, gender: '여성', race: '인간',
+            world: '현대', job: '회사원', hairStyle: '단정한단발', hairColor: '#8B4513',
+            eyeColor: '#4A4A4A', skinColor: '#FDBCB4',
+            topwear: '정장 상의', bottomwear: '정장 하의',
+            accessory: '화관',
+            appearanceFeature: '없음',
+            mbti: '모름/미정',
+            valueSystem: '선택안함', personality1: '선택안함', personality2: '선택안함', personality3: '선택안함',
+            traits: '',
+            trauma: '없음', complex: '없음', erogenousZone: '없음', fetish: '없음'
+        };
+        const appContainer = document.getElementById('app-container');
+        const windowTitleCard = document.getElementById('window-title-card');
+        const personaMainWindow = document.getElementById('persona-main-window');
+        const charNameDisplay = document.getElementById('char-name-display');
+        const charAgeDisplay = document.getElementById('char-age-display');
+        const charHeightDisplay = document.getElementById('char-height-display');
+        const charHeightInfoLineDisplay = document.getElementById('char-height-info-line-display');
+        const charGenderDisplay = document.getElementById('char-gender-display');
+        const charRaceDisplay = document.getElementById('char-race-display');
+        const charRaceEmojiDisplay = document.getElementById('char-race-emoji-display');
+        const charWorldEmojiDisplay = document.getElementById('char-world-emoji-display');
+        const charWorldDisplay = document.getElementById('char-world-display');
+        const charJobDisplay = document.getElementById('char-job-display');
+        const charHairStyleDisplay = document.getElementById('char-hairStyle-display');
+        const charClothingDisplay = document.getElementById('char-clothing-display');
+        const charHairFColorSwatch = document.getElementById('char-hairColor-swatch');
+        const charEyeColorSwatch = document.getElementById('char-eyeColor-swatch');
+        const charSkinColorSwatch = document.getElementById('char-skinColor-swatch');
+        const charAccessoryDisplay = document.getElementById('char-accessory-display');
+        const charHairColorText = document.getElementById('char-hairColor-text');
+        const charEyeColorText = document.getElementById('char-eyeColor-text');
+        const charSkinColorText = document.getElementById('char-skinColor-text');
+        const cardStatusBar = document.getElementById('card-status-bar');
+        const charNameInput = document.getElementById('char-name-input');
+        const charAgeInput = document.getElementById('char-age-input');
+        const charHeightInput = document.getElementById('char-height-input');
+        const charGenderSelect = document.getElementById('char-gender-select');
+        const charTraitsInput = document.getElementById('char-traits-input');
+        const hairColorSwatchDisplay = document.getElementById('hairColor-swatch-display');
+        const eyeColorSwatchDisplay = document.getElementById('eyeColor-swatch-display');
+        const skinColorSwatchDisplay = document.getElementById('skinColor-swatch-display');
+        const charHairColorNativeInput = document.getElementById('char-hairColor-native-input');
+        const charEyeColorNativeInput = document.getElementById('char-eyeColor-native-input');
+        const charSkinColorNativeInput = document.getElementById('char-skinColor-native-input');
+        const toggleTraitsButton = document.getElementById('toggle-traits-button');
+        const traitsContentArea = document.getElementById('traits-content-area');
+        const traitsChevron = document.getElementById('traits-chevron');
+        const settingsWindow = document.getElementById('settings-window');
+        const settingsPanelContent = document.getElementById('settings-panel-content');
+        const desktopGenerateButton = document.getElementById('desktop-generate-button');
+        const desktopCopyButton = document.getElementById('desktop-copy-button');
+        const desktopSettingsButton = document.getElementById('desktop-settings-button');
+        const desktopSaveImageButton = document.getElementById('desktop-save-image-button');
+        const desktopReadmeButton = document.getElementById('desktop-readme-button');
+        const notepadOverlay = document.getElementById('notepad-overlay');
+        const notepadWindow = document.getElementById('notepad-window');
+        const closeNotepadButton = document.getElementById('close-notepad-button');
+        const charMbtiSelect = document.getElementById('char-mbti-select');
+        const charWorldSelect = document.getElementById('char-world-select');
+        const charRaceSelect = document.getElementById('char-race-select');
+        const charJobSelect = document.getElementById('char-job-select');
+        const charHairStyleSelect = document.getElementById('char-hairStyle-select');
+        const charTopwearSelect = document.getElementById('char-topwear-select');
+        const charBottomwearSelect = document.getElementById('char-bottomwear-select');
+        const charAccessorySelect = document.getElementById('char-accessory-select');
+        const charAppearanceFeatureSelect = document.getElementById('char-appearanceFeature-select');
+        const charValueSystemDisplay = document.getElementById('char-valueSystem-display');
+        const charPersonalityTagsDisplay = document.getElementById('char-personality-tags-display');
+        const charValueSystemSelect = document.getElementById('char-valueSystem-select');
+        const charPersonality1Select = document.getElementById('char-personality1-select');
+        const charPersonality2Select = document.getElementById('char-personality2-select');
+        const charPersonality3Select = document.getElementById('char-personality3-select');
+        const toggleDetailsButton = document.getElementById('toggle-details-button');
+        const detailsContentArea = document.getElementById('details-content-area');
+        const detailsChevron = document.getElementById('details-chevron');
+        const charTraumaSelect = document.getElementById('char-trauma-select');
+        const charComplexSelect = document.getElementById('char-complex-select');
+        const charErogenousZoneSelect = document.getElementById('char-erogenousZone-select');
+        const charFetishSelect = document.getElementById('char-fetish-select');
+        const charMbtiDisplay = document.getElementById('char-mbti-display');
+        const charMbtiInfoLineDisplay = document.getElementById('char-mbti-info-line-display');
+        const charAppearanceFeatureDisplay = document.getElementById('char-appearanceFeature-display');
+        const charAppearanceFeatureInfoLineDisplay = document.getElementById('char-appearanceFeature-info-line-display');
+        const getRandomElement = (arr) => arr[Math.floor(Math.random() * arr.length)];
+        const getRaceEmoji = (race) => { const map = { '인간': '👤', '동양인': '👩', '백인': '👱', '흑인': '🧑🏾', '혼혈': '🧑‍🤝‍🧑', '알파': '👑', '오메가': '🌸', '베타': '👤', '케이크': '🍰', '포크': '🍴', '센티넬': '🛡️', '에스퍼': '🧠', '뱀파이어': '🧛', '엘프': '🧝', '하이엘프': '🧝‍♀️', '다크엘프': '🧝‍♂️', '천사': '👼', '타락천사': '🥀', '악마': '😈', '데몬': '👹', '서큐버스': '💋', '인큐버스': '🔥', '페어리': '🧚', '월광족': '🌙', '몽마': '💭', '수인(고양이)': '🐱', '수인(강아지)': '🐶', '수인(늑대)': '🐺', '수인(여우)': '🦊', '수인(토끼)': '🐰', '수인(곰)': '🐻', '수인(새)': '🐦', '수인(표범)': '🐆', '수인(사슴)': '🦌', '수인(용)': '🐉', '수인(호랑이)': '🐅', '수인(뱀)': '🐍', '수인(나비)': '🦋', '수인(돌고래)': '🐬', '인어': '🧜', '세이렌': '🌊', '드래곤(폴리모프)': '🐲', '정령': '✨', '드라이어드': '🌳', '님프': '💧', '나가': '🐍', '라미아': '🐍', '켄타우로스': '🐎', '실프': '🌬️', '운디네': '💧', '샐러맨더': '🔥', '노움(원소정령)': '💎', '드워프': '🧔', '하플링': '🍄', '티플링': '뿔', '드래곤본': '🐲', '오크': '👹', '고블린': '👺', '트롤': '🧌', '오우거': '🦍', '아스모데우스': '⚖️', '사이보그': '🤖', '안드로이드': '🤖', '골렘': '🗿', '가고일': '🦇', '유령': '👻', '리치': '💀', '슬라임(의인화)': '🦠', '더스크웜': '🐛', '하피': '🦅', '미노타우로스': '🐂', '거인': '👣', '아인': '🧬', '키메라': '🦁', '스핑크스': '🏛️', '만드라고라(의인화)': '🌱', '그리핀': '🦅', '히드라': '🐍', '베히모스': '🐘', '크라켄(의인화)': '🐙' }; return map[race] || '👤'; };
+        const getWorldEmoji = (world) => { const map = { '현대': '🏙️', '학원물': '🏫', '로맨스 판타지': '🏰', '현대 판타지': '🔮', '판타지': '⚜️', '역사/시대물': '⚔️', '무협': '🗡️', 'SF/사이버펑크': '🚀', '스페이스 오페라': '🌌', '호러/오컬트': '👻', '포스트 아포칼립스': '☢️', '디스토피아': '⛓️', '스팀펑크': '⚙️', '서부극': '🤠', '특수설정버스': '🧬' }; return map[world] || '🌍'; };
+        function populateSelectWithOptions(selectElement, optionsArray) {
+            if (!selectElement) return;
+            selectElement.innerHTML = '';
+            if (Array.isArray(optionsArray) && optionsArray.length > 0) {
+                optionsArray.forEach(optionValue => {
+                    const option = document.createElement('option');
+                    option.value = optionValue;
+                    option.textContent = optionValue;
+                    selectElement.appendChild(option);
+                });
+            }
+        }
+        function updateTraitsFromDetails() {
+            let currentTraits = characterData.traits;
+            const detailKeywords = ["트라우마:", "콤플렉스:", "성감대:", "패티쉬:", "⚠️성인전용"];
+            let baseTraits = [];
+            let inDetailSectionParse = false;
+            const lines = currentTraits.split('\n');
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                let isKeywordLine = false;
+                if(line){
+                    for (const keyword of detailKeywords) {
+                        if (line.startsWith(keyword)) {
+                            isKeywordLine = true;
+                            inDetailSectionParse = true;
+                            break;
+                        }
+                    }
+                }
+                if (!isKeywordLine && !inDetailSectionParse && line) {
+                    baseTraits.push(lines[i]);
+                }
+                 if (!isKeywordLine && line === "" && inDetailSectionParse) { 
+                    inDetailSectionParse = false;
+                }
+            }
+            let baseTraitsString = baseTraits.join('\n').trim();
+            let newDetailsText = "";
+            if (characterData.trauma && characterData.trauma !== '없음') newDetailsText += `트라우마: ${characterData.trauma}\n`;
+            if (characterData.complex && characterData.complex !== '없음') newDetailsText += `콤플렉스: ${characterData.complex}\n`;
+            let adultContentText = "";
+            if (characterData.erogenousZone && characterData.erogenousZone !== '없음') adultContentText += `성감대: ${characterData.erogenousZone}\n`;
+            if (characterData.fetish && characterData.fetish !== '없음') adultContentText += `패티쉬: ${characterData.fetish}\n`;
+            if (adultContentText.trim()) {
+                newDetailsText += (newDetailsText.trim() && adultContentText.trim() ? '\n' : '') + '⚠️성인전용\n' + adultContentText.trim();
+            }
+            newDetailsText = newDetailsText.trim();
+            if (newDetailsText) {
+                characterData.traits = baseTraitsString + (baseTraitsString ? "\n\n" : "") + newDetailsText;
+            } else {
+                characterData.traits = baseTraitsString;
+            }
+            charTraitsInput.value = characterData.traits;
+        }
+        function updateDisplay() {
+            windowTitleCard.textContent = characterData.name ? `${characterData.name}.txt` : '페르소나 정보.txt';
+            charNameDisplay.textContent = characterData.name;
+            charAgeDisplay.textContent = characterData.age;
+            if (characterData.height && characterData.height > 0) {
+                charHeightDisplay.textContent = characterData.height;
+                charHeightInfoLineDisplay.style.display = 'inline';
+            } else {
+                charHeightInfoLineDisplay.style.display = 'none';
+            }
+            charGenderDisplay.textContent = characterData.gender;
+            charRaceDisplay.textContent = characterData.race;
+            charRaceEmojiDisplay.textContent = getRaceEmoji(characterData.race);
+            charWorldEmojiDisplay.textContent = getWorldEmoji(characterData.world);
+            charWorldDisplay.textContent = characterData.world;
+            charJobDisplay.textContent = characterData.job;
+            if (characterData.mbti && characterData.mbti !== '모름/미정') {
+                charMbtiDisplay.textContent = characterData.mbti;
+                charMbtiInfoLineDisplay.style.display = 'block';
+            } else {
+                charMbtiInfoLineDisplay.style.display = 'none';
+            }
+            charValueSystemDisplay.textContent = characterData.valueSystem !== '선택안함' ? characterData.valueSystem : '';
+            let personalityTags = '';
+            if (characterData.personality1 && characterData.personality1 !== '선택안함') personalityTags += `#${characterData.personality1} `;
+            if (characterData.personality2 && characterData.personality2 !== '선택안함') personalityTags += `#${characterData.personality2} `;
+            if (characterData.personality3 && characterData.personality3 !== '선택안함') personalityTags += `#${characterData.personality3} `;
+            charPersonalityTagsDisplay.textContent = personalityTags.trim();
+            charHairStyleDisplay.textContent = characterData.hairStyle;
+            let clothingTextValue = '의상 없음';
+            if (characterData.topwear !== '없음' && characterData.bottomwear === '없음') {
+                clothingTextValue = characterData.topwear;
+            } else if (characterData.topwear === '없음' && characterData.bottomwear !== '없음') {
+                clothingTextValue = characterData.bottomwear;
+            } else if (characterData.topwear !== '없음' && characterData.bottomwear !== '없음') {
+                clothingTextValue = `${characterData.topwear} / ${characterData.bottomwear}`;
+            }
+            charClothingDisplay.textContent = clothingTextValue;
+            charHairFColorSwatch.style.backgroundColor = characterData.hairColor;
+            charEyeColorSwatch.style.backgroundColor = characterData.eyeColor;
+            charSkinColorSwatch.style.backgroundColor = characterData.skinColor;
+            charAccessoryDisplay.textContent = characterData.accessory;
+            if (characterData.appearanceFeature && characterData.appearanceFeature !== '없음') {
+                charAppearanceFeatureDisplay.textContent = characterData.appearanceFeature;
+                charAppearanceFeatureInfoLineDisplay.style.display = 'flex';
+            } else {
+                charAppearanceFeatureInfoLineDisplay.style.display = 'none';
+            }
+            charHairColorText.textContent = `(${characterData.hairColor})`;
+            charEyeColorText.textContent = `(${characterData.eyeColor})`;
+            charSkinColorText.textContent = `(${characterData.skinColor})`;
+            cardStatusBar.textContent = `이름: ${characterData.name} | 세계: ${characterData.world}`;
+            checkContentOverflow();
+        }
+        function updateInputs() {
+            charNameInput.value = characterData.name;
+            charAgeInput.value = characterData.age;
+            charHeightInput.value = characterData.height;
+            charGenderSelect.value = characterData.gender;
+            charMbtiSelect.value = characterData.mbti;
+            charWorldSelect.value = characterData.world;
+            charRaceSelect.value = characterData.race;
+            populateJobsForSelect();
+            populateClothingForSelectedWorldSimplified();
+            const currentWorldData = worlds[characterData.world];
+            const currentJobs = currentWorldData && currentWorldData.jobs ? currentWorldData.jobs : [];
+            if (currentJobs.length > 0 && !currentJobs.includes(characterData.job)) {
+                 if (characterData.job && !currentJobs.includes(characterData.job)) {
+                    const newOption = document.createElement('option');
+                    newOption.value = characterData.job;
+                    newOption.textContent = characterData.job;
+                    newOption.selected = true; 
+                    charJobSelect.appendChild(newOption);
+                 } else if (!characterData.job && currentJobs.length > 0) {
+                    characterData.job = currentJobs[0];
+                 }
+            } else if (currentJobs.length === 0 && characterData.job) {
+                 const newOption = document.createElement('option');
+                 newOption.value = characterData.job;
+                 newOption.textContent = characterData.job;
+                 newOption.selected = true;
+                 charJobSelect.appendChild(newOption);
+            } else if (currentJobs.length === 0 && !characterData.job) {
+                 characterData.job = '';
+            }
+            charJobSelect.value = characterData.job;
+            charHairStyleSelect.value = characterData.hairStyle;
+            charTopwearSelect.value = characterData.topwear;
+            charBottomwearSelect.value = characterData.bottomwear;
+            charAccessorySelect.value = characterData.accessory;
+            charAppearanceFeatureSelect.value = characterData.appearanceFeature;
+            charValueSystemSelect.value = characterData.valueSystem;
+            charPersonality1Select.value = characterData.personality1;
+            charPersonality2Select.value = characterData.personality2;
+            charPersonality3Select.value = characterData.personality3;
+            charTraitsInput.value = characterData.traits;
+            charTraumaSelect.value = characterData.trauma;
+            charComplexSelect.value = characterData.complex;
+            charErogenousZoneSelect.value = characterData.erogenousZone;
+            charFetishSelect.value = characterData.fetish;
+            hairColorSwatchDisplay.style.backgroundColor = characterData.hairColor;
+            eyeColorSwatchDisplay.style.backgroundColor = characterData.eyeColor;
+            skinColorSwatchDisplay.style.backgroundColor = characterData.skinColor;
+            charHairColorNativeInput.value = characterData.hairColor;
+            charEyeColorNativeInput.value = characterData.eyeColor;
+            charSkinColorNativeInput.value = characterData.skinColor;
+        }
+        function populateJobsForSelect() {
+            const selectedWorldKey = charWorldSelect.value || characterData.world;
+            const worldData = worlds[selectedWorldKey];
+            const jobsForWorld = worldData && worldData.jobs ? worldData.jobs : [];
+            populateSelectWithOptions(charJobSelect, jobsForWorld);
+        }
+        
+        function autoResizeTextarea(textarea) {
+            if (!textarea) return;
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+            checkContentOverflow();
+        }
+        function populateClothingForSelectedWorldSimplified() {
+            const selectedWorldKey = charWorldSelect.value || characterData.world;
+            const worldData = worlds[selectedWorldKey];
+            let topwearOptions = [];
+            let bottomwearOptions = [];
+            let onepieceOptions = []; 
+            if (worldData && worldData.clothing) {
+                const clothing = worldData.clothing;
+                const 현대Clothing = worlds['현대'].clothing;
+                if (selectedWorldKey === '현대' || selectedWorldKey === '현대 판타지' || selectedWorldKey === '특수설정버스') {
+                    topwearOptions.push(...(현대Clothing.spring_top || []), ...(현대Clothing.summer_top || []), ...(현대Clothing.autumn_top || []), ...(현대Clothing.winter_top || []), ...(현대Clothing.special_top || []));
+                    bottomwearOptions.push(...(현대Clothing.spring_bottom || []), ...(현대Clothing.summer_bottom || []), ...(현대Clothing.autumn_bottom || []), ...(현대Clothing.winter_bottom || []), ...(현대Clothing.special_bottom || []));
+                    onepieceOptions.push(...(현대Clothing.spring_onepiece_set || []), ...(현대Clothing.summer_onepiece_set || []), ...(현대Clothing.autumn_onepiece_set || []), ...(현대Clothing.winter_onepiece_set || []), ...(현대Clothing.special_onepiece_set || []));
+                } else if (selectedWorldKey === '학원물') {
+                    topwearOptions.push(...(현대Clothing.spring_top || []), ...(현대Clothing.summer_top || []), ...(현대Clothing.autumn_top || []), ...(현대Clothing.winter_top || []), ...(현대Clothing.special_top || []));
+                    bottomwearOptions.push(...(현대Clothing.spring_bottom || []), ...(현대Clothing.summer_bottom || []), ...(현대Clothing.autumn_bottom || []), ...(현대Clothing.winter_bottom || []), ...(현대Clothing.special_bottom || []));
+                    onepieceOptions.push(...(현대Clothing.spring_onepiece_set || []), ...(현대Clothing.summer_onepiece_set || []), ...(현대Clothing.autumn_onepiece_set || []), ...(현대Clothing.winter_onepiece_set || []), ...(현대Clothing.special_onepiece_set || []));
+                    topwearOptions.push(...(clothing.school_spring_top || []), ...(clothing.school_summer_top || []), ...(clothing.school_autumn_top || []), ...(clothing.school_winter_top || []), ...(clothing.gym_top || []), ...(clothing.special_top || []));
+                    bottomwearOptions.push(...(clothing.school_spring_bottom || []), ...(clothing.school_summer_bottom || []), ...(clothing.school_autumn_bottom || []), ...(clothing.school_winter_bottom || []), ...(clothing.gym_bottom || []), ...(clothing.special_bottom || []));
+                    onepieceOptions.push(...(clothing.school_spring_onepiece_set || []), ...(clothing.school_summer_onepiece_set || []), ...(clothing.school_autumn_onepiece_set || []), ...(clothing.school_winter_onepiece_set || []), ...(clothing.gym_onepiece_set || []), ...(clothing.special_onepiece_set || []));
+                } else {
+                    topwearOptions.push(...(clothing.spring_top || []), ...(clothing.summer_top || []), ...(clothing.autumn_top || []), ...(clothing.winter_top || []), ...(clothing.special_top || []));
+                    bottomwearOptions.push(...(clothing.spring_bottom || []), ...(clothing.summer_bottom || []), ...(clothing.autumn_bottom || []), ...(clothing.winter_bottom || []), ...(clothing.special_bottom || []));
+                    onepieceOptions.push(...(clothing.spring_onepiece_set || []), ...(clothing.summer_onepiece_set || []), ...(clothing.autumn_onepiece_set || []), ...(clothing.winter_onepiece_set || []), ...(clothing.special_onepiece_set || []));
+                }
+            } else {
+                const 현대Clothing = worlds['현대'].clothing;
+                topwearOptions.push(...(현대Clothing.spring_top || []), ...(현대Clothing.summer_top || []), ...(현대Clothing.autumn_top || []), ...(현대Clothing.winter_top || []), ...(현대Clothing.special_top || []));
+                bottomwearOptions.push(...(현대Clothing.spring_bottom || []), ...(현대Clothing.summer_bottom || []), ...(현대Clothing.autumn_bottom || []), ...(현대Clothing.winter_bottom || []), ...(현대Clothing.special_bottom || []));
+                onepieceOptions.push(...(현대Clothing.spring_onepiece_set || []), ...(현대Clothing.summer_onepiece_set || []), ...(현대Clothing.autumn_onepiece_set || []), ...(현대Clothing.winter_onepiece_set || []), ...(현대Clothing.special_onepiece_set || []));
+            }
+            const combinedTopwear = ['없음', ...new Set(topwearOptions.filter(item => item)), ...new Set(onepieceOptions.filter(item => item))];
+            const uniqueBottomwear = ['없음', ...new Set(bottomwearOptions.filter(item => item))];
+            populateSelectWithOptions(charTopwearSelect, combinedTopwear);
+            populateSelectWithOptions(charBottomwearSelect, uniqueBottomwear);
+            if (combinedTopwear.includes(characterData.topwear)) {
+                charTopwearSelect.value = characterData.topwear;
+            } else if (combinedTopwear.length > 0) {
+                characterData.topwear = combinedTopwear[0];
+                charTopwearSelect.value = characterData.topwear;
+            } else {
+                characterData.topwear = '없음';
+                charTopwearSelect.value = '없음';
+            }
+            if (uniqueBottomwear.includes(characterData.bottomwear)) {
+                charBottomwearSelect.value = characterData.bottomwear;
+            } else if (uniqueBottomwear.length > 0) {
+                characterData.bottomwear = uniqueBottomwear[0];
+                charBottomwearSelect.value = characterData.bottomwear;
+            } else {
+                characterData.bottomwear = '없음';
+                charBottomwearSelect.value = '없음';
+            }
+        }
+        function checkContentOverflow() {
+            if (document.body.scrollHeight > window.innerHeight) {
+                document.body.style.justifyContent = 'flex-start';
+            } else {
+                 document.body.style.justifyContent = 'center';
+            }
+        }
+        function initialize() {
+            populateSelectWithOptions(charMbtiSelect, mbtiTypes);
+            populateSelectWithOptions(charWorldSelect, Object.keys(worlds));
+            populateSelectWithOptions(charRaceSelect, races);
+            populateJobsForSelect();
+            populateClothingForSelectedWorldSimplified();
+            populateSelectWithOptions(charHairStyleSelect, hairStyles);
+            populateSelectWithOptions(charAccessorySelect, accessories);
+            populateSelectWithOptions(charAppearanceFeatureSelect, appearanceFeatures);
+            populateSelectWithOptions(charValueSystemSelect, valueSystems);
+            populateSelectWithOptions(charPersonality1Select, personalityTraits);
+            populateSelectWithOptions(charPersonality2Select, personalityTraits);
+            populateSelectWithOptions(charPersonality3Select, personalityTraits);
+            populateSelectWithOptions(charTraumaSelect, complexExamples);
+            populateSelectWithOptions(charComplexSelect, complexExamples);
+            populateSelectWithOptions(charErogenousZoneSelect, erogenousZoneExamples);
+            populateSelectWithOptions(charFetishSelect, fetishExamples);
+            updateInputs(); 
+            updateDisplay();
+            if (charTraitsInput) {
+                autoResizeTextarea(charTraitsInput);
+            }
+            charNameInput.addEventListener('input', (e) => { characterData.name = e.target.value; updateDisplay(); });
+            charAgeInput.addEventListener('input', (e) => { characterData.age = parseInt(e.target.value) || 0; updateDisplay(); });
+            charHeightInput.addEventListener('input', (e) => { characterData.height = parseInt(e.target.value) || 0; updateDisplay(); });
+            charGenderSelect.addEventListener('change', (e) => { characterData.gender = e.target.value; updateDisplay(); });
+            charMbtiSelect.addEventListener('change', (e) => { characterData.mbti = e.target.value; updateDisplay(); });
+            charWorldSelect.addEventListener('change', (e) => {
+                characterData.world = e.target.value;
+                populateJobsForSelect();
+                populateClothingForSelectedWorldSimplified();
+                const worldJobData = worlds[characterData.world];
+                const jobsForSelectedWorld = worldJobData && worldJobData.jobs ? worldJobData.jobs : [];
+                if (jobsForSelectedWorld.length > 0) {
+                    characterData.job = jobsForSelectedWorld[0]; 
+                    charJobSelect.value = characterData.job;
+                } else {
+                    characterData.job = '';
+                    charJobSelect.value = '';
+                }
+                updateDisplay();
+            });
+            charRaceSelect.addEventListener('change', (e) => { characterData.race = e.target.value; updateDisplay(); });
+            charJobSelect.addEventListener('change', (e) => { characterData.job = e.target.value; updateDisplay(); });
+            charHairStyleSelect.addEventListener('change', (e) => { characterData.hairStyle = e.target.value; updateDisplay(); });
+            charTopwearSelect.addEventListener('change', (e) => { characterData.topwear = e.target.value; updateDisplay(); });
+            charBottomwearSelect.addEventListener('change', (e) => { characterData.bottomwear = e.target.value; updateDisplay(); });
+            charAccessorySelect.addEventListener('change', (e) => { characterData.accessory = e.target.value; updateDisplay(); });
+            charAppearanceFeatureSelect.addEventListener('change', (e) => { characterData.appearanceFeature = e.target.value; updateDisplay(); });
+            charValueSystemSelect.addEventListener('change', (e) => { characterData.valueSystem = e.target.value; updateDisplay(); });
+            charPersonality1Select.addEventListener('change', (e) => { characterData.personality1 = e.target.value; updateDisplay(); });
+            charPersonality2Select.addEventListener('change', (e) => { characterData.personality2 = e.target.value; updateDisplay(); });
+            charPersonality3Select.addEventListener('change', (e) => { characterData.personality3 = e.target.value; updateDisplay(); });
+            if (charTraitsInput) {
+                charTraitsInput.addEventListener('input', (e) => {
+                    characterData.traits = e.target.value;
+                    autoResizeTextarea(charTraitsInput);
+                });
+            }
+            [charTraumaSelect, charComplexSelect, charErogenousZoneSelect, charFetishSelect].forEach(selectElement => {
+                selectElement.addEventListener('change', (e) => {
+                    const property = e.target.id.replace('char-', '').replace('-select', '');
+                    characterData[property] = e.target.value;
+                    updateTraitsFromDetails();
+                });
+            });
+            charHairColorNativeInput.addEventListener('input', (e) => { characterData.hairColor = e.target.value; hairColorSwatchDisplay.style.backgroundColor = e.target.value; updateDisplay(); });
+            charEyeColorNativeInput.addEventListener('input', (e) => { characterData.eyeColor = e.target.value; eyeColorSwatchDisplay.style.backgroundColor = e.target.value; updateDisplay(); });
+            charSkinColorNativeInput.addEventListener('input', (e) => { characterData.skinColor = e.target.value; skinColorSwatchDisplay.style.backgroundColor = e.target.value; updateDisplay(); });
+            toggleTraitsButton.addEventListener('click', () => {
+                const isOpen = traitsContentArea.classList.toggle('show');
+                traitsContentArea.classList.toggle('animate-slide-in', isOpen);
+                traitsChevron.innerHTML = isOpen ? '<polyline points="18 15 12 9 6 15"></polyline>' : '<polyline points="6 9 12 15 18 9"></polyline>';
+                if (isOpen && charTraitsInput) { 
+                    autoResizeTextarea(charTraitsInput);
+                }
+                checkContentOverflow();
+            });
+            toggleDetailsButton.addEventListener('click', () => {
+                const isOpen = detailsContentArea.classList.toggle('show');
+                detailsContentArea.classList.toggle('animate-slide-in', isOpen);
+                detailsChevron.innerHTML = isOpen ? '<polyline points="18 15 12 9 6 15"></polyline>' : '<polyline points="6 9 12 15 18 9"></polyline>';
+                checkContentOverflow();
+            });
+            if (detailsContentArea.classList.contains('show')) {
+                detailsContentArea.classList.remove('show');
+                detailsChevron.innerHTML = '<polyline points="6 9 12 15 18 9"></polyline>';
+            }
+            if (traitsContentArea.classList.contains('show')) { traitsContentArea.classList.remove('show'); traitsChevron.innerHTML = '<polyline points="6 9 12 15 18 9"></polyline>';}
+            function handleSettingsToggle() {
+                const isSettingsOpen = settingsWindow.style.display !== 'none';
+                if (isSettingsOpen) {
+                    settingsWindow.style.display = 'none';
+                    settingsPanelContent.classList.remove('show', 'animate-slide-in');
+                } else {
+                    settingsWindow.style.display = 'block';
+                    settingsPanelContent.classList.add('show', 'animate-slide-in');
+                }
+                checkContentOverflow();
+            }
+            desktopSettingsButton.addEventListener('click', handleSettingsToggle);
+            if (settingsPanelContent.classList.contains('show')) { settingsPanelContent.classList.remove('show'); settingsWindow.style.display = 'none';}
+            document.querySelectorAll('.random-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const target = btn.dataset.target;
+                    let randomValue;
+                    const currentWorldKey = characterData.world;
+                    const worldSpecificData = worlds[currentWorldKey];
+                    let availableTopwear = [];
+                    let availableBottomwear = [];
+                    if (worldSpecificData && worldSpecificData.clothing) {
+                        const clothing = worldSpecificData.clothing;
+                        const 현대Clothing = worlds['현대'].clothing;
+                        if (currentWorldKey === '현대' || currentWorldKey === '현대 판타지' || currentWorldKey === '특수설정버스') {
+                            availableTopwear.push(...(현대Clothing.spring_top || []), ...(현대Clothing.summer_top || []), ...(현대Clothing.autumn_top || []), ...(현대Clothing.winter_top || []), ...(현대Clothing.special_top || []), ...(현대Clothing.spring_onepiece_set || []), ...(현대Clothing.summer_onepiece_set || []), ...(현대Clothing.autumn_onepiece_set || []), ...(현대Clothing.winter_onepiece_set || []), ...(현대Clothing.special_onepiece_set || []));
+                            availableBottomwear.push(...(현대Clothing.spring_bottom || []), ...(현대Clothing.summer_bottom || []), ...(현대Clothing.autumn_bottom || []), ...(현대Clothing.winter_bottom || []), ...(현대Clothing.special_bottom || []));
+                        } else if (currentWorldKey === '학원물') {
+                            availableTopwear.push(...(현대Clothing.spring_top || []), ...(현대Clothing.summer_top || []), ...(현대Clothing.autumn_top || []), ...(현대Clothing.winter_top || []), ...(현대Clothing.special_top || []), ...(현대Clothing.spring_onepiece_set || []), ...(현대Clothing.summer_onepiece_set || []), ...(현대Clothing.autumn_onepiece_set || []), ...(현대Clothing.winter_onepiece_set || []), ...(현대Clothing.special_onepiece_set || []));
+                            availableBottomwear.push(...(현대Clothing.spring_bottom || []), ...(현대Clothing.summer_bottom || []), ...(현대Clothing.autumn_bottom || []), ...(현대Clothing.winter_bottom || []), ...(현대Clothing.special_bottom || []));
+                            availableTopwear.push(...(clothing.school_spring_top || []), ...(clothing.school_summer_top || []), ...(clothing.school_autumn_top || []), ...(clothing.school_winter_top || []), ...(clothing.gym_top || []), ...(clothing.special_top || []), ...(clothing.school_spring_onepiece_set || []), ...(clothing.school_summer_onepiece_set || []), ...(clothing.school_autumn_onepiece_set || []), ...(clothing.school_winter_onepiece_set || []), ...(clothing.gym_onepiece_set || []), ...(clothing.special_onepiece_set || []));
+                            availableBottomwear.push(...(clothing.school_spring_bottom || []), ...(clothing.school_summer_bottom || []), ...(clothing.school_autumn_bottom || []), ...(clothing.school_winter_bottom || []), ...(clothing.gym_bottom || []), ...(clothing.special_bottom || []));
+                        } else {
+                            availableTopwear.push(...(clothing.spring_top || []), ...(clothing.summer_top || []), ...(clothing.autumn_top || []), ...(clothing.winter_top || []), ...(clothing.special_top || []), ...(clothing.spring_onepiece_set || []), ...(clothing.summer_onepiece_set || []), ...(clothing.autumn_onepiece_set || []), ...(clothing.winter_onepiece_set || []), ...(clothing.special_onepiece_set || []));
+                            availableBottomwear.push(...(clothing.spring_bottom || []), ...(clothing.summer_bottom || []), ...(clothing.autumn_bottom || []), ...(clothing.winter_bottom || []), ...(clothing.special_bottom || []));
+                        }
+                    }
+                    availableTopwear = ['없음', ...new Set(availableTopwear.filter(item => item))];
+                    availableBottomwear = ['없음', ...new Set(availableBottomwear.filter(item => item))];
+
+                    switch (target) {
+                        case 'gender': randomValue = getRandomElement(['남성', '여성', '기타']); characterData.gender = randomValue; charGenderSelect.value = randomValue; break;
+                        case 'mbti': randomValue = getRandomElement(mbtiTypes); characterData.mbti = randomValue; charMbtiSelect.value = randomValue; break;
+                        case 'world':
+                            const worldKeys = Object.keys(worlds);
+                            randomValue = getRandomElement(worldKeys);
+                            characterData.world = randomValue; charWorldSelect.value = randomValue;
+                            populateJobsForSelect();
+                            populateClothingForSelectedWorldSimplified();
+                            const newWorldJobData = worlds[characterData.world];
+                            const jobsForNewWorld = newWorldJobData && newWorldJobData.jobs ? newWorldJobData.jobs : [];
+                            if (jobsForNewWorld.length > 0) { characterData.job = getRandomElement(jobsForNewWorld); charJobSelect.value = characterData.job; }
+                            else { characterData.job = ''; charJobSelect.value = ''; }
+                            break;
+                        case 'race': randomValue = getRandomElement(races); characterData.race = randomValue; charRaceSelect.value = randomValue; break;
+                        case 'job':
+                            const currentWorldJobData = worlds[characterData.world];
+                            const currentJobsForWorld = currentWorldJobData && currentWorldJobData.jobs ? currentWorldJobData.jobs : [];
+                            if (currentJobsForWorld.length > 0) { randomValue = getRandomElement(currentJobsForWorld); characterData.job = randomValue; charJobSelect.value = randomValue; }
+                            break;
+                        case 'hairStyle': randomValue = getRandomElement(hairStyles); characterData.hairStyle = randomValue; charHairStyleSelect.value = randomValue; break;
+                        case 'topwear': randomValue = availableTopwear.length > 0 ? getRandomElement(availableTopwear) : '없음'; characterData.topwear = randomValue; charTopwearSelect.value = randomValue; break;
+                        case 'bottomwear': randomValue = availableBottomwear.length > 0 ? getRandomElement(availableBottomwear) : '없음'; characterData.bottomwear = randomValue; charBottomwearSelect.value = randomValue; break;
+                        case 'accessory': randomValue = getRandomElement(accessories); characterData.accessory = randomValue; charAccessorySelect.value = randomValue; break;
+                        case 'appearanceFeature': randomValue = getRandomElement(appearanceFeatures); characterData.appearanceFeature = randomValue; charAppearanceFeatureSelect.value = randomValue; break;
+                        case 'valueSystem': randomValue = getRandomElement(valueSystems); characterData.valueSystem = randomValue; charValueSystemSelect.value = randomValue; break;
+                        case 'personality1': randomValue = getRandomElement(personalityTraits); characterData.personality1 = randomValue; charPersonality1Select.value = randomValue; break;
+                        case 'personality2': randomValue = getRandomElement(personalityTraits); characterData.personality2 = randomValue; charPersonality2Select.value = randomValue; break;
+                        case 'personality3': randomValue = getRandomElement(personalityTraits); characterData.personality3 = randomValue; charPersonality3Select.value = randomValue; break;
+                        case 'trauma': randomValue = getRandomElement(complexExamples); characterData.trauma = randomValue; charTraumaSelect.value = randomValue; updateTraitsFromDetails(); break;
+                        case 'complex': randomValue = getRandomElement(complexExamples); characterData.complex = randomValue; charComplexSelect.value = randomValue; updateTraitsFromDetails(); break;
+                        case 'erogenousZone': randomValue = getRandomElement(erogenousZoneExamples); characterData.erogenousZone = randomValue; charErogenousZoneSelect.value = randomValue; updateTraitsFromDetails(); break;
+                        case 'fetish': randomValue = getRandomElement(fetishExamples); characterData.fetish = randomValue; charFetishSelect.value = randomValue; updateTraitsFromDetails(); break;
+                    }
+                    updateDisplay();
+                });
+            });
+            document.querySelectorAll('.random-btn-color').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const target = btn.dataset.target;
+                    let randomColor;
+                    if (target === 'hairColor') {
+                        randomColor = getRandomElement(defaultHairColors);
+                        characterData.hairColor = randomColor;
+                        hairColorSwatchDisplay.style.backgroundColor = randomColor;
+                        charHairColorNativeInput.value = randomColor;
+                    } else if (target === 'eyeColor') {
+                        randomColor = getRandomElement(defaultEyeColors);
+                        characterData.eyeColor = randomColor;
+                        eyeColorSwatchDisplay.style.backgroundColor = randomColor;
+                        charEyeColorNativeInput.value = randomColor;
+                    } else if (target === 'skinColor') {
+                        randomColor = getRandomElement(defaultSkinColors);
+                        characterData.skinColor = randomColor;
+                        skinColorSwatchDisplay.style.backgroundColor = randomColor;
+                        charSkinColorNativeInput.value = randomColor;
+                    }
+                    updateDisplay();
+                });
+            });
+            desktopGenerateButton.addEventListener('click', () => {
+                const worldKeysForRandom = Object.keys(worlds);
+                characterData.world = getRandomElement(worldKeysForRandom);
+                populateJobsForSelect();
+                populateClothingForSelectedWorldSimplified();
+                const generatedWorldData = worlds[characterData.world];
+                const jobsForGeneratedWorld = generatedWorldData && generatedWorldData.jobs ? generatedWorldData.jobs : [];
+                characterData.job = jobsForGeneratedWorld.length > 0 ? getRandomElement(jobsForGeneratedWorld) : '';
+                let randomTopwearOptions = [];
+                let randomBottomwearOptions = [];
+                if (generatedWorldData && generatedWorldData.clothing) {
+                    const clothing = generatedWorldData.clothing;
+                    const 현대Clothing = worlds['현대'].clothing;
+                     if (characterData.world === '현대' || characterData.world === '현대 판타지' || characterData.world === '특수설정버스') {
+                        randomTopwearOptions.push(...(현대Clothing.spring_top || []), ...(현대Clothing.summer_top || []), ...(현대Clothing.autumn_top || []), ...(현대Clothing.winter_top || []), ...(현대Clothing.special_top || []), ...(현대Clothing.spring_onepiece_set || []), ...(현대Clothing.summer_onepiece_set || []), ...(현대Clothing.autumn_onepiece_set || []), ...(현대Clothing.winter_onepiece_set || []), ...(현대Clothing.special_onepiece_set || []));
+                        randomBottomwearOptions.push(...(현대Clothing.spring_bottom || []), ...(현대Clothing.summer_bottom || []), ...(현대Clothing.autumn_bottom || []), ...(현대Clothing.winter_bottom || []), ...(현대Clothing.special_bottom || []));
+                    } else if (characterData.world === '학원물') {
+                        randomTopwearOptions.push(...(현대Clothing.spring_top || []), ...(현대Clothing.summer_top || []), ...(현대Clothing.autumn_top || []), ...(현대Clothing.winter_top || []), ...(현대Clothing.special_top || []), ...(현대Clothing.spring_onepiece_set || []), ...(현대Clothing.summer_onepiece_set || []), ...(현대Clothing.autumn_onepiece_set || []), ...(현대Clothing.winter_onepiece_set || []), ...(현대Clothing.special_onepiece_set || []));
+                        randomBottomwearOptions.push(...(현대Clothing.spring_bottom || []), ...(현대Clothing.summer_bottom || []), ...(현대Clothing.autumn_bottom || []), ...(현대Clothing.winter_bottom || []), ...(현대Clothing.special_bottom || []));
+                        randomTopwearOptions.push(...(clothing.school_spring_top || []), ...(clothing.school_summer_top || []), ...(clothing.school_autumn_top || []), ...(clothing.school_winter_top || []), ...(clothing.gym_top || []), ...(clothing.special_top || []), ...(clothing.school_spring_onepiece_set || []), ...(clothing.school_summer_onepiece_set || []), ...(clothing.school_autumn_onepiece_set || []), ...(clothing.school_winter_onepiece_set || []), ...(clothing.gym_onepiece_set || []), ...(clothing.special_onepiece_set || []));
+                        randomBottomwearOptions.push(...(clothing.school_spring_bottom || []), ...(clothing.school_summer_bottom || []), ...(clothing.school_autumn_bottom || []), ...(clothing.school_winter_bottom || []), ...(clothing.gym_bottom || []), ...(clothing.special_bottom || []));
+                    } else {
+                        randomTopwearOptions.push(...(clothing.spring_top || []), ...(clothing.summer_top || []), ...(clothing.autumn_top || []), ...(clothing.winter_top || []), ...(clothing.special_top || []), ...(clothing.spring_onepiece_set || []), ...(clothing.summer_onepiece_set || []), ...(clothing.autumn_onepiece_set || []), ...(clothing.winter_onepiece_set || []), ...(clothing.special_onepiece_set || []));
+                        randomBottomwearOptions.push(...(clothing.spring_bottom || []), ...(clothing.summer_bottom || []), ...(clothing.autumn_bottom || []), ...(clothing.winter_bottom || []), ...(clothing.special_bottom || []));
+                    }
+                }
+                randomTopwearOptions = ['없음', ...new Set(randomTopwearOptions.filter(item => item))];
+                randomBottomwearOptions = ['없음', ...new Set(randomBottomwearOptions.filter(item => item))];
+                characterData.race = getRandomElement(races);
+                characterData.hairStyle = getRandomElement(hairStyles);
+                characterData.hairColor = getRandomElement(defaultHairColors);
+                characterData.eyeColor = getRandomElement(defaultEyeColors);
+                characterData.skinColor = getRandomElement(defaultSkinColors);
+                characterData.topwear = randomTopwearOptions.length > 0 ? getRandomElement(randomTopwearOptions) : '없음';
+                characterData.bottomwear = randomBottomwearOptions.length > 0 ? getRandomElement(randomBottomwearOptions) : '없음';
+                characterData.accessory = getRandomElement(accessories);
+                characterData.mbti = getRandomElement(mbtiTypes);
+                characterData.appearanceFeature = getRandomElement(appearanceFeatures);
+                characterData.valueSystem = getRandomElement(valueSystems);
+                characterData.personality1 = getRandomElement(personalityTraits);
+                characterData.personality2 = getRandomElement(personalityTraits);
+                characterData.personality3 = getRandomElement(personalityTraits);
+                characterData.trauma = '없음'; 
+                characterData.complex = '없음';
+                characterData.erogenousZone = '없음'; 
+                characterData.fetish = '없음';
+                characterData.traits = '';
+                updateTraitsFromDetails(); 
+                cardStatusBar.textContent = "랜덤 캐릭터 생성됨!";
+                updateInputs(); 
+                updateDisplay();
+            });
+        if (desktopSaveImageButton) {
+            desktopSaveImageButton.addEventListener('click', () => {
+                const elementToCapture = document.getElementById('persona-main-window');
+                if (elementToCapture) {
+                    const originalWindowBg = elementToCapture.style.backgroundColor;
+                    elementToCapture.style.backgroundColor = '#C0C0C0'; 
+
+                    html2canvas(elementToCapture, { 
+                        backgroundColor: '#C0C0C0', 
+                        logging: false,
+                        removeContainer: true, 
+                        scale: 2,
+                        onclone: (clonedDoc) => {
+                            const clonedWindow = clonedDoc.getElementById('persona-main-window');
+                            if (clonedWindow) {
+                                clonedWindow.style.fontFamily = '"돋움", Dotum, Arial, sans-serif';
+                            }
+                            const titleBar = clonedDoc.querySelector('.title-bar');
+                            if (titleBar) {
+                                titleBar.style.backgroundColor = '#000080';
+                                titleBar.style.color = '#FFFFFF';
+                                titleBar.style.fontWeight = 'bold';
+                            }
+                            clonedDoc.querySelectorAll('.title-bar-button').forEach(btn => {
+                                btn.style.backgroundColor = '#C0C0C0';
+                                btn.style.color = '#000000';
+                                btn.style.borderTopColor = '#FFFFFF';
+                                btn.style.borderRightColor = '#808080';
+                                btn.style.borderBottomColor = '#808080';
+                                btn.style.borderLeftColor = '#FFFFFF';
+                                btn.style.borderStyle = 'solid';
+                                btn.style.borderWidth = '1px';
+                                btn.style.boxShadow = 'none';
+                                btn.style.display = 'flex';
+                                btn.style.alignItems = 'center';
+                                btn.style.justifyContent = 'center';
+                            });
+                            const windowContent = clonedDoc.querySelector('.window-content');
+                            if(windowContent){
+                                windowContent.style.backgroundColor = '#FFFFFF';
+                                windowContent.style.borderColor = '#808080';
+                                windowContent.style.borderStyle = 'solid';
+                                windowContent.style.borderWidth = '1px';
+                            }
+                            const statusBar = clonedDoc.querySelector('.status-bar');
+                            if(statusBar){
+                                statusBar.style.backgroundColor = '#C0C0C0';
+                                statusBar.style.borderTopColor = '#808080';
+                                statusBar.style.borderRightColor = '#FFFFFF';
+                                statusBar.style.borderBottomColor = '#FFFFFF';
+                                statusBar.style.borderLeftColor = '#808080';
+                                statusBar.style.borderStyle = 'solid';
+                                statusBar.style.borderWidth = '1px';
+                                statusBar.style.color = '#000000';
+                            }
+                            const traitsToggleButton = clonedDoc.getElementById('toggle-traits-button');
+                            if (traitsToggleButton) {
+                                traitsToggleButton.style.backgroundColor = '#C0C0C0';
+                                traitsToggleButton.style.color = '#000000';
+                                traitsToggleButton.style.borderTopColor = '#FFFFFF';
+                                traitsToggleButton.style.borderRightColor = '#808080';
+                                traitsToggleButton.style.borderBottomColor = '#808080';
+                                traitsToggleButton.style.borderLeftColor = '#FFFFFF';
+                                traitsToggleButton.style.borderStyle = 'solid';
+                                traitsToggleButton.style.borderWidth = '1px';
+                                traitsToggleButton.style.boxShadow = 'none';
+                                const spanInsideButton = traitsToggleButton.querySelector('span');
+                                if(spanInsideButton) spanInsideButton.style.color = '#000000';
+                                const svgInsideButton = traitsToggleButton.querySelector('svg');
+                                if(svgInsideButton) {
+                                    svgInsideButton.style.color = '#000000';
+                                    svgInsideButton.style.stroke = '#000000';
+                                }
+                            }
+                            const valueDisp = clonedDoc.getElementById('char-valueSystem-display');
+                            if(valueDisp) valueDisp.style.color = '#BABABA';
+                            const persDisp = clonedDoc.getElementById('char-personality-tags-display');
+                            if(persDisp) persDisp.style.color = '#BABABA';
+
+                            clonedDoc.querySelectorAll('.color-swatch').forEach(sw => {
+                                 const originalSwatch = document.getElementById(sw.id);
+                                 if(originalSwatch) sw.style.backgroundColor = originalSwatch.style.backgroundColor;
+                            });
+
+                            const textarea = clonedDoc.getElementById('char-traits-input');
+                            if (textarea) {
+                                const textareaValue = textarea.value;
+                                const div = clonedDoc.createElement('div');
+                                const originalTextarea = document.getElementById('char-traits-input');
+                                const computedStyle = window.getComputedStyle(originalTextarea);
+                                
+                                div.style.fontFamily = computedStyle.fontFamily;
+                                div.style.fontSize = computedStyle.fontSize;
+                                div.style.lineHeight = computedStyle.lineHeight;
+                                div.style.padding = computedStyle.padding;
+                                div.style.margin = computedStyle.margin;
+                                div.style.borderTopColor = computedStyle.borderTopColor;
+                                div.style.borderRightColor = computedStyle.borderRightColor;
+                                div.style.borderBottomColor = computedStyle.borderBottomColor;
+                                div.style.borderLeftColor = computedStyle.borderLeftColor;
+                                div.style.borderTopStyle = computedStyle.borderTopStyle;
+                                div.style.borderRightStyle = computedStyle.borderRightStyle;
+                                div.style.borderBottomStyle = computedStyle.borderBottomStyle;
+                                div.style.borderLeftStyle = computedStyle.borderLeftStyle;
+                                div.style.borderTopWidth = computedStyle.borderTopWidth;
+                                div.style.borderRightWidth = computedStyle.borderRightWidth;
+                                div.style.borderBottomWidth = computedStyle.borderBottomWidth;
+                                div.style.borderLeftWidth = computedStyle.borderLeftWidth;
+                                div.style.boxSizing = 'border-box';
+                                div.style.width = computedStyle.width; 
+                                div.style.minHeight = computedStyle.minHeight;
+                                div.style.backgroundColor = '#FFFFFF'; 
+                                div.style.color = '#000000'; 
+                                div.style.whiteSpace = 'pre-wrap';
+                                div.style.wordBreak = 'break-word'; 
+                                div.style.height = originalTextarea.scrollHeight > parseFloat(computedStyle.minHeight.replace('px','')) ? (originalTextarea.scrollHeight + 'px') : computedStyle.minHeight;
+                                
+                                div.innerHTML = textareaValue.replace(/\n/g, '<br>');
+                                if (textarea.parentNode) {
+                                    textarea.parentNode.replaceChild(div, textarea);
+                                }
+                            }
+                        }
+                    }).then(canvas => {
+                        elementToCapture.style.backgroundColor = originalWindowBg; 
+                        const link = document.createElement('a');
+                        const fileName = (characterData.name.replace(/[\\/:*?"<>|]/g, '') || '페르소나') + '_정보.png';
+                        link.download = fileName;
+                        link.href = canvas.toDataURL('image/png');
+                        link.click();
+                        cardStatusBar.textContent = "이미지 저장 완료!";
+                        setTimeout(() => { cardStatusBar.textContent = `이름: ${characterData.name} | 세계: ${characterData.world}`; }, 1500);
+                    }).catch(err => {
+                        elementToCapture.style.backgroundColor = originalWindowBg; 
+                        console.error('이미지 캡처 오류:', err);
+                        alert('이미지 저장에 실패했습니다.');
+                        cardStatusBar.textContent = "이미지 저장 실패...";
+                        setTimeout(() => { cardStatusBar.textContent = `이름: ${characterData.name} | 세계: ${characterData.world}`; }, 1500);
+                    });
+                } else {
+                    alert('캡처할 대상을 찾을 수 없습니다.');
+                }
+            });
+        }
+        desktopCopyButton.addEventListener('click', () => {
+                const heightText = (characterData.height && characterData.height > 0) ? ` (${characterData.height}cm)` : '';
+                let valueSystemText = '';
+                if (characterData.valueSystem && characterData.valueSystem !== '선택안함') {
+                    valueSystemText = `가치관: ${characterData.valueSystem}\n`;
+                }
+                let personalityText = '';
+                let persArray = [];
+                if (characterData.personality1 && characterData.personality1 !== '선택안함') persArray.push(`#${characterData.personality1}`);
+                if (characterData.personality2 && characterData.personality2 !== '선택안함') persArray.push(`#${characterData.personality2}`);
+                if (characterData.personality3 && characterData.personality3 !== '선택안함') persArray.push(`#${characterData.personality3}`);
+                if(persArray.length > 0) {
+                    personalityText = `성격: ${persArray.join(' ')}\n`;
+                }
+                let baseTraits = "";
+                let detailItemsForCopy = [];
+                let inBaseTraitsSection = true;
+                const lines = characterData.traits.split('\n');
+                const detailKeywords = ["트라우마:", "콤플렉스:", "성감대:", "패티쉬:", "⚠️성인전용"];
+                for (const line of lines) {
+                    const trimmedLine = line.trim();
+                    if (!trimmedLine) continue; 
+                    let isKeywordLine = false;
+                    if(inBaseTraitsSection){
+                        for (const keyword of detailKeywords) {
+                            if (trimmedLine.startsWith(keyword)) { isKeywordLine = true; inBaseTraitsSection = false; break; }
+                        }
+                    } else { isKeywordLine = true; }
+                    if (inBaseTraitsSection && !isKeywordLine) { baseTraits += (baseTraits ? '\n' : '') + `• ${trimmedLine}`; }
+                    else if (isKeywordLine || !inBaseTraitsSection) {
+                        if (trimmedLine.startsWith("⚠️성인전용")) { detailItemsForCopy.push(`• ${trimmedLine}`); }
+                        else if (trimmedLine.includes(":")) { detailItemsForCopy.push(`• ${trimmedLine}`); }
+                        else { detailItemsForCopy.push(`  • ${trimmedLine}`); }
+                    }
+                }
+                let traitsOutput = "";
+                if (baseTraits.trim()) { traitsOutput += `\n\n# 특징\n${baseTraits.trim()}`; }
+                if (detailItemsForCopy.length > 0){ traitsOutput += (traitsOutput.trim() ? `\n\n` : `\n\n`) + detailItemsForCopy.join('\n'); }
+                const clothingTextCopy = (characterData.topwear === '없음' && characterData.bottomwear === '없음') ? '없음' :
+                                     (characterData.topwear !== '없음' && characterData.bottomwear === '없음') ? characterData.topwear :
+                                     (characterData.topwear === '없음' && characterData.bottomwear !== '없음') ? characterData.bottomwear :
+                                     `${characterData.topwear}, ${characterData.bottomwear}`;
+                const textToCopy = `
+# ${characterData.name}
+${valueSystemText}${personalityText}
+${characterData.age}세${heightText} • ${characterData.gender}
+종족: ${characterData.race}
+세계: ${characterData.world} 
+직업: ${characterData.job}
+MBTI: ${characterData.mbti !== '모름/미정' ? characterData.mbti : '미정'}
+
+# 외모
+헤어: ${characterData.hairStyle} (${characterData.hairColor})
+눈색: ${characterData.eyeColor}
+피부색: ${characterData.skinColor}
+의상: ${clothingTextCopy}
+액세서리: ${characterData.accessory}
+외관특징: ${characterData.appearanceFeature !== '없음' ? characterData.appearanceFeature : '특이사항 없음'}
+${traitsOutput.trim()}
+`;
+                navigator.clipboard.writeText(textToCopy.trim()).then(() => {
+                    alert('클립보드에 복사되었습니다!'); cardStatusBar.textContent = "클립보드에 복사됨!"; setTimeout(() => { cardStatusBar.textContent = `이름: ${characterData.name} | 세계: ${characterData.world}`; }, 1500);
+                }).catch(err => {
+                    alert('클립보드 복사에 실패했습니다.'); cardStatusBar.textContent = "복사 실패..."; setTimeout(() => { cardStatusBar.textContent = `이름: ${characterData.name} | 세계: ${characterData.world}`; }, 1500);
+                });
+            });
+            function openNotepad() { notepadOverlay.classList.add('show'); notepadWindow.style.zIndex = '1001'; }
+            function closeNotepad() { notepadOverlay.classList.remove('show'); }
+            desktopReadmeButton.addEventListener('click', openNotepad);
+            closeNotepadButton.addEventListener('click', closeNotepad);
+            notepadOverlay.addEventListener('click', (event) => { if (event.target === notepadOverlay) { closeNotepad(); } });
+            window.addEventListener('resize', checkContentOverflow);
+            checkContentOverflow();
+        }
+        initialize();
+    </script>
+</body>
+</html>
