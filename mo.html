@@ -1,0 +1,55 @@
+<html>
+<head>
+<title>Page Title</title>
+</head>
+<body>
+
+<form id="clapForm" style="max-width: 400px; margin: 20px auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px; font-family: sans-serif;">
+  <h3 style="margin-top:0; text-align:center;">응원의 메시지를 남겨주세요! 💖</h3>
+  <textarea id="clapMessage" name="message" rows="3" style="width: 95%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 10px;" placeholder="따뜻한 한마디 부탁드려요!" required></textarea>
+  <button type="submit" style="display: block; width: 100%; padding: 10px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;">보내기</button>
+  <p id="formStatus" style="margin-top: 10px; text-align: center;"></p>
+</form>
+
+<script>
+  const form = document.getElementById('clapForm');
+  const formStatus = document.getElementById('formStatus');
+  // 여기에 Google Apps Script 웹 앱 URL을 붙여넣으세요.
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyrOvBsQ-U_WMyYKMmKF_gJb_wDKrZFrkQv_kpXNbR_QWVcQST8E3M1pkRo1E3JgxqF/exec";
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault(); // 기본 폼 제출 방지
+    formStatus.textContent = '보내는 중...';
+    const message = document.getElementById('clapMessage').value;
+
+    if (!message.trim()) {
+      formStatus.textContent = '메시지를 입력해주세요.';
+      return;
+    }
+
+    try {
+      // FormData를 사용하여 간단하게 전송
+      const formData = new FormData();
+      formData.append('message', message);
+
+      const response = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: formData // FormData를 그대로 body에 넣으면 Apps Script의 e.parameter로 받을 수 있음
+      });
+      const result = await response.json(); // Apps Script에서 JSON으로 응답
+
+      if (result.status === 'success') {
+        formStatus.textContent = '메시지가 전달되었어요. 감사합니다! ✨';
+        form.reset(); // 폼 초기화
+      } else {
+        formStatus.textContent = '오류: ' + result.message;
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      formStatus.textContent = '메시지 전송에 실패했어요. 😥';
+    }
+  });
+</script>
+
+</body>
+</html>
