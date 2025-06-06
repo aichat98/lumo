@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>카드 생성기</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Noto+Serif+KR:wght@400;700&family=Gamja+Flower&family=Stylish&family=Jua&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            transition: all 0.5s ease;
+        }
+
+        body.has-background {
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        body.has-background::before {
+            content: '';
+            position: fixed;
+            top: -50px;
+            left: -50px;
+            right: -50px;
+            bottom: -50px;
+            width: calc(100vw + 100px);
+            height: calc(100vh + 100px);
+            background: inherit;
+            filter: blur(30px) brightness(0.3);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            align-items: start;
+            position: relative;
+            z-index: 1;
+        }
+
+        .preview-panel {
+            position: sticky;
+            top: 20px;
+            order: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .control-panel {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            order: 2;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 2em;
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        textarea, input[type="text"], input[type="file"], select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+            background: white;
+        }
+
+        textarea:focus, input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+            line-height: 1.6;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 12px;
+            border: 2px dashed #e1e5e9;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f8f9fa;
+        }
+
+        .file-input-label:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .color-selector {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            justify-content: center;
+        }
+
+        .color-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+
+        .color-option.active {
+            border-color: #333;
+            transform: scale(1.1);
+        }
+
+        .color-option.active::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .theme-selector {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .theme-option {
+            padding: 8px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            text-align: center;
+            font-size: 11px;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .theme-option:hover {
+            border-color: #667eea;
+            transform: translateY(-1px);
+        }
+
+        .theme-option.active {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .theme-preview {
+            width: 100%;
+            height: 20px;
+            border-radius: 4px;
+            margin-bottom: 2px;
+        }
+
+        .align-selector {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+            height: 44px;
+        }
+
+        .align-option {
+            flex: 1;
+            padding: 12px 4px;
+            border: 2px solid #e1e5e9;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            text-align: center;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 44px;
+        }
+
+        .align-option:hover {
+            border-color: #667eea;
+            transform: translateY(-1px);
+        }
+
+        .align-option.active {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .overlay-slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e1e5e9;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .overlay-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+
+        .quote-card {
+            width: 400px;
+            height: 500px;
+            border-radius: 20px;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            margin: 0 auto;
+            transition: all 0.3s;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-size: cover;
+            background-position: center;
+            overflow: hidden;
+        }
+
+        .timestamp {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            font-size: 7px;
+            color: rgba(255, 255, 255, 0.6);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            z-index: 4;
+            font-weight: 400;
+            display: none;
+        }
+
+        .timestamp.show {
+            display: block;
+        }
+
+        .persona {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 7px;
+            color: rgba(255, 255, 255, 0.6);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            z-index: 4;
+            font-weight: 400;
+            display: none;
+        }
+
+        .persona.show {
+            display: block;
+        }
+
+        .dropdown-container {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .dropdown-input {
+            width: 60px;
+            padding: 4px 8px;
+            border: 2px solid #e1e5e9;
+            border-radius: 6px;
+            font-size: 11px;
+            background: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            position: absolute;
+            top: -35px;
+            left: 0;
+            z-index: 1000;
+            display: none;
+            text-align: center;
+        }
+
+        .dropdown-input.show {
+            display: block;
+        }
+
+        .dropdown-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .card-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1;
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+            padding: 40px 40px 120px;
+        }
+
+        .quote-text {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            font-weight: 300;
+            font-style: italic;
+            position: relative;
+            color: rgba(255, 255, 255, 0.85);
+            text-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.4);
+            text-align: center;
+        }
+
+        .quote-text .colored-quote {
+            color: var(--quote-color, #ff6b9d);
+            font-weight: 600;
+            font-style: normal;
+        }
+
+        .quote-text::before,
+        .quote-text::after {
+            display: none;
+        }
+
+        .character-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 120px;
+            padding: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.6) 50%, transparent 100%);
+            border-radius: 0 0 20px 20px;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            padding-bottom: 30px;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        .character-name {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #ffffff;
+            text-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.4);
+        }
+
+        .creator-name {
+            font-size: 16px;
+            color: #ffffff;
+            opacity: 0.6;
+            text-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.4);
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            justify-content: center;
+        }
+
+        .creator-icon {
+            width: 12px;
+            height: 12px;
+            stroke: currentColor;
+            stroke-width: 2;
+        }
+
+        .download-btn {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 50%, #1e1e1e 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+            width: 400px;
+            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(46, 204, 113, 0.4);
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 150px;
+            border-radius: 10px;
+            margin-top: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 40px;
+            height: 20px;
+            background: #e1e5e9;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: #667eea;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(20px);
+        }
+
+        .toggle-label {
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .preview-panel {
+                order: 1;
+            }
+
+            .control-panel {
+                order: 2;
+            }
+            
+            .quote-card {
+                width: 350px;
+                height: 450px;
+            }
+
+            .download-btn {
+                width: 350px;
+            }
+            
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="preview-panel">
+            <div class="quote-card" id="quote-card">
+                <div class="timestamp" id="timestamp"></div>
+                <div class="persona" id="persona"></div>
+                <div class="card-overlay" id="card-overlay"></div>
+                <div class="card-content">
+                    <div class="quote-text" id="preview-quote">인생은 가까이서 보면 비극이지만, 멀리서 보면 <span class="colored-quote">"희극"</span>이다.</div>
+                </div>
+                <div class="character-info">
+                    <div class="character-name" id="preview-character">찰리 채플린</div>
+                    <div class="creator-name" id="preview-creator">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="creator-icon">
+                            <path d="M2 21a8 8 0 0 1 10.821-7.487"></path>
+                            <path d="M21.378 16.626a1 1 0 0 0-3.004-3.004l-4.01 4.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"></path>
+                            <circle cx="10" cy="8" r="5"></circle>
+                        </svg>
+                        <span id="creator-text">모던 타임즈</span>
+                    </div>
+                </div>
+            </div>
+            <button class="download-btn" onclick="downloadCard()">💾 이미지로 저장</button>
+        </div>
+        
+        <div class="control-panel">
+            <h1>✨카드 생성기✨</h1>
+            
+            <div class="form-group">
+                <label for="quote">텍스트</label>
+                <textarea id="quote" placeholder='마음에 드는 글귀를 입력해주세요... "대사"는 자동으로 색이 변해요!'>인생은 가까이서 보면 비극이지만, 멀리서 보면 "희극"이다.</textarea>
+            </div>
+            
+            <div class="form-group">
+                <div class="two-column">
+                    <div>
+                        <label for="character">캐릭터 이름</label>
+                        <input type="text" id="character" placeholder="캐릭터 이름" value="찰리 채플린">
+                    </div>
+                    <div>
+                        <label for="creator">제작자</label>
+                        <input type="text" id="creator" placeholder="제작자/작품명" value="모던 타임즈">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="background-image">배경 이미지</label>
+                <div class="file-input-wrapper">
+                    <input type="file" id="background-image" class="file-input" accept="image/*">
+                    <label for="background-image" class="file-input-label">
+                        📷 이미지 선택하기
+                    </label>
+                </div>
+                <img id="preview-uploaded" class="preview-image" style="display: none;">
+            </div>
+            
+            <div class="form-group">
+                <div class="two-column">
+                    <div>
+                        <label>글씨 색상</label>
+                        <div class="color-selector">
+                            <div class="color-option active" data-color="#ff6b9d" style="background: #ff6b9d;"></div>
+                            <div class="color-option" data-color="#ffa726" style="background: #ffa726;"></div>
+                            <div class="color-option" data-color="#fff176" style="background: #fff176;"></div>
+                            <div class="color-option" data-color="#81c784" style="background: #81c784;"></div>
+                            <div class="color-option" data-color="#64b5f6" style="background: #64b5f6;"></div>
+                        </div>
+                        <div style="font-size: 12px; color: #666; margin-top: 5px; text-align: center;">"따옴표" 안의 글씨에 적용됩니다</div>
+                    </div>
+                    <div>
+                        <label>테마</label>
+                        <div class="theme-selector">
+                            <div class="theme-option active" data-theme="default">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #667eea, #764ba2);"></div>
+                                <span>기본</span>
+                            </div>
+                            <div class="theme-option" data-theme="dark">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #1a1a1a, #2c2c2c);"></div>
+                                <span>다크</span>
+                            </div>
+                            <div class="theme-option" data-theme="vintage">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #8b7355, #6b5b73);"></div>
+                                <span>빈티지</span>
+                            </div>
+                            <div class="theme-option" data-theme="neon">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #ff0080, #7928ca);"></div>
+                                <span>네온</span>
+                            </div>
+                            <div class="theme-option" data-theme="pastel">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #ffeaa7, #fab1a0);"></div>
+                                <span>파스텔</span>
+                            </div>
+                            <div class="theme-option" data-theme="ocean">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #0984e3, #00b894);"></div>
+                                <span>오션</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <div class="two-column">
+                    <div>
+                        <label for="font-family">글씨체</label>
+                        <select id="font-family">
+                            <option value="default">기본 글씨체</option>
+                            <option value="noto-serif">노토 명조</option>
+                            <option value="gamja">감자꽃체</option>
+                            <option value="stylish">스타일리쉬</option>
+                            <option value="jua">주아체</option>
+                            <option value="serif">Times 명조</option>
+                            <option value="monospace">모노스페이스</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>정렬</label>
+                        <div class="align-selector">
+                            <div class="align-option" data-align="left">⬅️</div>
+                            <div class="align-option active" data-align="center">↔️</div>
+                            <div class="align-option" data-align="right">➡️</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="overlay">오버레이 강도</label>
+                <input type="range" id="overlay" class="overlay-slider" min="0" max="80" value="40">
+                <div style="text-align: center; margin-top: 5px; font-size: 14px; color: #666;">
+                    어둡게: <span id="overlay-value">40</span>%
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="font-size">폰트 크기</label>
+                <input type="range" id="font-size" class="overlay-slider" min="12" max="32" value="18">
+                <div style="text-align: center; margin-top: 5px; font-size: 14px; color: #666;">
+                    크기: <span id="font-size-value">18</span>px
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <div class="toggle-container">
+                    <div class="toggle-switch" id="timestamp-toggle">
+                        <div class="toggle-slider"></div>
+                    </div>
+                    <label class="toggle-label" for="timestamp-toggle">현재 시간 표시</label>
+                </div>
+                <div class="toggle-container">
+                    <div class="toggle-switch" id="persona-toggle">
+                        <div class="toggle-slider"></div>
+                    </div>
+                    <div class="dropdown-container">
+                        <label class="toggle-label" for="persona-toggle">페르소나</label>
+                        <input type="text" class="dropdown-input" id="persona-input" placeholder="페르소나 이름 입력">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        let currentQuoteColor = '#ff6b9d';
+        let currentBackgroundImage = null;
+        let showTimestamp = false;
+        let showPersona = false;
+        let currentTheme = 'default';
+        let currentAlign = 'center';
+
+        const themes = {
+            default: {
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                textColor: '#ffffff',
+                textShadow: '0.5px 0.5px 1px rgba(0, 0, 0, 0.4)'
+            },
+            dark: {
+                background: 'linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%)',
+                textColor: '#f5f5f5',
+                textShadow: '0.5px 0.5px 1px rgba(0, 0, 0, 0.6)'
+            },
+            vintage: {
+                background: 'linear-gradient(135deg, #8b7355 0%, #6b5b73 100%)',
+                textColor: '#f4f1de',
+                textShadow: '0.5px 0.5px 1px rgba(0, 0, 0, 0.3)'
+            },
+            neon: {
+                background: 'linear-gradient(135deg, #ff0080 0%, #7928ca 100%)',
+                textColor: '#ffffff',
+                textShadow: '0 0 6px rgba(255, 255, 255, 0.4), 0.5px 0.5px 1px rgba(0, 0, 0, 0.4)'
+            },
+            pastel: {
+                background: 'linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%)',
+                textColor: '#2d3436',
+                textShadow: '0.5px 0.5px 1px rgba(0, 0, 0, 0.2)'
+            },
+            ocean: {
+                background: 'linear-gradient(135deg, #0984e3 0%, #00b894 100%)',
+                textColor: '#ffffff',
+                textShadow: '0.5px 0.5px 1px rgba(0, 0, 0, 0.4)'
+            }
+        };
+
+        function updateTimestamp() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth() + 1;
+            const date = now.getDate();
+            const hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            const displayHours = hours % 12 || 12;
+            
+            const timestampText = `${year}년 ${month}월 ${date}일 ${displayHours}:${minutes} ${ampm}`;
+            document.getElementById('timestamp').textContent = timestampText;
+        }
+
+        function processQuoteText(text) {
+            // 줄바꿈을 <br>로 변환하고 따옴표 색상 처리
+            const withLineBreaks = text.replace(/\n/g, '<br>');
+            return withLineBreaks.replace(/"([^"]+)"/g, `<span class="colored-quote">"$1"</span>`);
+        }
+
+        function updatePreview() {
+            const quote = document.getElementById('quote').value;
+            const character = document.getElementById('character').value;
+            const creator = document.getElementById('creator').value;
+            
+            const processedQuote = processQuoteText(quote);
+            document.getElementById('preview-quote').innerHTML = processedQuote;
+            document.getElementById('preview-character').textContent = character;
+            document.getElementById('creator-text').textContent = creator;
+            
+            updateQuoteColor();
+        }
+
+        function updateOverlay() {
+            const overlayValue = document.getElementById('overlay').value;
+            const overlay = document.getElementById('card-overlay');
+            document.getElementById('overlay-value').textContent = overlayValue;
+            overlay.style.background = `rgba(0, 0, 0, ${overlayValue / 100})`;
+        }
+
+        function updateFontSize() {
+            const fontSize = document.getElementById('font-size').value;
+            const quoteText = document.getElementById('preview-quote');
+            document.getElementById('font-size-value').textContent = fontSize;
+            quoteText.style.fontSize = fontSize + 'px';
+            quoteText.style.setProperty('--quote-font-size', fontSize + 'px');
+        }
+
+        function updateQuoteColor() {
+            const quoteText = document.getElementById('preview-quote');
+            quoteText.style.setProperty('--quote-color', currentQuoteColor);
+        }
+
+        function updateAlignment() {
+            const quoteText = document.getElementById('preview-quote');
+            quoteText.style.textAlign = currentAlign;
+        }
+
+        function applyTheme(themeName) {
+            const theme = themes[themeName];
+            const card = document.getElementById('quote-card');
+            const quoteText = document.getElementById('preview-quote');
+            const characterName = document.getElementById('preview-character');
+            const creatorName = document.getElementById('creator-text');
+            const timestamp = document.getElementById('timestamp');
+            const persona = document.getElementById('persona');
+            const characterInfo = document.querySelector('.character-info');
+            
+            if (!currentBackgroundImage) {
+                card.style.background = theme.background;
+            }
+            
+            quoteText.style.color = theme.textColor;
+            quoteText.style.textShadow = theme.textShadow;
+            characterName.style.color = theme.textColor;
+            characterName.style.textShadow = theme.textShadow;
+            creatorName.style.color = theme.textColor;
+            creatorName.style.textShadow = theme.textShadow;
+            timestamp.style.color = theme.textColor.replace('1)', '0.6)');
+            persona.style.color = theme.textColor.replace('1)', '0.6)');
+            
+            // 파스텔 테마일 때 하단 오버레이를 밝게
+            if (themeName === 'pastel') {
+                characterInfo.style.background = 'linear-gradient(to top, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 50%, transparent 100%)';
+            } else {
+                characterInfo.style.background = 'linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.6) 50%, transparent 100%)';
+            }
+            
+            currentTheme = themeName;
+        }
+
+        function updateBackgroundImage(imageUrl) {
+            const card = document.getElementById('quote-card');
+            const body = document.body;
+            
+            if (imageUrl) {
+                card.style.backgroundImage = `url(${imageUrl})`;
+                card.style.backgroundSize = 'cover';
+                card.style.backgroundPosition = 'center';
+                
+                body.style.backgroundImage = `url(${imageUrl})`;
+                body.classList.add('has-background');
+                
+                currentBackgroundImage = imageUrl;
+            } else {
+                card.style.backgroundImage = '';
+                body.style.backgroundImage = '';
+                body.classList.remove('has-background');
+                currentBackgroundImage = null;
+            }
+        }
+
+        // 이벤트 리스너
+        document.getElementById('quote').addEventListener('input', updatePreview);
+        document.getElementById('character').addEventListener('input', updatePreview);
+        document.getElementById('creator').addEventListener('input', updatePreview);
+        document.getElementById('overlay').addEventListener('input', updateOverlay);
+        document.getElementById('font-size').addEventListener('input', updateFontSize);
+
+        document.getElementById('font-family').addEventListener('change', function() {
+            const fontFamily = this.value;
+            const quoteText = document.getElementById('preview-quote');
+            
+            const fontMap = {
+                'default': '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                'noto-serif': '"Noto Serif KR", serif',
+                'gamja': '"Gamja Flower", cursive',
+                'stylish': '"Stylish", sans-serif',
+                'jua': '"Jua", sans-serif',
+                'serif': '"Times New Roman", Times, serif',
+                'monospace': '"Courier New", Courier, monospace'
+            };
+            
+            quoteText.style.fontFamily = fontMap[fontFamily];
+        });
+
+        document.querySelectorAll('.color-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelector('.color-option.active').classList.remove('active');
+                this.classList.add('active');
+                currentQuoteColor = this.dataset.color;
+                updateQuoteColor();
+            });
+        });
+
+        document.querySelectorAll('.theme-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelector('.theme-option.active').classList.remove('active');
+                this.classList.add('active');
+                applyTheme(this.dataset.theme);
+            });
+        });
+
+        document.querySelectorAll('.align-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelector('.align-option.active').classList.remove('active');
+                this.classList.add('active');
+                currentAlign = this.dataset.align;
+                updateAlignment();
+            });
+        });
+
+        document.getElementById('background-image').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('preview-uploaded');
+                    
+                    updateBackgroundImage(e.target.result);
+                    
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    
+                    document.querySelector('.file-input-label').textContent = '✅ 이미지 업로드됨';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById('timestamp-toggle').addEventListener('click', function() {
+            showTimestamp = !showTimestamp;
+            const toggle = this;
+            const timestamp = document.getElementById('timestamp');
+            
+            if (showTimestamp) {
+                toggle.classList.add('active');
+                timestamp.classList.add('show');
+                updateTimestamp();
+            } else {
+                toggle.classList.remove('active');
+                timestamp.classList.remove('show');
+            }
+        });
+
+        document.getElementById('persona-toggle').addEventListener('click', function() {
+            showPersona = !showPersona;
+            const toggle = this;
+            const persona = document.getElementById('persona');
+            const input = document.getElementById('persona-input');
+            
+            if (showPersona) {
+                toggle.classList.add('active');
+                persona.classList.add('show');
+                input.classList.add('show');
+                input.focus();
+                const personaText = input.value;
+                persona.textContent = personaText;
+            } else {
+                toggle.classList.remove('active');
+                persona.classList.remove('show');
+                input.classList.remove('show');
+            }
+        });
+
+        document.getElementById('persona-input').addEventListener('input', function() {
+            const personaText = this.value;
+            document.getElementById('persona').textContent = personaText;
+        });
+
+        document.querySelectorAll('.toggle-label').forEach((label, index) => {
+            label.addEventListener('click', function() {
+                if (index === 0) {
+                    document.getElementById('timestamp-toggle').click();
+                } else if (index === 1) {
+                    document.getElementById('persona-toggle').click();
+                }
+            });
+        });
+
+        async function downloadCard() {
+            const card = document.getElementById('quote-card');
+            
+            try {
+                // 저장용 임시 스타일 적용
+                const originalBorderRadius = card.style.borderRadius;
+                const originalOverflow = card.style.overflow;
+                const characterInfo = document.querySelector('.character-info');
+                const originalCharacterRadius = characterInfo.style.borderRadius;
+                
+                // 직각으로 변경
+                card.style.borderRadius = '0';
+                card.style.overflow = 'hidden';
+                characterInfo.style.borderRadius = '0';
+                
+                const canvas = await html2canvas(card, {
+                    backgroundColor: null,
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    foreignObjectRendering: false,
+                    logging: false,
+                    width: card.offsetWidth,
+                    height: card.offsetHeight
+                });
+                
+                // 원래 스타일 복원
+                card.style.borderRadius = originalBorderRadius;
+                card.style.overflow = originalOverflow;
+                characterInfo.style.borderRadius = originalCharacterRadius;
+                
+                // 다운로드 링크 생성
+                const link = document.createElement('a');
+                link.download = 'quote-card.png';
+                link.href = canvas.toDataURL('image/png', 1.0);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } catch (error) {
+                console.error('Download error:', error);
+                alert('이미지 저장 중 오류가 발생했습니다. 다시 시도해주세요.');
+            }
+        }
+
+        // 초기 설정
+        updateOverlay();
+        updateFontSize();
+        updatePreview();
+        updateTimestamp();
+        applyTheme('default');
+        updateAlignment();
+    </script>
+</body>
+</html>
