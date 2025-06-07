@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>카드 생성기</title>
+    <title>글귀 카드 생성기</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Noto+Serif+KR:wght@400;700&family=Gamja+Flower&family=Stylish&family=Jua&display=swap" rel="stylesheet">
     <style>
         * {
@@ -404,9 +404,9 @@
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 120px;
+            height: 140px;
             padding: 0;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.6) 30%, rgba(0, 0, 0, 0.3) 60%, transparent 100%);
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.6) 25%, rgba(0, 0, 0, 0.4) 40%, rgba(0, 0, 0, 0.2) 55%, rgba(0, 0, 0, 0.1) 70%, rgba(0, 0, 0, 0.05) 85%, transparent 100%);
             border-radius: 0 0 20px 20px;
             z-index: 3;
             display: flex;
@@ -833,9 +833,10 @@
             
             // 파스텔 테마일 때 하단 오버레이를 밝게
             if (themeName === 'pastel') {
-                characterInfo.style.background = 'linear-gradient(to top, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 30%, rgba(255, 255, 255, 0.4) 60%, transparent 100%)';
+                characterInfo.style.background = 'linear-gradient(to top, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 25%, rgba(255, 255, 255, 0.5) 40%, rgba(255, 255, 255, 0.3) 55%, rgba(255, 255, 255, 0.15) 70%, rgba(255, 255, 255, 0.05) 85%, transparent 100%)';
             } else {
-                characterInfo.style.background = 'linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.6) 30%, rgba(0, 0, 0, 0.3) 60%, transparent 100%)';
+                characterInfo.style.background = 'linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.6) 25%, rgba(0, 0, 0, 0.4) 40%, rgba(0, 0, 0, 0.2) 55%, rgba(0, 0, 0, 0.1) 70%, rgba(0, 0, 0, 0.05) 85%, transparent 100%)';
+                characterInfo.style.height = '140px';
             }
             
             currentTheme = themeName;
@@ -1003,7 +1004,11 @@
                     foreignObjectRendering: false,
                     logging: false,
                     width: card.offsetWidth,
-                    height: card.offsetHeight
+                    height: card.offsetHeight,
+                    x: 0,
+                    y: 0,
+                    scrollX: 0,
+                    scrollY: 0
                 });
                 
                 // 원래 스타일 복원
