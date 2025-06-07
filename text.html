@@ -406,7 +406,7 @@
             width: 100%;
             height: 120px;
             padding: 0;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.6) 50%, transparent 100%);
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.6) 30%, rgba(0, 0, 0, 0.3) 60%, transparent 100%);
             border-radius: 0 0 20px 20px;
             z-index: 3;
             display: flex;
@@ -571,10 +571,10 @@
         </div>
         
         <div class="control-panel">
-            <h1>✨카드 생성기✨</h1>
+            <h1>✨ 글귀 카드 생성기</h1>
             
             <div class="form-group">
-                <label for="quote">텍스트</label>
+                <label for="quote">글귀</label>
                 <textarea id="quote" placeholder='마음에 드는 글귀를 입력해주세요... "대사"는 자동으로 색이 변해요!'>인생은 가까이서 보면 비극이지만, 멀리서 보면 "희극"이다.</textarea>
             </div>
             
@@ -833,9 +833,9 @@
             
             // 파스텔 테마일 때 하단 오버레이를 밝게
             if (themeName === 'pastel') {
-                characterInfo.style.background = 'linear-gradient(to top, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 50%, transparent 100%)';
+                characterInfo.style.background = 'linear-gradient(to top, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 30%, rgba(255, 255, 255, 0.4) 60%, transparent 100%)';
             } else {
-                characterInfo.style.background = 'linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.6) 50%, transparent 100%)';
+                characterInfo.style.background = 'linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.6) 30%, rgba(0, 0, 0, 0.3) 60%, transparent 100%)';
             }
             
             currentTheme = themeName;
