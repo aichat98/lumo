@@ -13,98 +13,107 @@
         }
 
         body {
-            font-family: 'Courier New', monospace;
-            background: linear-gradient(45deg, #ff006e, #8338ec, #3a86ff);
-            background-size: 400% 400%;
-            animation: gradientShift 8s ease infinite;
-            min-height: 100vh;
-            color: white;
-            overflow-x: hidden;
-        }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f8f9fa;
+            color: #343a40;
+            line-height: 1.6;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
         }
 
         .title {
-            text-align: center;
-            font-size: 3rem;
-            margin-bottom: 30px;
-            text-shadow: 0 0 20px #ff006e, 0 0 40px #8338ec;
-            animation: glitchText 2s infinite;
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
         }
 
-        @keyframes glitchText {
-            0% { transform: translate(0); }
-            20% { transform: translate(-2px, 2px); }
-            40% { transform: translate(-2px, -2px); }
-            60% { transform: translate(2px, 2px); }
-            80% { transform: translate(2px, -2px); }
-            100% { transform: translate(0); }
+        .subtitle {
+            font-size: 1.1rem;
+            color: #6c757d;
         }
 
-        .upload-area {
-            border: 3px dashed #ff006e;
-            border-radius: 15px;
-            padding: 50px;
-            text-align: center;
+        .upload-section {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
             margin-bottom: 30px;
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+            border: 2px dashed #dee2e6;
+            text-align: center;
             transition: all 0.3s ease;
             cursor: pointer;
         }
 
-        .upload-area:hover {
-            border-color: #8338ec;
-            transform: scale(1.02);
-            box-shadow: 0 0 30px rgba(255, 0, 110, 0.5);
+        .upload-section:hover {
+            border-color: #6c5ce7;
+            background: #f8f9ff;
         }
 
-        .upload-area.dragover {
-            background: rgba(255, 0, 110, 0.2);
-            border-color: #3a86ff;
+        .upload-section.dragover {
+            border-color: #6c5ce7;
+            background: #f0f0ff;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: #6c757d;
         }
 
         .upload-text {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             margin-bottom: 20px;
+            color: #495057;
+        }
+
+        .upload-btn {
+            background: #6c5ce7;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            font-weight: 500;
+        }
+
+        .upload-btn:hover {
+            background: #5a4fcf;
         }
 
         .file-input {
             display: none;
         }
 
-        .upload-btn {
-            background: linear-gradient(45deg, #ff006e, #8338ec);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 1.2rem;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'Courier New', monospace;
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
         }
 
-        .upload-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        .canvas-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
         }
 
         .canvas-container {
             display: flex;
-            justify-content: center;
-            margin: 30px 0;
             gap: 20px;
+            justify-content: center;
+            margin-bottom: 30px;
         }
 
         .canvas-wrapper {
@@ -112,232 +121,292 @@
         }
 
         .canvas-label {
-            font-size: 1.2rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #6c757d;
             margin-bottom: 10px;
-            color: #ff006e;
-            text-shadow: 0 0 10px #ff006e;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         canvas {
-            border: 2px solid #ff006e;
-            border-radius: 10px;
-            max-width: 400px;
-            max-height: 400px;
-            box-shadow: 0 0 30px rgba(255, 0, 110, 0.3);
-        }
-
-        .effects-panel {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin: 30px 0;
-        }
-
-        .effect-group {
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 15px;
-            padding: 20px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 0, 110, 0.3);
-        }
-
-        .effect-group h3 {
-            color: #ff006e;
-            margin-bottom: 15px;
-            text-align: center;
-            font-size: 1.3rem;
-            text-shadow: 0 0 10px #ff006e;
-        }
-
-        .effect-btn {
-            width: 100%;
-            padding: 12px;
-            margin: 5px 0;
-            background: linear-gradient(45deg, #333, #555);
-            color: white;
-            border: 2px solid transparent;
+            border: 2px solid #e9ecef;
             border-radius: 8px;
-            cursor: pointer;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-        }
-
-        .effect-btn:hover {
-            background: linear-gradient(45deg, #ff006e, #8338ec);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 0, 110, 0.4);
-        }
-
-        .effect-btn.active {
-            background: linear-gradient(45deg, #ff006e, #8338ec);
-            border-color: #3a86ff;
-            box-shadow: 0 0 15px rgba(255, 0, 110, 0.6);
+            max-width: 300px;
+            max-height: 300px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
 
         .controls {
             display: flex;
+            gap: 12px;
             justify-content: center;
-            gap: 20px;
-            margin: 30px 0;
             flex-wrap: wrap;
         }
 
         .control-btn {
-            padding: 15px 30px;
-            font-size: 1.1rem;
+            padding: 12px 20px;
             border: none;
-            border-radius: 25px;
+            border-radius: 8px;
             cursor: pointer;
-            font-family: 'Courier New', monospace;
+            font-weight: 500;
             transition: all 0.3s ease;
+            font-size: 0.95rem;
         }
 
         .preview-btn {
-            background: linear-gradient(45deg, #3a86ff, #06ffa5);
+            background: #74b9ff;
             color: white;
+        }
+
+        .preview-btn:hover {
+            background: #0984e3;
         }
 
         .generate-btn {
-            background: linear-gradient(45deg, #ff006e, #ffbe0b);
+            background: #00b894;
             color: white;
+        }
+
+        .generate-btn:hover {
+            background: #00a085;
         }
 
         .clear-btn {
-            background: linear-gradient(45deg, #ff4081, #f44336);
+            background: #fd79a8;
             color: white;
         }
 
-        .control-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        .clear-btn:hover {
+            background: #e84393;
+        }
+
+        .effects-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+        }
+
+        .effects-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .effect-group {
+            margin-bottom: 25px;
+        }
+
+        .effect-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .effect-group h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #6c757d;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #e9ecef;
+            padding-bottom: 8px;
+        }
+
+        .effect-btn {
+            width: 100%;
+            padding: 10px 12px;
+            margin: 4px 0;
+            background: #f8f9fa;
+            color: #495057;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .effect-btn:hover {
+            background: #e9ecef;
+            border-color: #6c5ce7;
+        }
+
+        .effect-btn.active {
+            background: #6c5ce7;
+            color: white;
+            border-color: #6c5ce7;
+        }
+
+        .progress-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+            display: none;
         }
 
         .progress-bar {
             width: 100%;
-            height: 20px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            margin: 20px 0;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
             overflow: hidden;
-            display: none;
         }
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(45deg, #ff006e, #8338ec);
+            background: #6c5ce7;
             width: 0%;
             transition: width 0.3s ease;
-            border-radius: 10px;
+            border-radius: 4px;
         }
 
-        .result-area {
+        .progress-text {
             text-align: center;
-            margin: 30px 0;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .result-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+            text-align: center;
         }
 
         .download-link {
             display: inline-block;
-            padding: 15px 30px;
-            background: linear-gradient(45deg, #06ffa5, #3a86ff);
+            padding: 12px 24px;
+            background: #00b894;
             color: white;
             text-decoration: none;
-            border-radius: 25px;
-            font-family: 'Courier New', monospace;
-            font-size: 1.1rem;
-            margin: 10px;
-            transition: all 0.3s ease;
+            border-radius: 8px;
+            font-weight: 500;
+            margin: 15px 10px;
+            transition: background 0.3s ease;
         }
 
         .download-link:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 20px rgba(6, 255, 165, 0.5);
+            background: #00a085;
+        }
+
+        .result-gif {
+            max-width: 400px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
 
         @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
             .canvas-container {
                 flex-direction: column;
                 align-items: center;
             }
             
-            .effects-panel {
-                grid-template-columns: 1fr;
-            }
-            
             .title {
                 font-size: 2rem;
+            }
+            
+            .upload-section {
+                padding: 30px 20px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1 class="title">🌈 레트로 글리치 GIF 메이커 🌈</h1>
+        <div class="header">
+            <h1 class="title">레트로 글리치 GIF 메이커</h1>
+            <p class="subtitle">이미지에 레트로 효과를 적용해서 멋진 GIF를 만들어보세요</p>
+        </div>
         
-        <div class="upload-area" id="uploadArea">
-            <div class="upload-text">🖼️ 이미지를 드래그하거나 클릭해서 업로드하세요!</div>
+        <div class="upload-section" id="uploadArea">
+            <div class="upload-icon">📁</div>
+            <div class="upload-text">이미지를 드래그하거나 클릭해서 업로드하세요</div>
             <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
-                📁 파일 선택
+                파일 선택
             </button>
             <input type="file" id="fileInput" class="file-input" accept="image/*">
         </div>
 
-        <div class="canvas-container">
-            <div class="canvas-wrapper">
-                <div class="canvas-label">원본 이미지</div>
-                <canvas id="originalCanvas" width="400" height="400"></canvas>
+        <div class="main-content">
+            <div class="canvas-section">
+                <div class="canvas-container">
+                    <div class="canvas-wrapper">
+                        <div class="canvas-label">원본 이미지</div>
+                        <canvas id="originalCanvas" width="300" height="300"></canvas>
+                    </div>
+                    <div class="canvas-wrapper">
+                        <div class="canvas-label">미리보기</div>
+                        <canvas id="previewCanvas" width="300" height="300"></canvas>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button class="control-btn preview-btn" onclick="previewEffects()">미리보기</button>
+                    <button class="control-btn generate-btn" onclick="generateGIF()">GIF 생성</button>
+                    <button class="control-btn clear-btn" onclick="clearEffects()">초기화</button>
+                </div>
             </div>
-            <div class="canvas-wrapper">
-                <div class="canvas-label">미리보기</div>
-                <canvas id="previewCanvas" width="400" height="400"></canvas>
+
+            <div class="effects-panel">
+                <div class="effects-title">효과 선택</div>
+                
+                <div class="effect-group">
+                    <h4>글리치 효과</h4>
+                    <button class="effect-btn" data-effect="rgbSplit">RGB 채널 분리</button>
+                    <button class="effect-btn" data-effect="digitalNoise">디지털 노이즈</button>
+                    <button class="effect-btn" data-effect="scanlines">스캔라인</button>
+                    <button class="effect-btn" data-effect="pixelShift">픽셀 시프트</button>
+                </div>
+
+                <div class="effect-group">
+                    <h4>VHS 스타일</h4>
+                    <button class="effect-btn" data-effect="vhsBlur">VHS 블러</button>
+                    <button class="effect-btn" data-effect="tracking">트래킹 노이즈</button>
+                    <button class="effect-btn" data-effect="vintage">빈티지 색감</button>
+                    <button class="effect-btn" data-effect="chromatic">색수차</button>
+                </div>
+
+                <div class="effect-group">
+                    <h4>왜곡 효과</h4>
+                    <button class="effect-btn" data-effect="wave">물결 왜곡</button>
+                    <button class="effect-btn" data-effect="fisheye">어안렌즈</button>
+                    <button class="effect-btn" data-effect="stretch">스트레치</button>
+                    <button class="effect-btn" data-effect="ripple">파문 효과</button>
+                </div>
+
+                <div class="effect-group">
+                    <h4>특수 효과</h4>
+                    <button class="effect-btn" data-effect="neon">네온 글로우</button>
+                    <button class="effect-btn" data-effect="hologram">홀로그램</button>
+                    <button class="effect-btn" data-effect="rainbow">무지개 글리치</button>
+                    <button class="effect-btn" data-effect="dotMatrix">도트 매트릭스</button>
+                </div>
             </div>
         </div>
 
-        <div class="effects-panel">
-            <div class="effect-group">
-                <h3>🎨 글리치 효과</h3>
-                <button class="effect-btn" data-effect="rgbSplit">RGB 채널 분리</button>
-                <button class="effect-btn" data-effect="digitalNoise">디지털 노이즈</button>
-                <button class="effect-btn" data-effect="scanlines">스캔라인</button>
-                <button class="effect-btn" data-effect="pixelShift">픽셀 시프트</button>
-            </div>
-
-            <div class="effect-group">
-                <h3>📼 VHS 스타일</h3>
-                <button class="effect-btn" data-effect="vhsBlur">VHS 블러</button>
-                <button class="effect-btn" data-effect="tracking">트래킹 노이즈</button>
-                <button class="effect-btn" data-effect="vintage">빈티지 색감</button>
-                <button class="effect-btn" data-effect="chromatic">색수차</button>
-            </div>
-
-            <div class="effect-group">
-                <h3>🌊 왜곡 효과</h3>
-                <button class="effect-btn" data-effect="wave">물결 왜곡</button>
-                <button class="effect-btn" data-effect="fisheye">어안렌즈</button>
-                <button class="effect-btn" data-effect="stretch">스트레치</button>
-                <button class="effect-btn" data-effect="ripple">파문 효과</button>
-            </div>
-
-            <div class="effect-group">
-                <h3>✨ 네온 & 홀로그램</h3>
-                <button class="effect-btn" data-effect="neon">네온 글로우</button>
-                <button class="effect-btn" data-effect="hologram">홀로그램</button>
-                <button class="effect-btn" data-effect="rainbow">무지개 글리치</button>
-                <button class="effect-btn" data-effect="dotMatrix">도트 매트릭스</button>
+        <div class="progress-section" id="progressSection">
+            <div class="progress-text">GIF 생성 중...</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
             </div>
         </div>
 
-        <div class="controls">
-            <button class="control-btn preview-btn" onclick="previewEffects()">🎬 미리보기</button>
-            <button class="control-btn generate-btn" onclick="generateGIF()">🎁 GIF 생성</button>
-            <button class="control-btn clear-btn" onclick="clearEffects()">🗑️ 초기화</button>
+        <div class="result-section" id="resultSection" style="display: none;">
         </div>
-
-        <div class="progress-bar" id="progressBar">
-            <div class="progress-fill" id="progressFill"></div>
-        </div>
-
-        <div class="result-area" id="resultArea"></div>
     </div>
 
     <script>
@@ -397,7 +466,7 @@
             const ctx = originalCtx;
             
             // 캔버스 크기 조정
-            const maxSize = 400;
+            const maxSize = 300;
             let { width, height } = originalImage;
             
             if (width > height) {
@@ -450,18 +519,16 @@
                 for (let x = 0; x < width; x++) {
                     const i = (y * width + x) * 4;
                     
-                    // R 채널 시프트
                     const rShift = Math.floor(intensity * Math.sin(frameCount * 0.1));
                     const rIndex = (y * width + Math.max(0, Math.min(width - 1, x + rShift))) * 4;
                     
-                    // B 채널 시프트
                     const bShift = Math.floor(intensity * Math.cos(frameCount * 0.1));
                     const bIndex = (y * width + Math.max(0, Math.min(width - 1, x + bShift))) * 4;
                     
-                    newData[i] = data[rIndex]; // R
-                    newData[i + 1] = data[i + 1]; // G
-                    newData[i + 2] = data[bIndex + 2]; // B
-                    newData[i + 3] = data[i + 3]; // A
+                    newData[i] = data[rIndex];
+                    newData[i + 1] = data[i + 1];
+                    newData[i + 2] = data[bIndex + 2];
+                    newData[i + 3] = data[i + 3];
                 }
             }
             
@@ -538,7 +605,6 @@
                     let r = 0, g = 0, b = 0;
                     let count = 0;
                     
-                    // 수평 블러
                     for (let dx = -2; dx <= 2; dx++) {
                         const nx = Math.max(0, Math.min(width - 1, x + dx));
                         const ni = (y * width + nx) * 4;
@@ -564,7 +630,6 @@
             const height = imageData.height;
             const newData = new Uint8ClampedArray(data);
             
-            // 랜덤 수직선 노이즈
             for (let i = 0; i < 5; i++) {
                 const x = Math.floor(Math.random() * width);
                 for (let y = 0; y < height; y++) {
@@ -587,7 +652,6 @@
                 let g = data[i + 1];
                 let b = data[i + 2];
                 
-                // 세피아 효과
                 newData[i] = Math.min(255, (r * 0.393) + (g * 0.769) + (b * 0.189));
                 newData[i + 1] = Math.min(255, (r * 0.349) + (g * 0.686) + (b * 0.168));
                 newData[i + 2] = Math.min(255, (r * 0.272) + (g * 0.534) + (b * 0.131));
@@ -838,7 +902,6 @@
                 for (let x = 0; x < width; x += dotSize) {
                     let avgR = 0, avgG = 0, avgB = 0, count = 0;
                     
-                    // 도트 영역의 평균 색상 계산
                     for (let dy = 0; dy < dotSize && y + dy < height; dy++) {
                         for (let dx = 0; dx < dotSize && x + dx < width; dx++) {
                             const i = ((y + dy) * width + (x + dx)) * 4;
@@ -857,7 +920,6 @@
                         const brightness = (avgR + avgG + avgB) / 3;
                         const dotRadius = (brightness / 255) * (dotSize / 2);
                         
-                        // 도트 그리기
                         for (let dy = 0; dy < dotSize && y + dy < height; dy++) {
                             for (let dx = 0; dx < dotSize && x + dx < width; dx++) {
                                 const distance = Math.sqrt((dx - dotSize/2) ** 2 + (dy - dotSize/2) ** 2);
@@ -979,63 +1041,123 @@
                 return;
             }
             
-            const progressBar = document.getElementById('progressBar');
+            const progressSection = document.getElementById('progressSection');
             const progressFill = document.getElementById('progressFill');
+            const resultSection = document.getElementById('resultSection');
             
-            progressBar.style.display = 'block';
+            progressSection.style.display = 'block';
+            resultSection.style.display = 'none';
             progressFill.style.width = '0%';
+            
+            // GIF 라이브러리 확인
+            if (typeof GIF === 'undefined') {
+                console.error('GIF 라이브러리가 로드되지 않았습니다.');
+                alert('GIF 라이브러리 로딩 중입니다. 잠시 후 다시 시도해주세요.');
+                progressSection.style.display = 'none';
+                return;
+            }
+            
+            console.log('GIF 생성 시작...');
             
             const gif = new GIF({
                 workers: 2,
                 quality: 10,
                 width: previewCanvas.width,
                 height: previewCanvas.height,
-                workerScript: 'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js'
+                workerScript: 'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js',
+                debug: true
             });
             
-            const totalFrames = 30;
+            const totalFrames = 20; // 프레임 수 줄여서 안정성 향상
             let currentFrame = 0;
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = previewCanvas.width;
+            tempCanvas.height = previewCanvas.height;
             
             function addFrame() {
                 if (currentFrame >= totalFrames) {
+                    console.log('모든 프레임 추가 완료, GIF 렌더링 시작...');
                     gif.render();
                     return;
                 }
                 
-                frameCount = currentFrame;
+                frameCount = currentFrame * 2; // 더 뚜렷한 애니메이션 효과
                 
-                previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
-                previewCtx.drawImage(originalImage, 0, 0, previewCanvas.width, previewCanvas.height);
+                // 임시 캔버스에 그리기
+                tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
+                tempCtx.drawImage(originalImage, 0, 0, tempCanvas.width, tempCanvas.height);
                 
-                let imageData = previewCtx.getImageData(0, 0, previewCanvas.width, previewCanvas.height);
+                let imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
                 imageData = applyEffects(imageData);
-                previewCtx.putImageData(imageData, 0, 0);
+                tempCtx.putImageData(imageData, 0, 0);
                 
-                gif.addFrame(previewCanvas, { delay: 100 });
+                // GIF에 프레임 추가
+                gif.addFrame(tempCtx, { 
+                    delay: 150, // 조금 더 긴 딜레이
+                    copy: true 
+                });
                 
                 currentFrame++;
-                progressFill.style.width = ((currentFrame / totalFrames) * 100) + '%';
+                const progress = (currentFrame / totalFrames) * 100;
+                progressFill.style.width = progress + '%';
                 
-                setTimeout(addFrame, 10);
+                console.log(`프레임 ${currentFrame}/${totalFrames} 추가됨`);
+                
+                // 다음 프레임을 비동기로 처리
+                setTimeout(addFrame, 50);
             }
             
-            gif.on('finished', function(blob) {
-                progressBar.style.display = 'none';
-                
-                const url = URL.createObjectURL(blob);
-                const resultArea = document.getElementById('resultArea');
-                
-                resultArea.innerHTML = `
-                    <h3 style="color: #ff006e; margin-bottom: 20px;">🎉 GIF 생성 완료!</h3>
-                    <img src="${url}" style="max-width: 400px; border: 2px solid #ff006e; border-radius: 10px; margin: 20px;">
-                    <br>
-                    <a href="${url}" download="retro-glitch.gif" class="download-link">
-                        💾 GIF 다운로드
-                    </a>
-                `;
+            gif.on('start', function() {
+                console.log('GIF 렌더링 시작됨');
             });
             
+            gif.on('progress', function(p) {
+                console.log('GIF 렌더링 진행률:', Math.round(p * 100) + '%');
+            });
+            
+            gif.on('finished', function(blob) {
+                console.log('GIF 생성 완료!', blob);
+                progressSection.style.display = 'none';
+                
+                try {
+                    const url = URL.createObjectURL(blob);
+                    resultSection.style.display = 'block';
+                    
+                    resultSection.innerHTML = `
+                        <h3 style="color: #2c3e50; margin-bottom: 20px;">🎉 GIF 생성 완료!</h3>
+                        <p style="color: #6c757d; margin-bottom: 15px;">파일 크기: ${(blob.size / 1024 / 1024).toFixed(2)} MB</p>
+                        <img src="${url}" class="result-gif" alt="생성된 GIF">
+                        <br>
+                        <a href="${url}" download="retro-glitch-${Date.now()}.gif" class="download-link">
+                            💾 GIF 다운로드
+                        </a>
+                        <button onclick="copyToClipboard('${url}')" class="download-link" style="background: #74b9ff; margin-left: 10px;">
+                            📋 링크 복사
+                        </button>
+                    `;
+                } catch (error) {
+                    console.error('결과 표시 중 오류:', error);
+                    alert('GIF는 생성되었지만 표시 중 오류가 발생했습니다.');
+                }
+            });
+            
+            gif.on('abort', function() {
+                console.log('GIF 생성이 중단됨');
+                progressSection.style.display = 'none';
+                alert('GIF 생성이 중단되었습니다.');
+            });
+            
+            // 프레임 추가 시작
             addFrame();
+        }
+        
+        function copyToClipboard(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                alert('링크가 클립보드에 복사되었습니다!');
+            }).catch(() => {
+                alert('클립보드 복사에 실패했습니다.');
+            });
         }
 
         function clearEffects() {
@@ -1054,8 +1176,8 @@
                 previewCtx.drawImage(originalImage, 0, 0, previewCanvas.width, previewCanvas.height);
             }
             
-            document.getElementById('progressBar').style.display = 'none';
-            document.getElementById('resultArea').innerHTML = '';
+            document.getElementById('progressSection').style.display = 'none';
+            document.getElementById('resultSection').style.display = 'none';
         }
     </script>
 </body>
