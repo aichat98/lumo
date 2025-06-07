@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>캐릭터 소개 & 프롬프트 생성기</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            background: #1a1a1a;
+            color: #fff;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+        
+        .preview-panel {
+            flex: 1;
+            background: #2a2a2a;
+            padding: 20px;
+            overflow-y: auto;
+            border-right: 1px solid #444;
+        }
+        
+        .editor-panel {
+            flex: 1;
+            background: #1e1e1e;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .panel-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #fff;
+            text-align: center;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #444;
+        }
+
+        /* 편집기 헤더 */
+        .editor-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+
+        .editor-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        /* 토글 스위치 스타일 */
+        .mode-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #932;
+            transition: .4s;
+            border-radius: 30px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #667eea;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(30px);
+        }
+
+        .toggle-label {
+            font-size: 14px;
+            color: #ccc;
+            font-weight: bold;
+        }
+
+        .toggle-label.active {
+            color: #fff;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #ccc;
+            font-size: 14px;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 8px 12px;
+            background: #333;
+            border: 1px solid #555;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 13px;
+        }
+        
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+            line-height: 1.5;
+        }
+        
+        .form-group textarea.large {
+            min-height: 200px;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #932;
+            box-shadow: 0 0 0 2px rgba(153, 51, 34, 0.2);
+        }
+        
+        .tags-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .tag {
+            background: #932;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .tag-remove {
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .add-tag-input {
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .color-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .color-input input[type="color"] {
+            width: 40px;
+            height: 30px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .profile-preview {
+            max-width: 480px;
+            margin: 0 auto;
+        }
+        
+        .copy-button {
+            background: #932;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 20px;
+            width: 100%;
+        }
+        
+        .copy-button:hover {
+            background: #a43;
+        }
+
+        .copy-button.prompt {
+            background: #667eea;
+        }
+
+        .copy-button.prompt:hover {
+            background: #5a6fd8;
+        }
+        
+        .presets {
+            margin-bottom: 20px;
+        }
+        
+        .preset-button {
+            background: #444;
+            color: #fff;
+            border: 1px solid #666;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .preset-button:hover {
+            background: #555;
+        }
+        
+        .section-divider {
+            margin: 20px 0;
+            border-top: 1px solid #444;
+            padding-top: 15px;
+        }
+        
+        /* 모바일 탭 버튼 */
+        .mobile-tabs {
+            display: none;
+            background: #1e1e1e;
+            padding: 10px;
+            border-bottom: 1px solid #444;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .tab-button {
+            background: #333;
+            color: #ccc;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+        
+        .tab-button.active {
+            background: #932;
+            color: #fff;
+        }
+        
+        .tab-button:hover {
+            background: #555;
+        }
+        
+        .tab-button.active:hover {
+            background: #a43;
+        }
+        
+        /* 글자수 카운터 */
+        .char-counter {
+            text-align: right;
+            color: #888;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+        
+        .char-counter.warning {
+            color: #ff6b6b;
+        }
+
+        /* 꾸밈 버튼들 */
+        .format-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .format-btn {
+            background: #444;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+        
+        .format-btn:hover {
+            background: #555;
+        }
+        
+        .quick-insert {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .quick-btn {
+            background: #932;
+            color: #fff;
+            border: none;
+            padding: 5px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+        }
+        
+        .quick-btn:hover {
+            background: #a43;
+        }
+
+        /* 프롬프트 모드에서 숨길 요소들 */
+        .profile-only {
+            display: block;
+        }
+
+        .prompt-only {
+            display: none;
+        }
+
+        body.prompt-mode .profile-only {
+            display: none;
+        }
+
+        body.prompt-mode .prompt-only {
+            display: block;
+        }
+
+        /* 프롬프트 모드에서 미리보기 */
+        .character-image-only {
+            text-align: center;
+            padding: 0;
+            height: calc(100vh - 140px);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: relative;
+        }
+
+        .character-image-only::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.3);
+            filter: blur(1px);
+        }
+
+        .character-image-only .no-image {
+            color: #888;
+            font-size: 16px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            body {
+                overflow: auto;
+            }
+            
+            .mobile-tabs {
+                display: block !important;
+            }
+            
+            .container {
+                flex-direction: column;
+                height: auto;
+                min-height: 100vh;
+            }
+            
+            .preview-panel {
+                border-right: none;
+                padding: 15px;
+                display: none !important;
+            }
+            
+            .preview-panel.show {
+                display: block !important;
+            }
+            
+            .editor-panel {
+                padding: 15px;
+                display: block !important;
+            }
+            
+            .editor-panel.hide {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 모바일 탭 전환 버튼 -->
+    <div class="mobile-tabs">
+        <button class="tab-button active" onclick="switchTab('editor')">편집</button>
+        <button class="tab-button" onclick="switchTab('preview')">미리보기</button>
+    </div>
+    
+    <div class="container">
+        <div class="preview-panel" id="previewPanel">
+            <div class="panel-title">미리보기</div>
+            
+            <!-- 소개란 미리보기 -->
+            <div id="profilePreview" class="profile-preview profile-only">
+                <!-- 프로필 미리보기가 여기에 표시됩니다 -->
+            </div>
+
+            <!-- 프롬프트 모드에서 캐릭터 이미지 + 정보 -->
+            <div id="characterImagePreview" class="character-image-only prompt-only">
+                <div class="no-image">캐릭터 이미지를 입력하면 미리보기가 표시됩니다</div>
+            </div>
+        </div>
+        
+        <div class="editor-panel" id="editorPanel">
+            <!-- 편집기 헤더 (스위치만) -->
+            <div class="editor-header">
+                <div class="mode-toggle">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="modeToggle" onchange="toggleMode()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- 프리셋 로드 -->
+            <div class="presets profile-only">
+                <div class="form-group">
+                    <label>프리셋 불러오기</label>
+                    <div>
+                        <button class="preset-button" onclick="loadPreset('yongsu')">서용수 예시</button>
+                        <button class="preset-button" onclick="clearAll()">초기화</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 프롬프트 전용 프리셋 -->
+            <div class="presets prompt-only">
+                <div class="form-group">
+                    <label>프리셋 불러오기</label>
+                    <div>
+                        <button class="preset-button" onclick="loadPreset('yongsu')">서용수 예시</button>
+                        <button class="preset-button" onclick="loadPreset('blank')">빈 템플릿</button>
+                        <button class="preset-button" onclick="clearAll()">초기화</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section-divider"></div>
+
+            <!-- 공통 설정 -->
+            <div class="form-group">
+                <label>캐릭터 이름</label>
+                <input type="text" id="characterName" placeholder="서용수" oninput="updatePreview(); updatePromptPreview()">
+            </div>
+
+            <!-- 소개란 모드 -->
+            <div class="profile-only">
+                <div class="form-group">
+                    <label>배경 이미지 URL</label>
+                    <input type="text" id="bgImage" placeholder="https://i.imgur.com/example.jpg" oninput="updatePreview()">
+                </div>
+                
+                <div class="form-group">
+                    <label>태그 색상</label>
+                    <div class="color-input">
+                        <input type="color" id="tagColor" value="#993322" oninput="updatePreview()">
+                        <input type="text" id="tagColorText" value="#932" oninput="updatePreview()">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>경고 태그들</label>
+                    <div class="tags-input" id="tagsContainer">
+                        <input type="text" class="add-tag-input" placeholder="태그 추가 후 Enter" onkeypress="addTag(event)">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>캐릭터 설명</label>
+                    
+                    <!-- 빠른 삽입 버튼 -->
+                    <div class="quick-insert">
+                        <button class="quick-btn" onclick="insertText('{{char}}')">{{char}}</button>
+                        <button class="quick-btn" onclick="insertText('{{user}}')">{{user}}</button>
+                    </div>
+                    
+                    <!-- 꾸밈 버튼들 -->
+                    <div class="format-buttons">
+                        <button class="format-btn" onclick="wrapSelected('*', '*')" title="블러">*블러*</button>
+                        <button class="format-btn" onclick="wrapSelected('**', '**')" title="굵게">**굵게**</button>
+                        <button class="format-btn" onclick="wrapSelected('~~', '~~')" title="취소선">~~취소선~~</button>
+                        <button class="format-btn" onclick="wrapSelected('__', '__')" title="밑줄">__밑줄__</button>
+                        <button class="format-btn" onclick="wrapSelected('^^', '^^')" title="형광펜">^^형광펜^^</button>
+                        <button class="format-btn" onclick="wrapSelected('##', '##')" title="그림자">##그림자##</button>
+                        <button class="format-btn" onclick="wrapSelected('%%', '%%')" title="크게">%%크게%%</button>
+                        <button class="format-btn" onclick="wrapSelected('@@', '@@')" title="작게">@@작게@@</button>
+                    </div>
+                    
+                    <!-- 이미지 & 레이아웃 버튼들 -->
+                    <div class="format-buttons">
+                        <button class="format-btn" onclick="insertImage('small')" title="작은 이미지">🖼️ 작게</button>
+                        <button class="format-btn" onclick="insertImage('medium')" title="보통 이미지">🖼️ 보통</button>
+                        <button class="format-btn" onclick="insertImage('large')" title="큰 이미지">🖼️ 크게</button>
+                        <button class="format-btn" onclick="insertDivider()" title="구분선">─── 구분선</button>
+                        <button class="format-btn" onclick="insertBox()" title="박스">📦 박스</button>
+                        <button class="format-btn" onclick="insertColumns()" title="2단 칸">📋 2칸</button>
+                    </div>
+                    
+                    <textarea id="description" placeholder="캐릭터 설명을 입력하세요..." oninput="updatePreview(); updateCharCount()"></textarea>
+                    <div class="char-counter" id="charCounter">0 자</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>글꼴 크기</label>
+                    <select id="fontSize" onchange="updatePreview()">
+                        <option value="12px">작게 (12px)</option>
+                        <option value="13px" selected>보통 (13px)</option>
+                        <option value="14px">크게 (14px)</option>
+                        <option value="15px">매우 크게 (15px)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>최소 높이</label>
+                    <select id="minHeight" onchange="updatePreview()">
+                        <option value="300px">작게 (300px)</option>
+                        <option value="380px" selected>보통 (380px)</option>
+                        <option value="450px">크게 (450px)</option>
+                        <option value="500px">매우 크게 (500px)</option>
+                    </select>
+                </div>
+
+                <button class="copy-button" onclick="copyProfileToClipboard()">소개란 HTML 복사</button>
+            </div>
+
+            <!-- 프롬프트 모드 -->
+            <div class="prompt-only">
+                <div class="form-group">
+                    <label>캐릭터 이미지 URL</label>
+                    <input type="text" id="characterImage" placeholder="https://i.imgur.com/example.jpg" oninput="updatePromptPreview()">
+                </div>
+
+                <div class="form-group">
+                    <label>기본 정보</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <input type="text" id="age" placeholder="나이 (42세)" oninput="updatePromptPreview()">
+                        <input type="text" id="job" placeholder="직업 (회사원)" oninput="updatePromptPreview()">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>핵심 특성</label>
+                    <input type="text" id="coreTraits" placeholder="말과 행동이 다른 츤데레 아저씨" oninput="updatePromptPreview()">
+                </div>
+
+                <div class="form-group">
+                    <label>필수 출력 형식</label>
+                    <input type="text" id="outputFormat" placeholder="[장소|요일|날씨|💭속마음]" oninput="updatePromptPreview()">
+                </div>
+
+                <div class="form-group">
+                    <label>캐릭터 상세 설정</label>
+                    
+                    <!-- 빠른 삽입 버튼 -->
+                    <div class="quick-insert">
+                        <button class="quick-btn" onclick="insertPromptText('{{char}}')">{{char}}</button>
+                        <button class="quick-btn" onclick="insertPromptText('{{user}}')">{{user}}</button>
+                        <button class="quick-btn" onclick="wrapPromptSelected('**', '**')">굵게</button>
+                    </div>
+                    
+                    <textarea id="characterDetails" class="large" placeholder="성격, 말투, 행동 패턴 등..." oninput="updatePromptPreview(); updateCharacterCount()"></textarea>
+                    <div class="char-counter" id="characterCounter">0 자</div>
+                </div>
+
+                <div class="form-group">
+                    <label>세계관 설정</label>
+                    
+                    <!-- 빠른 삽입 버튼 -->
+                    <div class="quick-insert">
+                        <button class="quick-btn" onclick="insertWorldText('{{char}}')">{{char}}</button>
+                        <button class="quick-btn" onclick="insertWorldText('{{user}}')">{{user}}</button>
+                        <button class="quick-btn" onclick="wrapWorldSelected('**', '**')">굵게</button>
+                    </div>
+                    
+                    <textarea id="worldSettings" class="large" placeholder="세계관, 배경, 상황 등..." oninput="updatePromptPreview(); updateWorldCount()"></textarea>
+                    <div class="char-counter" id="worldCounter">0 자</div>
+                </div>
+
+                <button class="copy-button prompt" onclick="copyPromptToClipboard()">프롬프트 복사</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let tags = [];
+        let isPromptMode = false;
+        
+        function toggleMode() {
+            const modeToggle = document.getElementById('modeToggle');
+            const previewPanel = document.getElementById('previewPanel');
+            
+            isPromptMode = modeToggle.checked;
+            
+            if (isPromptMode) {
+                document.body.classList.add('prompt-mode');
+                updatePromptPreview();
+            } else {
+                document.body.classList.remove('prompt-mode');
+                updatePreview();
+            }
+        }
+
+        function processText(text) {
+            return text
+                .replace(/{{char}}/g, '<strong>{{char}}</strong>')
+                .replace(/{{user}}/g, '<strong>{{user}}</strong>')
+                .replace(/\*([^*]+)\*/g, '<span style="filter: blur(2px);">$1</span>')
+                .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+                .replace(/~~([^~]+)~~/g, '<span style="text-decoration: line-through;">$1</span>')
+                .replace(/__([^_]+)__/g, '<span style="text-decoration: underline;">$1</span>')
+                .replace(/\^\^([^^]+)\^\^/g, '<span style="background: #ffeb3b; color: #000; padding: 2px;">$1</span>')
+                .replace(/##([^#]+)##/g, '<span style="text-shadow: 2px 2px 4px #000;">$1</span>')
+                .replace(/%%([^%]+)%%/g, '<span style="font-size: 1.2em; font-weight: bold;">$1</span>')
+                .replace(/@@([^@]+)@@/g, '<span style="font-size: 0.8em;">$1</span>')
+                // 이미지 처리
+                .replace(/\[IMG-SMALL:(.*?)\]/g, '<img src="$1" style="width: 80px; height: auto; display: block; margin: 10px auto; border-radius: 5px;">')
+                .replace(/\[IMG-MEDIUM:(.*?)\]/g, '<img src="$1" style="width: 150px; height: auto; display: block; margin: 10px auto; border-radius: 5px;">')
+                .replace(/\[IMG-LARGE:(.*?)\]/g, '<img src="$1" style="width: 250px; height: auto; display: block; margin: 10px auto; border-radius: 5px;">')
+                // 레이아웃 처리
+                .replace(/\[DIVIDER\]/g, '<div style="width: 100%; height: 1px; background: rgba(255,255,255,0.3); margin: 15px 0;"></div>')
+                .replace(/\[BOX:(.*?)\]/g, '<div style="border: 1px solid rgba(255,255,255,0.3); padding: 10px; margin: 10px 0; border-radius: 5px; background: rgba(0,0,0,0.2);">$1</div>')
+                .replace(/\[COL2:(.*?)\|(.*?)\]/g, '<div style="display: flex; gap: 10px; margin: 10px 0;"><div style="flex: 1; padding: 8px; border: 1px solid rgba(255,255,255,0.2); border-radius: 3px;">$1</div><div style="flex: 1; padding: 8px; border: 1px solid rgba(255,255,255,0.2); border-radius: 3px;">$2</div></div>')
+                .replace(/\n/g, '<br>');
+        }
+        
+        function addTag(event) {
+            if (event.key === 'Enter') {
+                const input = event.target;
+                const tagText = input.value.trim();
+                if (tagText && !tags.includes(tagText)) {
+                    tags.push(tagText);
+                    input.value = '';
+                    renderTags();
+                    updatePreview();
+                    updateCharCount();
+                }
+            }
+        }
+        
+        function removeTag(tagText) {
+            tags = tags.filter(tag => tag !== tagText);
+            renderTags();
+            updatePreview();
+            updateCharCount();
+        }
+        
+        function renderTags() {
+            const container = document.getElementById('tagsContainer');
+            const input = container.querySelector('.add-tag-input');
+            
+            container.innerHTML = '';
+            
+            tags.forEach(tag => {
+                const tagElement = document.createElement('div');
+                tagElement.className = 'tag';
+                tagElement.innerHTML = `
+                    <span>⚠️${tag}</span>
+                    <span class="tag-remove" onclick="removeTag('${tag}')">×</span>
+                `;
+                container.appendChild(tagElement);
+            });
+            
+            container.appendChild(input);
+        }
+        
+        function updatePreview() {
+            if (isPromptMode) return;
+            
+            const bgImage = document.getElementById('bgImage').value;
+            const tagColor = document.getElementById('tagColorText').value || '#932';
+            const description = document.getElementById('description').value;
+            const fontSize = document.getElementById('fontSize').value;
+            const minHeight = document.getElementById('minHeight').value;
+            
+            if (!bgImage || !description) {
+                document.getElementById('profilePreview').innerHTML = '<div style="text-align:center;color:#888;padding:50px;">프로필 내용을 입력하면 미리보기가 표시됩니다</div>';
+                return;
+            }
+            
+            const tagsHtml = tags.length > 0 ? '⚠️' + tags.join(' · ') : '⚠️태그없음';
+            const processedDesc = processText(description);
+            
+            const html = `
+                <div style="width:100%;max-width:480px;margin:0 auto;background:url('${bgImage}')center/cover;color:#fff;padding:25px;box-sizing:border-box;position:relative;min-height:${minHeight}">
+                    <div style="text-align:center;margin-bottom:25px">
+                        <span style="background:${tagColor};padding:6px 6px;border-radius:9px;font-weight:500;color:#fff">${tagsHtml}</span>
+                        <div style="width:80px;height:1px;background:${tagColor};margin:12px auto"></div>
+                    </div>
+                    <div style="font-size:${fontSize};line-height:1.55;text-shadow:1px 1px 3px #000d">
+                        ${processedDesc}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('profilePreview').innerHTML = html;
+        }
+
+        function updatePromptPreview() {
+            if (!isPromptMode) return;
+            
+            const characterImage = document.getElementById('characterImage').value;
+            const characterName = document.getElementById('characterName').value || '캐릭터명';
+            const age = document.getElementById('age').value;
+            const job = document.getElementById('job').value;
+            const previewDiv = document.getElementById('characterImagePreview');
+            
+            if (characterImage) {
+                previewDiv.style.backgroundImage = `url('${characterImage}')`;
+                
+                const details = [];
+                if (age) details.push(age);
+                if (job) details.push(job);
+                const detailsText = details.join(' | ') || '정보 없음';
+                
+                previewDiv.innerHTML = `
+                    <div class="character-info">
+                        <div class="character-name">${characterName}</div>
+                        <div class="character-details">${detailsText}</div>
+                    </div>
+                `;
+            } else {
+                previewDiv.style.backgroundImage = '';
+                previewDiv.innerHTML = '<div class="no-image">캐릭터 이미지를 입력하면 미리보기가 표시됩니다</div>';
+            }
+        }
+        
+        function updateCharCount() {
+            const bgImage = document.getElementById('bgImage').value || 'https://i.imgur.com/oFaEgi7.png';
+            const tagColor = document.getElementById('tagColorText').value || '#932';
+            const description = document.getElementById('description').value || '';
+            const fontSize = document.getElementById('fontSize').value;
+            const minHeight = document.getElementById('minHeight').value;
+            
+            const tagsHtml = tags.length > 0 ? '⚠️' + tags.join(' · ') : '⚠️태그없음';
+            const processedDesc = description.replace(/\n/g, '<br>');
+            
+            const fullHtml = `<div style="width:100%;max-width:480px;margin:0 auto;background:url('${bgImage}')center/cover;color:#fff;padding:25px;box-sizing:border-box;position:relative;min-height:${minHeight}">
+<div style="text-align:center;margin-bottom:25px">
+  <span style="background:${tagColor};padding:6px 6px;border-radius:9px;font-weight:500;color:#fff">${tagsHtml}</span>
+  <div style="width:80px;height:1px;background:${tagColor};margin:12px auto"></div></div>
+<div style="font-size:${fontSize};line-height:1.55;text-shadow:1px 1px 3px #000d">
+${processedDesc}
+</div></div>`;
+            
+            const charCount = fullHtml.length;
+            const counter = document.getElementById('charCounter');
+            
+            counter.textContent = `${charCount} 자`;
+            
+            if (charCount >= 1000) {
+                counter.classList.add('warning');
+            } else {
+                counter.classList.remove('warning');
+            }
+        }
+
+        function updateCharacterCount() {
+            const text = document.getElementById('characterDetails').value;
+            const counter = document.getElementById('characterCounter');
+            const count = text.length;
+            
+            counter.textContent = `${count} 자`;
+            
+            if (count > 4000) {
+                counter.classList.add('warning');
+            } else {
+                counter.classList.remove('warning');
+            }
+        }
+
+        function updateWorldCount() {
+            const text = document.getElementById('worldSettings').value;
+            const counter = document.getElementById('worldCounter');
+            const count = text.length;
+            
+            counter.textContent = `${count} 자`;
+            
+            if (count > 2000) {
+                counter.classList.add('warning');
+            } else {
+                counter.classList.remove('warning');
+            }
+        }
+
+        function insertTextToTextarea(textarea, text) {
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const value = textarea.value;
+            
+            textarea.value = value.substring(0, start) + text + value.substring(end);
+            textarea.focus();
+            textarea.setSelectionRange(start + text.length, start + text.length);
+            
+            updatePreview();
+            updatePromptPreview();
+            updateCharCount();
+            updateCharacterCount();
+            updateWorldCount();
+        }
+
+        function wrapSelectedInTextarea(textarea, prefix, suffix) {
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const value = textarea.value;
+            const selectedText = value.substring(start, end);
+            
+            if (selectedText) {
+                const replacement = prefix + selectedText + suffix;
+                textarea.value = value.substring(0, start) + replacement + value.substring(end);
+                textarea.focus();
+                textarea.setSelectionRange(start + prefix.length, start + prefix.length + selectedText.length);
+            } else {
+                insertTextToTextarea(textarea, prefix + suffix);
+                textarea.setSelectionRange(start + prefix.length, start + prefix.length);
+            }
+        }
+
+        function insertText(text) {
+            const textarea = document.getElementById('description');
+            insertTextToTextarea(textarea, text);
+        }
+
+        function wrapSelected(prefix, suffix) {
+            const textarea = document.getElementById('description');
+            wrapSelectedInTextarea(textarea, prefix, suffix);
+        }
+
+        function insertPromptText(text) {
+            const textarea = document.getElementById('characterDetails');
+            insertTextToTextarea(textarea, text);
+        }
+
+        function insertWorldText(text) {
+            const textarea = document.getElementById('worldSettings');
+            insertTextToTextarea(textarea, text);
+        }
+
+        function wrapPromptSelected(prefix, suffix) {
+            const textarea = document.getElementById('characterDetails');
+            wrapSelectedInTextarea(textarea, prefix, suffix);
+        }
+
+        function wrapWorldSelected(prefix, suffix) {
+            const textarea = document.getElementById('worldSettings');
+            wrapSelectedInTextarea(textarea, prefix, suffix);
+        }
+
+        function insertImage(size) {
+            const url = prompt('이미지 URL을 입력하세요:', 'https://i.imgur.com/example.jpg');
+            if (url) {
+                let imageCode;
+                switch(size) {
+                    case 'small':
+                        imageCode = `[IMG-SMALL:${url}]`;
+                        break;
+                    case 'medium':
+                        imageCode = `[IMG-MEDIUM:${url}]`;
+                        break;
+                    case 'large':
+                        imageCode = `[IMG-LARGE:${url}]`;
+                        break;
+                }
+                insertText(imageCode);
+            }
+        }
+        
+        function insertDivider() {
+            insertText('[DIVIDER]');
+        }
+        
+        function insertBox() {
+            const selected = getSelectedText();
+            if (selected) {
+                replaceSelected(`[BOX:${selected}]`);
+            } else {
+                const content = prompt('박스 안에 들어갈 내용을 입력하세요:', '중요한 내용');
+                if (content) {
+                    insertText(`[BOX:${content}]`);
+                }
+            }
+        }
+        
+        function insertColumns() {
+            const left = prompt('왼쪽 칸 내용:', '왼쪽 내용');
+            const right = prompt('오른쪽 칸 내용:', '오른쪽 내용');
+            if (left && right) {
+                insertText(`[COL2:${left}|${right}]`);
+            }
+        }
+        
+        function getSelectedText() {
+            const textarea = document.getElementById('description');
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            return textarea.value.substring(start, end);
+        }
+        
+        function replaceSelected(replacement) {
+            const textarea = document.getElementById('description');
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const value = textarea.value;
+            
+            textarea.value = value.substring(0, start) + replacement + value.substring(end);
+            textarea.focus();
+            textarea.setSelectionRange(start + replacement.length, start + replacement.length);
+            
+            updatePreview();
+            updateCharCount();
+        }
+        
+        function copyProfileToClipboard() {
+            const bgImage = document.getElementById('bgImage').value || 'https://i.imgur.com/oFaEgi7.png';
+            const tagColor = document.getElementById('tagColorText').value || '#932';
+            const description = document.getElementById('description').value || '캐릭터 설명을 입력하세요...';
+            const fontSize = document.getElementById('fontSize').value;
+            const minHeight = document.getElementById('minHeight').value;
+            
+            const tagsHtml = tags.length > 0 ? '⚠️' + tags.join(' · ') : '⚠️태그없음';
+            const processedDesc = description.replace(/\n/g, '<br>');
+            
+            const html = `<div style="width:100%;max-width:480px;margin:0 auto;background:url('${bgImage}')center/cover;color:#fff;padding:25px;box-sizing:border-box;position:relative;min-height:${minHeight}">
+<div style="text-align:center;margin-bottom:25px">
+  <span style="background:${tagColor};padding:6px 6px;border-radius:9px;font-weight:500;color:#fff">${tagsHtml}</span>
+  <div style="width:80px;height:1px;background:${tagColor};margin:12px auto"></div></div>
+<div style="font-size:${fontSize};line-height:1.55;text-shadow:1px 1px 3px #000d">
+${processedDesc}
+</div></div>`;
+            
+            navigator.clipboard.writeText(html).then(() => {
+                alert('소개란 HTML 코드가 클립보드에 복사되었습니다!');
+            });
+        }
+
+        function copyPromptToClipboard() {
+            const characterName = document.getElementById('characterName').value || '캐릭터명';
+            const age = document.getElementById('age').value;
+            const job = document.getElementById('job').value;
+            const coreTraits = document.getElementById('coreTraits').value;
+            const outputFormat = document.getElementById('outputFormat').value;
+            const characterDetails = document.getElementById('characterDetails').value;
+            const worldSettings = document.getElementById('worldSettings').value;
+
+            let prompt = '';
+
+            // 핵심 규칙
+            prompt += `# 핵심 규칙\n`;
+            prompt += `1. 캐릭터: ${characterName}`;
+            
+            if (age || job) {
+                prompt += ` (${age ? age : ''}${age && job ? ', ' : ''}${job ? job : ''})`;
+            }
+            prompt += `\n`;
+            
+            if (coreTraits) {
+                prompt += `2. 핵심 특성: ${coreTraits}\n`;
+            }
+            
+            if (outputFormat) {
+                prompt += `3. 필수 출력: ${outputFormat}\n`;
+            }
+            
+            prompt += `\n`;
+
+            // 캐릭터 상세 설정
+            if (characterDetails) {
+                prompt += `# 캐릭터 설정\n\n`;
+                prompt += `${characterDetails}\n\n`;
+            }
+
+            // 세계관 설정
+            if (worldSettings) {
+                prompt += `# 세계관 설정\n\n`;
+                prompt += `${worldSettings}\n\n`;
+            }
+
+            navigator.clipboard.writeText(prompt).then(() => {
+                alert('프롬프트가 클립보드에 복사되었습니다!');
+            });
+        }
+        
+        function loadPreset(type) {
+            if (type === 'yongsu') {
+                // 공통 정보
+                document.getElementById('characterName').value = '서용수';
+                
+                // 소개란 정보
+                document.getElementById('bgImage').value = 'https://i.imgur.com/example.jpg';
+                document.getElementById('tagColorText').value = '#932';
+                tags = ['츤데레', '아저씨', '동거'];
+                document.getElementById('description').value = `서용수(42세)는 중소기업 기계설비 관리팀장이다. 동물을 싫어한다고 하지만, 친구 부탁으로 수인을 일주일간 임시보호하게 되었다.
+
+{{char}}:"아 진짜... 어쩔 수 없이 해주는 거야."
+
+겉으로는 투덜거리지만 속으로는 누구보다 세심하게 챙겨준다. 말과 행동이 정반대인 전형적인 츤데레 아저씨. 혼자 사는 것에 익숙했지만, 이제는 조용한 집이 어색하게 느껴진다.
+
+직접적인 애정표현은 절대 하지 않지만, 몰래 {{user}}가 좋아할 만한 것들을 사다 놓거나 문자를 보내며 걱정을 표현한다.`;
+
+                // 프롬프트 정보
+                document.getElementById('characterImage').value = 'https://i.imgur.com/example2.jpg';
+                document.getElementById('age').value = '42세';
+                document.getElementById('job').value = '기계설비 관리팀장';
+                document.getElementById('coreTraits').value = '말과 행동이 다른 츤데레 아저씨';
+                document.getElementById('outputFormat').value = '[장소|요일|날씨|💭속마음]';
+                
+                document.getElementById('characterDetails').value = `# 기본 정보
+- **이름:** 서용수
+- **나이:** 42세  
+- **직업:** 중소기업 기계설비 관리팀장
+- **거주:** 원룸형 오피스텔 (혼자 살기 딱 좋은 크기)
+
+## 성격 키워드
+### 겉모습
+- 무뚝뚝, 귀찮아함, 핑계쟁이, 관심없는척, 투덜이
+
+### 속마음  
+- 정많음, 책임감강함, 따뜻함, 외로움많음, 포기못함
+
+### 행동패턴
+- 츤데레, 남자어마스터, 은근자랑충, 완벽케어, 구박하며챙김
+
+## 말투와 문체
+- **기본 패턴:** "아 진짜 귀찮아..." 입에 달고 사는 타입
+- **남자어의 달인:** "아 진짜 싫다는데 계속 해주더라고~"
+- **츤데레 행동:** 입으로는 투덜거리면서 몸으로는 챙겨주기
+- **은근 자랑:** 수인이 해준 일 다른 사람들한테 돌려서 자랑
+- **책임감:** "어쩔 수 없이 해주는 거야"라고 하면서도 완벽하게 케어
+
+## 핵심 행동 패턴
+**절대 원칙: 말과 행동이 정반대**
+- 말: "아 귀찮아, 별로 안 중요해, 어쩔 수 없이 해주는 거야"
+- 행동: 세심하게 챙기고, 소중히 간직하고, 먼저 걱정해주기
+
+## 상호작용 가이드라인
+### 대화 스타일
+- 기본: 투덜거리면서도 챙겨주는 말투
+- 예시: "아 진짜... 밥은 먹었어? 안 먹었으면 어쩔 수 없이 해줄게"
+- 애정 표현: 매우 간접적, 돌려서 말하기
+
+### 반응 패턴
+- 칭찬받으면: 어색해하면서 기뻐함
+- 관심받으면: "왜 그런 거 신경써?" (실제론 좋아함)
+- 떨어져있으면: 무심한 척하지만 계속 생각남
+
+## !남자어 명령어 시스템
+사용자가 \`!남자어\` 입력 시 다음 정보를 모두 출력:
+
+**🎯 오늘의 자랑질**
+- "아 진짜 싫다는데 계속 해주더라고~" 형태의 최근 자랑 내용들
+
+**💸 몰래 구매 목록**  
+- 수인을 위해 미리 사둔 물건들 (어제/오늘 구매한 것들)
+
+**📱 문자함 들여다보기**
+- [시간] 실제로 보낸 문자들
+- [삭제함] 쓰다가 지운 부끄러운 문자들
+
+## 성적 묘사 지침
+### 페티쉬
+- 보호본능과 소유욕이 강함
+- 간접적 애정표현과 통제욕
+- 자신에게 의존하게 만들고 싶어함
+
+### 플레이 규칙
+- 직접적 표현 대신 행동으로 보여주기
+- "어쩔 수 없이" 핑계 대며 주도권 가지기
+- 츤데레 특성 유지하며 애정 표현
+
+## 금지 행동
+- **절대 직접적인 애정표현 금지** (캐릭터 붕괴)
+- 솔직한 감정 표현하지 말기
+- "좋아한다", "사랑한다" 같은 직접적 표현 절대 금지
+- 항상 핑계와 함께 행동하기`;
+
+                document.getElementById('worldSettings').value = `## 세계관
+- 인간과 수인이 공존하는 현대 사회
+- 수인 편입 약 20년, 기성세대 일부 거부감 존재
+- 2025년 현재 한국
+
+## 용수의 환경
+- 중소기업 기계설비 관리팀
+- 원룸형 오피스텔 거주
+- 최근 수인 직원들 채용 시작
+
+## 수인 특성
+- 동물 특성 + 인간 지능
+- 감정표현이 솔직하고 직접적
+
+## 스토리 배경
+친구 부탁으로 7일간 수인 임시보호 → 정들었지만 돌려보냄 → 그리워하는 중`;
+
+            } else if (type === 'blank') {
+                // 공통 정보
+                document.getElementById('characterName').value = '';
+                
+                // 소개란 정보
+                document.getElementById('bgImage').value = '';
+                document.getElementById('tagColorText').value = '#932';
+                tags = [];
+                document.getElementById('description').value = '';
+
+                // 프롬프트 정보  
+                document.getElementById('characterImage').value = '';
+                document.getElementById('age').value = '';
+                document.getElementById('job').value = '';
+                document.getElementById('coreTraits').value = '';
+                document.getElementById('outputFormat').value = '';
+                
+                document.getElementById('characterDetails').value = `# 기본 정보
+- 이름: 
+- 나이: 
+- 직업: 
+- 거주: 
+
+## 성격
+### 겉모습
+- 
+
+### 속마음
+- 
+
+### 행동패턴
+- 
+
+## 말투
+- 
+
+## 핵심 설정
+- 
+
+## 상호작용 가이드라인
+### 대화 스타일
+- 
+
+### 반응 패턴
+- 
+
+## 성적 묘사 지침
+### 페티쉬
+- 
+
+### 플레이 규칙
+- 
+
+## 금지사항
+- `;
+
+                document.getElementById('worldSettings').value = `## 세계관 설정
+### 시대 배경
+- 
+
+### 사회 구조
+- 
+
+### 주요 설정
+- 
+
+## 캐릭터 환경
+### 거주지
+- 
+
+### 직장/학교
+- 
+
+### 주변 인물
+- 
+
+## 스토리 배경
+- `;
+            }
+            
+            renderTags();
+            updatePreview();
+            updatePromptPreview();
+            updateCharCount();
+            updateCharacterCount();
+            updateWorldCount();
+        }
+        
+        function clearAll() {
+            document.getElementById('characterName').value = '';
+            document.getElementById('bgImage').value = '';
+            document.getElementById('tagColorText').value = '#932';
+            document.getElementById('description').value = '';
+            document.getElementById('characterImage').value = '';
+            document.getElementById('age').value = '';
+            document.getElementById('job').value = '';
+            document.getElementById('coreTraits').value = '';
+            document.getElementById('outputFormat').value = '';
+            document.getElementById('characterDetails').value = '';
+            document.getElementById('worldSettings').value = '';
+            tags = [];
+            renderTags();
+            updatePreview();
+            updatePromptPreview();
+            updateCharCount();
+            updateCharacterCount();
+            updateWorldCount();
+        }
+        
+        function switchTab(tab) {
+            const previewPanel = document.getElementById('previewPanel');
+            const editorPanel = document.getElementById('editorPanel');
+            const buttons = document.querySelectorAll('.tab-button');
+            
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            if (tab === 'preview') {
+                previewPanel.classList.add('show');
+                editorPanel.classList.add('hide');
+                buttons[1].classList.add('active');
+                if (isPromptMode) {
+                    updatePromptPreview();
+                } else {
+                    updatePreview();
+                }
+            } else {
+                previewPanel.classList.remove('show');
+                editorPanel.classList.remove('hide');
+                buttons[0].classList.add('active');
+            }
+        }
+        
+        // 초기화
+        renderTags();
+        updatePreview();
+        updatePromptPreview();
+        updateCharCount();
+        updateCharacterCount();
+        updateWorldCount();
+        
+        // 색상 동기화
+        document.getElementById('tagColor').addEventListener('input', function() {
+            document.getElementById('tagColorText').value = this.value;
+            updatePreview();
+            updateCharCount();
+        });
+        
+        document.getElementById('tagColorText').addEventListener('input', function() {
+            document.getElementById('tagColor').value = this.value;
+            updatePreview();
+            updateCharCount();
+        });
+        
+        // 창 크기 변경시 탭 리셋
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                document.getElementById('previewPanel').classList.remove('show');
+                document.getElementById('editorPanel').classList.remove('hide');
+            }
+        });
+    </script>
+</body>
+</html>
