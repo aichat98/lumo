@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>캐릭터 소개 & 프롬프트 생성기</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             font-family: 'Malgun Gothic', sans-serif;
@@ -19,24 +15,34 @@
             overflow: hidden;
         }
         
-        .container {
-            display: flex;
-            height: 100vh;
-        }
+        .container { display: flex; height: 100vh; }
         
         .preview-panel {
-            flex: 1;
+            width: calc(50% + 20px);
+            flex: none;
             background: #2a2a2a;
             padding: 20px;
             overflow-y: auto;
             border-right: 1px solid #444;
         }
+
+        body.prompt-mode .preview-panel {
+            padding: 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        body.prompt-mode .panel-title {
+            display: none;
+        }
         
         .editor-panel {
+            width: calc(50% - 20px);
             flex: 1;
             background: #1e1e1e;
             padding: 20px;
             overflow-y: auto;
+            min-width: 0;
         }
         
         .panel-title {
@@ -49,7 +55,6 @@
             border-bottom: 2px solid #444;
         }
 
-        /* 편집기 헤더 */
         .editor-header {
             display: flex;
             align-items: center;
@@ -58,13 +63,6 @@
             gap: 15px;
         }
 
-        .editor-title {
-            font-size: 18px;
-            font-weight: bold;
-            color: #fff;
-        }
-
-        /* 토글 스위치 스타일 */
         .mode-toggle {
             display: flex;
             align-items: center;
@@ -115,20 +113,8 @@
         input:checked + .toggle-slider:before {
             transform: translateX(30px);
         }
-
-        .toggle-label {
-            font-size: 14px;
-            color: #ccc;
-            font-weight: bold;
-        }
-
-        .toggle-label.active {
-            color: #fff;
-        }
         
-        .form-group {
-            margin-bottom: 15px;
-        }
+        .form-group { margin-bottom: 15px; }
         
         .form-group label {
             display: block;
@@ -156,9 +142,7 @@
             line-height: 1.5;
         }
         
-        .form-group textarea.large {
-            min-height: 200px;
-        }
+        .form-group textarea.large { min-height: 200px; }
         
         .form-group input:focus,
         .form-group textarea:focus,
@@ -186,15 +170,8 @@
             gap: 5px;
         }
         
-        .tag-remove {
-            cursor: pointer;
-            font-weight: bold;
-        }
-        
-        .add-tag-input {
-            flex: 1;
-            min-width: 120px;
-        }
+        .tag-remove { cursor: pointer; font-weight: bold; }
+        .add-tag-input { flex: 1; min-width: 120px; }
         
         .color-input {
             display: flex;
@@ -211,8 +188,8 @@
         }
         
         .profile-preview {
-            max-width: 480px;
-            margin: 0 auto;
+            width: 100%;
+            margin: 0;
         }
         
         .copy-button {
@@ -227,21 +204,11 @@
             width: 100%;
         }
         
-        .copy-button:hover {
-            background: #a43;
-        }
-
-        .copy-button.prompt {
-            background: #667eea;
-        }
-
-        .copy-button.prompt:hover {
-            background: #5a6fd8;
-        }
+        .copy-button:hover { background: #a43; }
+        .copy-button.prompt { background: #667eea; }
+        .copy-button.prompt:hover { background: #5a6fd8; }
         
-        .presets {
-            margin-bottom: 20px;
-        }
+        .presets { margin-bottom: 20px; }
         
         .preset-button {
             background: #444;
@@ -255,8 +222,48 @@
             margin-bottom: 8px;
         }
         
-        .preset-button:hover {
-            background: #555;
+        .preset-button:hover { background: #555; }
+        
+        .preset-button.add-preset {
+            background: #667eea;
+            border-color: #5a6fd8;
+        }
+        
+        .preset-button.add-preset:hover {
+            background: #5a6fd8;
+        }
+        
+        .preset-button.custom {
+            background: #2d5a27;
+            border-color: #4a7c59;
+            position: relative;
+            padding-right: 30px;
+        }
+        
+        .preset-button.custom:hover {
+            background: #4a7c59;
+        }
+        
+        .preset-delete {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #ff6b6b;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .preset-delete:hover {
+            color: #ff5252;
         }
         
         .section-divider {
@@ -265,42 +272,6 @@
             padding-top: 15px;
         }
         
-        /* 모바일 탭 버튼 */
-        .mobile-tabs {
-            display: none;
-            background: #1e1e1e;
-            padding: 10px;
-            border-bottom: 1px solid #444;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        
-        .tab-button {
-            background: #333;
-            color: #ccc;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-right: 10px;
-            font-size: 14px;
-        }
-        
-        .tab-button.active {
-            background: #932;
-            color: #fff;
-        }
-        
-        .tab-button:hover {
-            background: #555;
-        }
-        
-        .tab-button.active:hover {
-            background: #a43;
-        }
-        
-        /* 글자수 카운터 */
         .char-counter {
             text-align: right;
             color: #888;
@@ -308,11 +279,8 @@
             margin-top: 5px;
         }
         
-        .char-counter.warning {
-            color: #ff6b6b;
-        }
+        .char-counter.warning { color: #ff6b6b; }
 
-        /* 꾸밈 버튼들 */
         .format-buttons {
             display: flex;
             flex-wrap: wrap;
@@ -330,9 +298,7 @@
             font-size: 11px;
         }
         
-        .format-btn:hover {
-            background: #555;
-        }
+        .format-btn:hover { background: #555; }
         
         .quick-insert {
             display: flex;
@@ -350,36 +316,22 @@
             font-size: 11px;
         }
         
-        .quick-btn:hover {
-            background: #a43;
-        }
+        .quick-btn:hover { background: #a43; }
 
-        /* 프롬프트 모드에서 숨길 요소들 */
-        .profile-only {
-            display: block;
-        }
+        .profile-only { display: block; }
+        .prompt-only { display: none; }
 
-        .prompt-only {
-            display: none;
-        }
+        body.prompt-mode .profile-only { display: none; }
+        body.prompt-mode .prompt-only { display: block; }
 
-        body.prompt-mode .profile-only {
-            display: none;
-        }
-
-        body.prompt-mode .prompt-only {
-            display: block;
-        }
-
-        /* 프롬프트 모드에서 미리보기 */
         .character-image-only {
-            text-align: center;
-            padding: 0;
-            height: calc(100vh - 140px);
+            position: relative;
+            width: 100%;
+            height: 100vh;
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            position: relative;
+            background-color: #2a2a2a;
         }
 
         .character-image-only::before {
@@ -387,10 +339,52 @@
             position: absolute;
             top: 0;
             left: 0;
-            right: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, 
+                transparent 0%, 
+                transparent 40%, 
+                rgba(0, 0, 0, 0.3) 70%, 
+                rgba(0, 0, 0, 0.8) 100%);
+            z-index: 1;
+        }
+
+        .character-namecard {
+            position: absolute;
             bottom: 0;
-            background: rgba(0,0,0,0.3);
-            filter: blur(1px);
+            left: 0;
+            right: 0;
+            z-index: 2;
+            padding: 20px 24px;
+            height: 120px;
+        }
+
+        .character-name {
+            position: absolute;
+            bottom: 60px;
+            left: 24px;
+            right: 24px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0;
+            color: white;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+            letter-spacing: -0.5px;
+            word-break: break-word;
+            line-height: 1.2;
+        }
+
+        .character-details {
+            position: absolute;
+            bottom: 32px;
+            left: 24px;
+            right: 24px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 400;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+            line-height: 1.3;
+            margin: 0;
         }
 
         .character-image-only .no-image {
@@ -401,9 +395,47 @@
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: 1;
+            text-align: center;
+            padding: 20px;
         }
 
-        /* 반응형 디자인 */
+        /* 모바일 탭 버튼 */
+        .mobile-tabs {
+            display: none;
+            background: #1e1e1e;
+            padding: 10px;
+            border-bottom: 1px solid #444;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .tab-button {
+            background: #333;
+            color: #ccc;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .tab-button.active {
+            background: #932;
+            color: #fff;
+        }
+        
+        .tab-button:hover {
+            background: #555;
+        }
+        
+        .tab-button.active:hover {
+            background: #a43;
+        }
+
+        /* 반응형 조정 */
         @media (max-width: 768px) {
             body {
                 overflow: auto;
@@ -420,6 +452,7 @@
             }
             
             .preview-panel {
+                width: 100%;
                 border-right: none;
                 padding: 15px;
                 display: none !important;
@@ -430,6 +463,7 @@
             }
             
             .editor-panel {
+                width: 100%;
                 padding: 15px;
                 display: block !important;
             }
@@ -437,33 +471,106 @@
             .editor-panel.hide {
                 display: none !important;
             }
+            
+            .panel-title {
+                font-size: 16px;
+                margin-bottom: 15px;
+            }
+            
+            .form-group {
+                margin-bottom: 12px;
+            }
+            
+            .form-group input,
+            .form-group textarea,
+            .form-group select {
+                padding: 12px 14px;
+                font-size: 16px; /* iOS 줌 방지 */
+            }
+            
+            .form-group textarea {
+                min-height: 100px;
+            }
+            
+            .preset-button {
+                padding: 12px 14px;
+                font-size: 13px;
+                margin-bottom: 10px;
+                display: inline-block;
+                width: calc(50% - 4px);
+            }
+            
+            .format-btn, .quick-btn {
+                padding: 8px 12px;
+                font-size: 12px;
+                margin-bottom: 5px;
+            }
+            
+            .copy-button {
+                padding: 14px 20px;
+                font-size: 16px;
+            }
+            
+            .character-image-only {
+                height: 70vh;
+            }
+            
+            .character-name {
+                font-size: 1.4rem;
+                bottom: 50px;
+            }
+            
+            .character-details {
+                font-size: 0.8rem;
+                bottom: 25px;
+            }
+            
+            .character-namecard {
+                height: 100px;
+                padding: 16px 20px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .preview-panel,
+            .editor-panel {
+                padding: 10px;
+            }
+            
+            .preset-button {
+                width: 100%;
+                margin-right: 0;
+            }
+            
+            .profile-preview {
+                max-width: none;
+            }
+            
+            .tab-button {
+                padding: 10px 16px;
+                font-size: 13px;
+            }
         }
     </style>
 </head>
 <body>
     <!-- 모바일 탭 전환 버튼 -->
     <div class="mobile-tabs">
-        <button class="tab-button active" onclick="switchTab('editor')">편집</button>
-        <button class="tab-button" onclick="switchTab('preview')">미리보기</button>
+        <button class="tab-button active" onclick="switchTab('editor')">✏️ 편집</button>
+        <button class="tab-button" onclick="switchTab('preview')">📱 미리보기</button>
     </div>
     
     <div class="container">
         <div class="preview-panel" id="previewPanel">
             <div class="panel-title">미리보기</div>
             
-            <!-- 소개란 미리보기 -->
-            <div id="profilePreview" class="profile-preview profile-only">
-                <!-- 프로필 미리보기가 여기에 표시됩니다 -->
-            </div>
-
-            <!-- 프롬프트 모드에서 캐릭터 이미지 + 정보 -->
+            <div id="profilePreview" class="profile-preview profile-only"></div>
             <div id="characterImagePreview" class="character-image-only prompt-only">
-                <div class="no-image">캐릭터 이미지를 입력하면 미리보기가 표시됩니다</div>
+                <div class="no-image">캐릭터 이미지를 입력하면<br>네임카드 미리보기가 표시됩니다</div>
             </div>
         </div>
         
         <div class="editor-panel" id="editorPanel">
-            <!-- 편집기 헤더 (스위치만) -->
             <div class="editor-header">
                 <div class="mode-toggle">
                     <label class="toggle-switch">
@@ -473,42 +580,42 @@
                 </div>
             </div>
 
-            <!-- 프리셋 로드 -->
             <div class="presets profile-only">
                 <div class="form-group">
                     <label>프리셋 불러오기</label>
                     <div>
-                        <button class="preset-button" onclick="loadPreset('yongsu')">서용수 예시</button>
+                        <button class="preset-button" onclick="loadPreset('yongsu')">예시</button>
+                        <button class="preset-button add-preset" onclick="saveCurrentPreset()" title="현재 설정을 프리셋으로 저장">+ 저장</button>
                         <button class="preset-button" onclick="clearAll()">초기화</button>
                     </div>
+                    <div id="customPresets" style="margin-top: 10px;"></div>
                 </div>
             </div>
 
-            <!-- 프롬프트 전용 프리셋 -->
             <div class="presets prompt-only">
                 <div class="form-group">
                     <label>프리셋 불러오기</label>
                     <div>
-                        <button class="preset-button" onclick="loadPreset('yongsu')">서용수 예시</button>
+                        <button class="preset-button" onclick="loadPreset('yongsu')">예시</button>
                         <button class="preset-button" onclick="loadPreset('blank')">빈 템플릿</button>
+                        <button class="preset-button add-preset" onclick="saveCurrentPreset()" title="현재 설정을 프리셋으로 저장">+ 저장</button>
                         <button class="preset-button" onclick="clearAll()">초기화</button>
                     </div>
+                    <div id="customPresetsPrompt" style="margin-top: 10px;"></div>
                 </div>
             </div>
             
             <div class="section-divider"></div>
 
-            <!-- 공통 설정 -->
             <div class="form-group">
                 <label>캐릭터 이름</label>
-                <input type="text" id="characterName" placeholder="서용수" oninput="updatePreview(); updatePromptPreview()">
+                <input type="text" id="characterName" oninput="updatePreview(); updatePromptPreview()">
             </div>
 
-            <!-- 소개란 모드 -->
             <div class="profile-only">
                 <div class="form-group">
                     <label>배경 이미지 URL</label>
-                    <input type="text" id="bgImage" placeholder="https://i.imgur.com/example.jpg" oninput="updatePreview()">
+                    <input type="text" id="bgImage" oninput="updatePreview()">
                 </div>
                 
                 <div class="form-group">
@@ -529,15 +636,13 @@
                 <div class="form-group">
                     <label>캐릭터 설명</label>
                     
-                    <!-- 빠른 삽입 버튼 -->
                     <div class="quick-insert">
                         <button class="quick-btn" onclick="insertText('{{char}}')">{{char}}</button>
                         <button class="quick-btn" onclick="insertText('{{user}}')">{{user}}</button>
                     </div>
                     
-                    <!-- 꾸밈 버튼들 -->
                     <div class="format-buttons">
-                        <button class="format-btn" onclick="wrapSelected('*', '*')" title="블러">*블러*</button>
+                        <button class="format-btn" onclick="wrapSelected('-', '-')" title="블러">-블러-</button>
                         <button class="format-btn" onclick="wrapSelected('**', '**')" title="굵게">**굵게**</button>
                         <button class="format-btn" onclick="wrapSelected('~~', '~~')" title="취소선">~~취소선~~</button>
                         <button class="format-btn" onclick="wrapSelected('__', '__')" title="밑줄">__밑줄__</button>
@@ -547,7 +652,6 @@
                         <button class="format-btn" onclick="wrapSelected('@@', '@@')" title="작게">@@작게@@</button>
                     </div>
                     
-                    <!-- 이미지 & 레이아웃 버튼들 -->
                     <div class="format-buttons">
                         <button class="format-btn" onclick="insertImage('small')" title="작은 이미지">🖼️ 작게</button>
                         <button class="format-btn" onclick="insertImage('medium')" title="보통 이미지">🖼️ 보통</button>
@@ -557,7 +661,7 @@
                         <button class="format-btn" onclick="insertColumns()" title="2단 칸">📋 2칸</button>
                     </div>
                     
-                    <textarea id="description" placeholder="캐릭터 설명을 입력하세요..." oninput="updatePreview(); updateCharCount()"></textarea>
+                    <textarea id="description" oninput="updatePreview(); updatePromptPreview(); updateCharCount(); updateCharacterCount(); updateWorldCount()"></textarea>
                     <div class="char-counter" id="charCounter">0 자</div>
                 </div>
                 
@@ -584,56 +688,53 @@
                 <button class="copy-button" onclick="copyProfileToClipboard()">소개란 HTML 복사</button>
             </div>
 
-            <!-- 프롬프트 모드 -->
             <div class="prompt-only">
                 <div class="form-group">
                     <label>캐릭터 이미지 URL</label>
-                    <input type="text" id="characterImage" placeholder="https://i.imgur.com/example.jpg" oninput="updatePromptPreview()">
+                    <input type="text" id="characterImage" oninput="updatePromptPreview()">
                 </div>
 
                 <div class="form-group">
                     <label>기본 정보</label>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <input type="text" id="age" placeholder="나이 (42세)" oninput="updatePromptPreview()">
-                        <input type="text" id="job" placeholder="직업 (회사원)" oninput="updatePromptPreview()">
+                        <input type="text" id="age" placeholder="나이">
+                        <input type="text" id="job" placeholder="직업">
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label>핵심 특성</label>
-                    <input type="text" id="coreTraits" placeholder="말과 행동이 다른 츤데레 아저씨" oninput="updatePromptPreview()">
+                    <input type="text" id="coreTraits" oninput="updatePromptPreview()">
                 </div>
 
                 <div class="form-group">
                     <label>필수 출력 형식</label>
-                    <input type="text" id="outputFormat" placeholder="[장소|요일|날씨|💭속마음]" oninput="updatePromptPreview()">
+                    <input type="text" id="outputFormat" oninput="updatePromptPreview()">
                 </div>
 
                 <div class="form-group">
                     <label>캐릭터 상세 설정</label>
                     
-                    <!-- 빠른 삽입 버튼 -->
                     <div class="quick-insert">
                         <button class="quick-btn" onclick="insertPromptText('{{char}}')">{{char}}</button>
                         <button class="quick-btn" onclick="insertPromptText('{{user}}')">{{user}}</button>
                         <button class="quick-btn" onclick="wrapPromptSelected('**', '**')">굵게</button>
                     </div>
                     
-                    <textarea id="characterDetails" class="large" placeholder="성격, 말투, 행동 패턴 등..." oninput="updatePromptPreview(); updateCharacterCount()"></textarea>
+                    <textarea id="characterDetails" class="large" oninput="updatePromptPreview(); updateCharacterCount()"></textarea>
                     <div class="char-counter" id="characterCounter">0 자</div>
                 </div>
 
                 <div class="form-group">
                     <label>세계관 설정</label>
                     
-                    <!-- 빠른 삽입 버튼 -->
                     <div class="quick-insert">
                         <button class="quick-btn" onclick="insertWorldText('{{char}}')">{{char}}</button>
                         <button class="quick-btn" onclick="insertWorldText('{{user}}')">{{user}}</button>
                         <button class="quick-btn" onclick="wrapWorldSelected('**', '**')">굵게</button>
                     </div>
                     
-                    <textarea id="worldSettings" class="large" placeholder="세계관, 배경, 상황 등..." oninput="updatePromptPreview(); updateWorldCount()"></textarea>
+                    <textarea id="worldSettings" class="large" oninput="updatePromptPreview(); updateWorldCount()"></textarea>
                     <div class="char-counter" id="worldCounter">0 자</div>
                 </div>
 
@@ -645,11 +746,10 @@
     <script>
         let tags = [];
         let isPromptMode = false;
+        let customPresets = {}; // localStorage 대신 메모리 저장
         
         function toggleMode() {
             const modeToggle = document.getElementById('modeToggle');
-            const previewPanel = document.getElementById('previewPanel');
-            
             isPromptMode = modeToggle.checked;
             
             if (isPromptMode) {
@@ -662,30 +762,25 @@
         }
 
         function processText(text) {
+            if (!text) return '';
+            
             return text
-                .replace(/{{char}}/g, '<strong>{{char}}</strong>')
-                .replace(/{{user}}/g, '<strong>{{user}}</strong>')
-                .replace(/\*([^*]+)\*/g, '<span style="filter: blur(2px);">$1</span>')
-                .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-                .replace(/~~([^~]+)~~/g, '<span style="text-decoration: line-through;">$1</span>')
-                .replace(/__([^_]+)__/g, '<span style="text-decoration: underline;">$1</span>')
-                .replace(/\^\^([^^]+)\^\^/g, '<span style="background: #ffeb3b; color: #000; padding: 2px;">$1</span>')
-                .replace(/##([^#]+)##/g, '<span style="text-shadow: 2px 2px 4px #000;">$1</span>')
-                .replace(/%%([^%]+)%%/g, '<span style="font-size: 1.2em; font-weight: bold;">$1</span>')
-                .replace(/@@([^@]+)@@/g, '<span style="font-size: 0.8em;">$1</span>')
-                // 이미지 처리
-                .replace(/\[IMG-SMALL:(.*?)\]/g, '<img src="$1" style="width: 80px; height: auto; display: block; margin: 10px auto; border-radius: 5px;">')
-                .replace(/\[IMG-MEDIUM:(.*?)\]/g, '<img src="$1" style="width: 150px; height: auto; display: block; margin: 10px auto; border-radius: 5px;">')
-                .replace(/\[IMG-LARGE:(.*?)\]/g, '<img src="$1" style="width: 250px; height: auto; display: block; margin: 10px auto; border-radius: 5px;">')
-                // 레이아웃 처리
-                .replace(/\[DIVIDER\]/g, '<div style="width: 100%; height: 1px; background: rgba(255,255,255,0.3); margin: 15px 0;"></div>')
-                .replace(/\[BOX:(.*?)\]/g, '<div style="border: 1px solid rgba(255,255,255,0.3); padding: 10px; margin: 10px 0; border-radius: 5px; background: rgba(0,0,0,0.2);">$1</div>')
-                .replace(/\[COL2:(.*?)\|(.*?)\]/g, '<div style="display: flex; gap: 10px; margin: 10px 0;"><div style="flex: 1; padding: 8px; border: 1px solid rgba(255,255,255,0.2); border-radius: 3px;">$1</div><div style="flex: 1; padding: 8px; border: 1px solid rgba(255,255,255,0.2); border-radius: 3px;">$2</div></div>')
+                .replace(/{{char}}/g, '<b>{{char}}</b>')
+                .replace(/{{user}}/g, '<b>{{user}}</b>')
+                .replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>')
+                .replace(/-([^-]+)-/g, '<span style="filter:blur(2px)">$1</span>')
+                .replace(/~~([^~]+)~~/g, '<s>$1</s>')
+                .replace(/__([^_]+)__/g, '<u>$1</u>')
+                .replace(/\^\^([^^]+)\^\^/g, '<span style="background:#ffeb3b;color:#000;padding:2px">$1</span>')
+                .replace(/##([^#]+)##/g, '<span style="text-shadow:2px 2px 4px #000">$1</span>')
+                .replace(/%%([^%]+)%%/g, '<span style="font-size:1.2em;font-weight:bold">$1</span>')
+                .replace(/@@([^@]+)@@/g, '<span style="font-size:0.8em">$1</span>')
                 .replace(/\n/g, '<br>');
         }
         
         function addTag(event) {
             if (event.key === 'Enter') {
+                event.preventDefault();
                 const input = event.target;
                 const tagText = input.value.trim();
                 if (tagText && !tags.includes(tagText)) {
@@ -707,6 +802,8 @@
         
         function renderTags() {
             const container = document.getElementById('tagsContainer');
+            if (!container) return;
+            
             const input = container.querySelector('.add-tag-input');
             
             container.innerHTML = '';
@@ -714,32 +811,39 @@
             tags.forEach(tag => {
                 const tagElement = document.createElement('div');
                 tagElement.className = 'tag';
-                tagElement.innerHTML = `
-                    <span>⚠️${tag}</span>
-                    <span class="tag-remove" onclick="removeTag('${tag}')">×</span>
-                `;
+                tagElement.innerHTML = `<span>⚠️${tag}</span><span class="tag-remove" onclick="removeTag('${tag}')">×</span>`;
                 container.appendChild(tagElement);
             });
             
-            container.appendChild(input);
+            if (input) {
+                container.appendChild(input);
+            } else {
+                const newInput = document.createElement('input');
+                newInput.type = 'text';
+                newInput.className = 'add-tag-input';
+                newInput.placeholder = '태그 추가 후 Enter';
+                newInput.addEventListener('keypress', addTag);
+                container.appendChild(newInput);
+            }
         }
         
         function updatePreview() {
             if (isPromptMode) return;
             
-            const bgImage = document.getElementById('bgImage').value;
+            const bgImage = document.getElementById('bgImage').value || 'https://i.imgur.com/oFaEgi7.png';
             const tagColor = document.getElementById('tagColorText').value || '#932';
             const description = document.getElementById('description').value;
             const fontSize = document.getElementById('fontSize').value;
             const minHeight = document.getElementById('minHeight').value;
             
-            if (!bgImage || !description) {
-                document.getElementById('profilePreview').innerHTML = '<div style="text-align:center;color:#888;padding:50px;">프로필 내용을 입력하면 미리보기가 표시됩니다</div>';
+            // 설명도 태그도 없으면 안내메시지
+            if (!description && tags.length === 0) {
+                document.getElementById('profilePreview').innerHTML = '<div style="text-align:center;color:#888;padding:50px;">캐릭터 설명을 입력하거나 태그를 추가하면 미리보기가 표시됩니다</div>';
                 return;
             }
             
             const tagsHtml = tags.length > 0 ? '⚠️' + tags.join(' · ') : '⚠️태그없음';
-            const processedDesc = processText(description);
+            const processedDesc = description ? processText(description) : '';
             
             const html = `
                 <div style="width:100%;max-width:480px;margin:0 auto;background:url('${bgImage}')center/cover;color:#fff;padding:25px;box-sizing:border-box;position:relative;min-height:${minHeight}">
@@ -747,9 +851,7 @@
                         <span style="background:${tagColor};padding:6px 6px;border-radius:9px;font-weight:500;color:#fff">${tagsHtml}</span>
                         <div style="width:80px;height:1px;background:${tagColor};margin:12px auto"></div>
                     </div>
-                    <div style="font-size:${fontSize};line-height:1.55;text-shadow:1px 1px 3px #000d">
-                        ${processedDesc}
-                    </div>
+                    ${processedDesc ? `<div style="font-size:${fontSize};line-height:1.55;text-shadow:1px 1px 3px #000d">${processedDesc}</div>` : ''}
                 </div>
             `;
             
@@ -771,17 +873,17 @@
                 const details = [];
                 if (age) details.push(age);
                 if (job) details.push(job);
-                const detailsText = details.join(' | ') || '정보 없음';
+                const detailsText = details.join(' · ') || '';
                 
                 previewDiv.innerHTML = `
-                    <div class="character-info">
+                    <div class="character-namecard">
                         <div class="character-name">${characterName}</div>
-                        <div class="character-details">${detailsText}</div>
+                        ${detailsText ? `<div class="character-details">${detailsText}</div>` : ''}
                     </div>
                 `;
             } else {
                 previewDiv.style.backgroundImage = '';
-                previewDiv.innerHTML = '<div class="no-image">캐릭터 이미지를 입력하면 미리보기가 표시됩니다</div>';
+                previewDiv.innerHTML = '';
             }
         }
         
@@ -793,15 +895,9 @@
             const minHeight = document.getElementById('minHeight').value;
             
             const tagsHtml = tags.length > 0 ? '⚠️' + tags.join(' · ') : '⚠️태그없음';
-            const processedDesc = description.replace(/\n/g, '<br>');
+            const processedDesc = processText(description);
             
-            const fullHtml = `<div style="width:100%;max-width:480px;margin:0 auto;background:url('${bgImage}')center/cover;color:#fff;padding:25px;box-sizing:border-box;position:relative;min-height:${minHeight}">
-<div style="text-align:center;margin-bottom:25px">
-  <span style="background:${tagColor};padding:6px 6px;border-radius:9px;font-weight:500;color:#fff">${tagsHtml}</span>
-  <div style="width:80px;height:1px;background:${tagColor};margin:12px auto"></div></div>
-<div style="font-size:${fontSize};line-height:1.55;text-shadow:1px 1px 3px #000d">
-${processedDesc}
-</div></div>`;
+            const fullHtml = `<div style="width:100%;max-width:480px;margin:0 auto;background:url('${bgImage}')center/cover;color:#fff;padding:25px;box-sizing:border-box;position:relative;min-height:${minHeight}"><div style="text-align:center;margin-bottom:25px"><span style="background:${tagColor};padding:6px 6px;border-radius:9px;font-weight:500;color:#fff">${tagsHtml}</span><div style="width:80px;height:1px;background:${tagColor};margin:12px auto"></div></div><div style="font-size:${fontSize};line-height:1.55;text-shadow:1px 1px 3px #000d">${processedDesc}</div></div>`;
             
             const charCount = fullHtml.length;
             const counter = document.getElementById('charCounter');
@@ -877,33 +973,27 @@ ${processedDesc}
         }
 
         function insertText(text) {
-            const textarea = document.getElementById('description');
-            insertTextToTextarea(textarea, text);
+            insertTextToTextarea(document.getElementById('description'), text);
         }
 
         function wrapSelected(prefix, suffix) {
-            const textarea = document.getElementById('description');
-            wrapSelectedInTextarea(textarea, prefix, suffix);
+            wrapSelectedInTextarea(document.getElementById('description'), prefix, suffix);
         }
 
         function insertPromptText(text) {
-            const textarea = document.getElementById('characterDetails');
-            insertTextToTextarea(textarea, text);
+            insertTextToTextarea(document.getElementById('characterDetails'), text);
         }
 
         function insertWorldText(text) {
-            const textarea = document.getElementById('worldSettings');
-            insertTextToTextarea(textarea, text);
+            insertTextToTextarea(document.getElementById('worldSettings'), text);
         }
 
         function wrapPromptSelected(prefix, suffix) {
-            const textarea = document.getElementById('characterDetails');
-            wrapSelectedInTextarea(textarea, prefix, suffix);
+            wrapSelectedInTextarea(document.getElementById('characterDetails'), prefix, suffix);
         }
 
         function wrapWorldSelected(prefix, suffix) {
-            const textarea = document.getElementById('worldSettings');
-            wrapSelectedInTextarea(textarea, prefix, suffix);
+            wrapSelectedInTextarea(document.getElementById('worldSettings'), prefix, suffix);
         }
 
         function insertImage(size) {
@@ -911,23 +1001,15 @@ ${processedDesc}
             if (url) {
                 let imageCode;
                 switch(size) {
-                    case 'small':
-                        imageCode = `[IMG-SMALL:${url}]`;
-                        break;
-                    case 'medium':
-                        imageCode = `[IMG-MEDIUM:${url}]`;
-                        break;
-                    case 'large':
-                        imageCode = `[IMG-LARGE:${url}]`;
-                        break;
+                    case 'small': imageCode = `[IMG-SMALL:${url}]`; break;
+                    case 'medium': imageCode = `[IMG-MEDIUM:${url}]`; break;
+                    case 'large': imageCode = `[IMG-LARGE:${url}]`; break;
                 }
                 insertText(imageCode);
             }
         }
         
-        function insertDivider() {
-            insertText('[DIVIDER]');
-        }
+        function insertDivider() { insertText('[DIVIDER]'); }
         
         function insertBox() {
             const selected = getSelectedText();
@@ -935,34 +1017,27 @@ ${processedDesc}
                 replaceSelected(`[BOX:${selected}]`);
             } else {
                 const content = prompt('박스 안에 들어갈 내용을 입력하세요:', '중요한 내용');
-                if (content) {
-                    insertText(`[BOX:${content}]`);
-                }
+                if (content) insertText(`[BOX:${content}]`);
             }
         }
         
         function insertColumns() {
             const left = prompt('왼쪽 칸 내용:', '왼쪽 내용');
             const right = prompt('오른쪽 칸 내용:', '오른쪽 내용');
-            if (left && right) {
-                insertText(`[COL2:${left}|${right}]`);
-            }
+            if (left && right) insertText(`[COL2:${left}|${right}]`);
         }
         
         function getSelectedText() {
             const textarea = document.getElementById('description');
-            const start = textarea.selectionStart;
-            const end = textarea.selectionEnd;
-            return textarea.value.substring(start, end);
+            return textarea.value.substring(textarea.selectionStart, textarea.selectionEnd);
         }
         
         function replaceSelected(replacement) {
             const textarea = document.getElementById('description');
             const start = textarea.selectionStart;
             const end = textarea.selectionEnd;
-            const value = textarea.value;
             
-            textarea.value = value.substring(0, start) + replacement + value.substring(end);
+            textarea.value = textarea.value.substring(0, start) + replacement + textarea.value.substring(end);
             textarea.focus();
             textarea.setSelectionRange(start + replacement.length, start + replacement.length);
             
@@ -973,20 +1048,14 @@ ${processedDesc}
         function copyProfileToClipboard() {
             const bgImage = document.getElementById('bgImage').value || 'https://i.imgur.com/oFaEgi7.png';
             const tagColor = document.getElementById('tagColorText').value || '#932';
-            const description = document.getElementById('description').value || '캐릭터 설명을 입력하세요...';
+            const description = document.getElementById('description').value || '';
             const fontSize = document.getElementById('fontSize').value;
             const minHeight = document.getElementById('minHeight').value;
             
             const tagsHtml = tags.length > 0 ? '⚠️' + tags.join(' · ') : '⚠️태그없음';
-            const processedDesc = description.replace(/\n/g, '<br>');
+            const processedDesc = processText(description);
             
-            const html = `<div style="width:100%;max-width:480px;margin:0 auto;background:url('${bgImage}')center/cover;color:#fff;padding:25px;box-sizing:border-box;position:relative;min-height:${minHeight}">
-<div style="text-align:center;margin-bottom:25px">
-  <span style="background:${tagColor};padding:6px 6px;border-radius:9px;font-weight:500;color:#fff">${tagsHtml}</span>
-  <div style="width:80px;height:1px;background:${tagColor};margin:12px auto"></div></div>
-<div style="font-size:${fontSize};line-height:1.55;text-shadow:1px 1px 3px #000d">
-${processedDesc}
-</div></div>`;
+            const html = `<div style="width:100%;max-width:480px;margin:0 auto;background:url('${bgImage}')center/cover;color:#fff;padding:25px;box-sizing:border-box;position:relative;min-height:${minHeight}"><div style="text-align:center;margin-bottom:25px"><span style="background:${tagColor};padding:6px 6px;border-radius:9px;font-weight:500;color:#fff">${tagsHtml}</span><div style="width:80px;height:1px;background:${tagColor};margin:12px auto"></div></div><div style="font-size:${fontSize};line-height:1.55;text-shadow:1px 1px 3px #000d">${processedDesc}</div></div>`;
             
             navigator.clipboard.writeText(html).then(() => {
                 alert('소개란 HTML 코드가 클립보드에 복사되었습니다!');
@@ -1002,50 +1071,136 @@ ${processedDesc}
             const characterDetails = document.getElementById('characterDetails').value;
             const worldSettings = document.getElementById('worldSettings').value;
 
-            let prompt = '';
-
-            // 핵심 규칙
-            prompt += `# 핵심 규칙\n`;
-            prompt += `1. 캐릭터: ${characterName}`;
+            let prompt = '# 핵심 규칙\n1. 캐릭터: ' + characterName;
             
             if (age || job) {
                 prompt += ` (${age ? age : ''}${age && job ? ', ' : ''}${job ? job : ''})`;
             }
-            prompt += `\n`;
+            prompt += '\n';
             
-            if (coreTraits) {
-                prompt += `2. 핵심 특성: ${coreTraits}\n`;
-            }
+            if (coreTraits) prompt += `2. 핵심 특성: ${coreTraits}\n`;
+            if (outputFormat) prompt += `3. 필수 출력: ${outputFormat}\n`;
             
-            if (outputFormat) {
-                prompt += `3. 필수 출력: ${outputFormat}\n`;
-            }
-            
-            prompt += `\n`;
+            prompt += '\n';
 
-            // 캐릭터 상세 설정
             if (characterDetails) {
-                prompt += `# 캐릭터 설정\n\n`;
-                prompt += `${characterDetails}\n\n`;
+                prompt += '# 캐릭터 설정\n\n' + characterDetails + '\n\n';
             }
 
-            // 세계관 설정
             if (worldSettings) {
-                prompt += `# 세계관 설정\n\n`;
-                prompt += `${worldSettings}\n\n`;
+                prompt += '# 세계관 설정\n\n' + worldSettings + '\n\n';
             }
 
             navigator.clipboard.writeText(prompt).then(() => {
                 alert('프롬프트가 클립보드에 복사되었습니다!');
             });
         }
+
+        // 메모리 프리셋 관리 (localStorage 대신)
+        function saveCurrentPreset() {
+            const characterName = document.getElementById('characterName').value.trim();
+            
+            if (!characterName) {
+                alert('캐릭터 이름을 입력해주세요!');
+                return;
+            }
+            
+            const presetData = {
+                characterName: characterName,
+                bgImage: document.getElementById('bgImage').value,
+                tagColor: document.getElementById('tagColorText').value,
+                tags: [...tags],
+                description: document.getElementById('description').value,
+                characterImage: document.getElementById('characterImage').value,
+                age: document.getElementById('age').value,
+                job: document.getElementById('job').value,
+                coreTraits: document.getElementById('coreTraits').value,
+                outputFormat: document.getElementById('outputFormat').value,
+                characterDetails: document.getElementById('characterDetails').value,
+                worldSettings: document.getElementById('worldSettings').value,
+                fontSize: document.getElementById('fontSize').value,
+                minHeight: document.getElementById('minHeight').value
+            };
+            
+            // 메모리에 저장
+            customPresets[characterName] = presetData;
+            
+            alert(`"${characterName}" 프리셋이 저장되었습니다!`);
+            loadCustomPresets();
+        }
+        
+        function loadCustomPresets() {
+            const container = document.getElementById('customPresets');
+            const containerPrompt = document.getElementById('customPresetsPrompt');
+            
+            container.innerHTML = '';
+            containerPrompt.innerHTML = '';
+            
+            Object.keys(customPresets).forEach(presetName => {
+                // 소개란용 버튼
+                const button = document.createElement('button');
+                button.className = 'preset-button custom';
+                button.onclick = () => loadCustomPreset(presetName);
+                button.innerHTML = `${presetName}<span class="preset-delete" onclick="event.stopPropagation(); deletePreset('${presetName}')" title="삭제">×</span>`;
+                container.appendChild(button);
+                
+                // 프롬프트용 버튼
+                const buttonPrompt = document.createElement('button');
+                buttonPrompt.className = 'preset-button custom';
+                buttonPrompt.onclick = () => loadCustomPreset(presetName);
+                buttonPrompt.innerHTML = `${presetName}<span class="preset-delete" onclick="event.stopPropagation(); deletePreset('${presetName}')" title="삭제">×</span>`;
+                containerPrompt.appendChild(buttonPrompt);
+            });
+        }
+        
+        function loadCustomPreset(presetName) {
+            const presetData = customPresets[presetName];
+            
+            if (!presetData) {
+                alert('프리셋을 찾을 수 없습니다.');
+                return;
+            }
+            
+            // 모든 값 설정
+            document.getElementById('characterName').value = presetData.characterName || '';
+            document.getElementById('bgImage').value = presetData.bgImage || '';
+            document.getElementById('tagColorText').value = presetData.tagColor || '#932';
+            document.getElementById('tagColor').value = presetData.tagColor || '#932';
+            document.getElementById('description').value = presetData.description || '';
+            document.getElementById('characterImage').value = presetData.characterImage || '';
+            document.getElementById('age').value = presetData.age || '';
+            document.getElementById('job').value = presetData.job || '';
+            document.getElementById('coreTraits').value = presetData.coreTraits || '';
+            document.getElementById('outputFormat').value = presetData.outputFormat || '';
+            document.getElementById('characterDetails').value = presetData.characterDetails || '';
+            document.getElementById('worldSettings').value = presetData.worldSettings || '';
+            document.getElementById('fontSize').value = presetData.fontSize || '13px';
+            document.getElementById('minHeight').value = presetData.minHeight || '380px';
+            
+            // 태그 설정
+            tags = presetData.tags || [];
+            
+            // 모든 업데이트
+            renderTags();
+            updatePreview();
+            updatePromptPreview();
+            updateCharCount();
+            updateCharacterCount();
+            updateWorldCount();
+        }
+        
+        function deletePreset(presetName) {
+            if (!confirm(`"${presetName}" 프리셋을 삭제하시겠습니까?`)) {
+                return;
+            }
+            
+            delete customPresets[presetName];
+            loadCustomPresets();
+        }
         
         function loadPreset(type) {
             if (type === 'yongsu') {
-                // 공통 정보
                 document.getElementById('characterName').value = '서용수';
-                
-                // 소개란 정보
                 document.getElementById('bgImage').value = 'https://i.imgur.com/example.jpg';
                 document.getElementById('tagColorText').value = '#932';
                 tags = ['츤데레', '아저씨', '동거'];
@@ -1057,7 +1212,6 @@ ${processedDesc}
 
 직접적인 애정표현은 절대 하지 않지만, 몰래 {{user}}가 좋아할 만한 것들을 사다 놓거나 문자를 보내며 걱정을 표현한다.`;
 
-                // 프롬프트 정보
                 document.getElementById('characterImage').value = 'https://i.imgur.com/example2.jpg';
                 document.getElementById('age').value = '42세';
                 document.getElementById('job').value = '기계설비 관리팀장';
@@ -1078,60 +1232,7 @@ ${processedDesc}
 - 정많음, 책임감강함, 따뜻함, 외로움많음, 포기못함
 
 ### 행동패턴
-- 츤데레, 남자어마스터, 은근자랑충, 완벽케어, 구박하며챙김
-
-## 말투와 문체
-- **기본 패턴:** "아 진짜 귀찮아..." 입에 달고 사는 타입
-- **남자어의 달인:** "아 진짜 싫다는데 계속 해주더라고~"
-- **츤데레 행동:** 입으로는 투덜거리면서 몸으로는 챙겨주기
-- **은근 자랑:** 수인이 해준 일 다른 사람들한테 돌려서 자랑
-- **책임감:** "어쩔 수 없이 해주는 거야"라고 하면서도 완벽하게 케어
-
-## 핵심 행동 패턴
-**절대 원칙: 말과 행동이 정반대**
-- 말: "아 귀찮아, 별로 안 중요해, 어쩔 수 없이 해주는 거야"
-- 행동: 세심하게 챙기고, 소중히 간직하고, 먼저 걱정해주기
-
-## 상호작용 가이드라인
-### 대화 스타일
-- 기본: 투덜거리면서도 챙겨주는 말투
-- 예시: "아 진짜... 밥은 먹었어? 안 먹었으면 어쩔 수 없이 해줄게"
-- 애정 표현: 매우 간접적, 돌려서 말하기
-
-### 반응 패턴
-- 칭찬받으면: 어색해하면서 기뻐함
-- 관심받으면: "왜 그런 거 신경써?" (실제론 좋아함)
-- 떨어져있으면: 무심한 척하지만 계속 생각남
-
-## !남자어 명령어 시스템
-사용자가 \`!남자어\` 입력 시 다음 정보를 모두 출력:
-
-**🎯 오늘의 자랑질**
-- "아 진짜 싫다는데 계속 해주더라고~" 형태의 최근 자랑 내용들
-
-**💸 몰래 구매 목록**  
-- 수인을 위해 미리 사둔 물건들 (어제/오늘 구매한 것들)
-
-**📱 문자함 들여다보기**
-- [시간] 실제로 보낸 문자들
-- [삭제함] 쓰다가 지운 부끄러운 문자들
-
-## 성적 묘사 지침
-### 페티쉬
-- 보호본능과 소유욕이 강함
-- 간접적 애정표현과 통제욕
-- 자신에게 의존하게 만들고 싶어함
-
-### 플레이 규칙
-- 직접적 표현 대신 행동으로 보여주기
-- "어쩔 수 없이" 핑계 대며 주도권 가지기
-- 츤데레 특성 유지하며 애정 표현
-
-## 금지 행동
-- **절대 직접적인 애정표현 금지** (캐릭터 붕괴)
-- 솔직한 감정 표현하지 말기
-- "좋아한다", "사랑한다" 같은 직접적 표현 절대 금지
-- 항상 핑계와 함께 행동하기`;
+- 츤데레, 남자어마스터, 은근자랑충, 완벽케어, 구박하며챙김`;
 
                 document.getElementById('worldSettings').value = `## 세계관
 - 인간과 수인이 공존하는 현대 사회
@@ -1141,39 +1242,28 @@ ${processedDesc}
 ## 용수의 환경
 - 중소기업 기계설비 관리팀
 - 원룸형 오피스텔 거주
-- 최근 수인 직원들 채용 시작
-
-## 수인 특성
-- 동물 특성 + 인간 지능
-- 감정표현이 솔직하고 직접적
-
-## 스토리 배경
-친구 부탁으로 7일간 수인 임시보호 → 정들었지만 돌려보냄 → 그리워하는 중`;
+- 최근 수인 직원들 채용 시작`;
 
             } else if (type === 'blank') {
-                // 공통 정보
                 document.getElementById('characterName').value = '';
-                
-                // 소개란 정보
                 document.getElementById('bgImage').value = '';
                 document.getElementById('tagColorText').value = '#932';
                 tags = [];
                 document.getElementById('description').value = '';
-
-                // 프롬프트 정보  
                 document.getElementById('characterImage').value = '';
                 document.getElementById('age').value = '';
                 document.getElementById('job').value = '';
                 document.getElementById('coreTraits').value = '';
-                document.getElementById('outputFormat').value = '';
+                document.getElementById('outputFormat').value = '[장소 | 날짜 | 날씨이모지]';
                 
                 document.getElementById('characterDetails').value = `# 기본 정보
-- 이름: 
-- 나이: 
-- 직업: 
-- 거주: 
+- **이름:** 
+- **나이:** 
+- **직업:** 
+- **거주:** 
+- **외관:**
 
-## 성격
+## 성격 키워드
 ### 겉모습
 - 
 
@@ -1183,10 +1273,10 @@ ${processedDesc}
 ### 행동패턴
 - 
 
-## 말투
+## 말투와 문체
 - 
 
-## 핵심 설정
+## 핵심 행동 패턴
 - 
 
 ## 상호작용 가이드라인
@@ -1203,7 +1293,7 @@ ${processedDesc}
 ### 플레이 규칙
 - 
 
-## 금지사항
+## 금지 행동
 - `;
 
                 document.getElementById('worldSettings').value = `## 세계관 설정
@@ -1270,11 +1360,8 @@ ${processedDesc}
                 previewPanel.classList.add('show');
                 editorPanel.classList.add('hide');
                 buttons[1].classList.add('active');
-                if (isPromptMode) {
-                    updatePromptPreview();
-                } else {
-                    updatePreview();
-                }
+                updatePreview();
+                updatePromptPreview();
             } else {
                 previewPanel.classList.remove('show');
                 editorPanel.classList.remove('hide');
@@ -1289,6 +1376,33 @@ ${processedDesc}
         updateCharCount();
         updateCharacterCount();
         updateWorldCount();
+        loadCustomPresets(); // 저장된 프리셋 불러오기 (메모리에서)
+        
+        // 강제 실시간 업데이트
+        const descriptionTextarea = document.getElementById('description');
+        
+        descriptionTextarea.addEventListener('input', function() {
+            setTimeout(() => { updatePreview(); updateCharCount(); }, 0);
+        });
+        
+        descriptionTextarea.addEventListener('keydown', function() {
+            setTimeout(() => { updatePreview(); updateCharCount(); }, 1);
+        });
+        
+        descriptionTextarea.addEventListener('keyup', function() {
+            setTimeout(() => { updatePreview(); updateCharCount(); }, 1);
+        });
+        
+        descriptionTextarea.addEventListener('paste', function() {
+            setTimeout(() => { updatePreview(); updateCharCount(); }, 10);
+        });
+        
+        // 매 100ms마다 강제 업데이트
+        setInterval(() => {
+            if (document.activeElement === descriptionTextarea) {
+                updatePreview();
+            }
+        }, 100);
         
         // 색상 동기화
         document.getElementById('tagColor').addEventListener('input', function() {
