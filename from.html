@@ -584,9 +584,9 @@
                 <div class="form-group">
                     <label>프리셋 불러오기</label>
                     <div>
-                        <button class="preset-button" onclick="loadPreset('yongsu')">예시</button>
+                        <button class="preset-button" onclick="loadPreset('yongsu')">서용수 예시</button>
                         <button class="preset-button add-preset" onclick="saveCurrentPreset()" title="현재 설정을 프리셋으로 저장">+ 저장</button>
-                        <button class="preset-button" onclick="clearAll()">초기화</button>
+                        <button class="preset-button" onclick="clearProfile()">소개란 초기화</button>
                     </div>
                     <div id="customPresets" style="margin-top: 10px;"></div>
                 </div>
@@ -596,10 +596,10 @@
                 <div class="form-group">
                     <label>프리셋 불러오기</label>
                     <div>
-                        <button class="preset-button" onclick="loadPreset('yongsu')">예시</button>
+                        <button class="preset-button" onclick="loadPreset('yongsu')">서용수 예시</button>
                         <button class="preset-button" onclick="loadPreset('blank')">빈 템플릿</button>
                         <button class="preset-button add-preset" onclick="saveCurrentPreset()" title="현재 설정을 프리셋으로 저장">+ 저장</button>
-                        <button class="preset-button" onclick="clearAll()">초기화</button>
+                        <button class="preset-button" onclick="clearPrompt()">프롬프트 초기화</button>
                     </div>
                     <div id="customPresetsPrompt" style="margin-top: 10px;"></div>
                 </div>
@@ -697,8 +697,8 @@
                 <div class="form-group">
                     <label>기본 정보</label>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <input type="text" id="age" placeholder="나이">
-                        <input type="text" id="job" placeholder="직업">
+                        <input type="text" id="age" placeholder="나이" oninput="updatePromptPreview()">
+                        <input type="text" id="job" placeholder="직업" oninput="updatePromptPreview()">
                     </div>
                 </div>
 
@@ -862,28 +862,46 @@
             if (!isPromptMode) return;
             
             const characterImage = document.getElementById('characterImage').value;
-            const characterName = document.getElementById('characterName').value || '캐릭터명';
+            const characterName = document.getElementById('characterName').value;
             const age = document.getElementById('age').value;
             const job = document.getElementById('job').value;
             const previewDiv = document.getElementById('characterImagePreview');
             
+            const details = [];
+            if (age) details.push(age);
+            if (job) details.push(job);
+            const detailsText = details.join(' · ') || '';
+            
+            // 이름이나 세부정보 둘 다 없으면 네임카드 자체를 안 보여줌
+            if (!characterName && !detailsText) {
+                if (characterImage) {
+                    previewDiv.style.backgroundImage = `url('${characterImage}')`;
+                    previewDiv.innerHTML = '';
+                } else {
+                    previewDiv.style.backgroundImage = '';
+                    previewDiv.style.backgroundColor = '#2a2a2a';
+                    previewDiv.innerHTML = '';
+                }
+                return;
+            }
+            
             if (characterImage) {
                 previewDiv.style.backgroundImage = `url('${characterImage}')`;
-                
-                const details = [];
-                if (age) details.push(age);
-                if (job) details.push(job);
-                const detailsText = details.join(' · ') || '';
-                
                 previewDiv.innerHTML = `
                     <div class="character-namecard">
-                        <div class="character-name">${characterName}</div>
+                        ${characterName ? `<div class="character-name">${characterName}</div>` : ''}
                         ${detailsText ? `<div class="character-details">${detailsText}</div>` : ''}
                     </div>
                 `;
             } else {
                 previewDiv.style.backgroundImage = '';
-                previewDiv.innerHTML = '';
+                previewDiv.style.backgroundColor = '#2a2a2a';
+                previewDiv.innerHTML = `
+                    <div class="character-namecard">
+                        ${characterName ? `<div class="character-name">${characterName}</div>` : ''}
+                        ${detailsText ? `<div class="character-details">${detailsText}</div>` : ''}
+                    </div>
+                `;
             }
         }
         
@@ -1328,11 +1346,22 @@
             updateWorldCount();
         }
         
-        function clearAll() {
+        function clearProfile() {
             document.getElementById('characterName').value = '';
             document.getElementById('bgImage').value = '';
             document.getElementById('tagColorText').value = '#932';
+            document.getElementById('tagColor').value = '#932';
             document.getElementById('description').value = '';
+            document.getElementById('fontSize').value = '13px';
+            document.getElementById('minHeight').value = '380px';
+            tags = [];
+            renderTags();
+            updatePreview();
+            updateCharCount();
+        }
+        
+        function clearPrompt() {
+            document.getElementById('characterName').value = '';
             document.getElementById('characterImage').value = '';
             document.getElementById('age').value = '';
             document.getElementById('job').value = '';
@@ -1340,13 +1369,15 @@
             document.getElementById('outputFormat').value = '';
             document.getElementById('characterDetails').value = '';
             document.getElementById('worldSettings').value = '';
-            tags = [];
-            renderTags();
-            updatePreview();
             updatePromptPreview();
-            updateCharCount();
             updateCharacterCount();
             updateWorldCount();
+        }
+        
+        function clearAll() {
+            // 전체 초기화 (프리셋에서만 사용)
+            clearProfile();
+            clearPrompt();
         }
         
         function switchTab(tab) {
