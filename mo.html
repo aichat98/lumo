@@ -1,10 +1,756 @@
-<html>
+<!DOCTYPE html>
+<html lang="ko">
 <head>
-<title>Page Title</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Steam에서 푸룬푸룬 슬라임 왕자 구매</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(to bottom, #0e1419 0%, #1a1f26 100%);
+            font-family: "Motiva Sans", sans-serif, Arial;
+            color: #c6d4df;
+            min-height: 100vh;
+        }
+
+        .steam-header {
+            background: #0a0e13;
+            height: 104px;
+            border-bottom: 1px solid #1a1f26;
+        }
+
+        .header-content {
+            max-width: 940px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+
+        .steam-logo {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            margin-right: 40px;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .nav-item {
+            color: #c6d4df;
+            text-decoration: none;
+            padding: 6px 12px;
+            background: rgba(42, 71, 94, 0.3);
+            border-radius: 3px;
+            font-size: 12px;
+            text-transform: uppercase;
+            transition: all 0.2s ease;
+            border: 1px solid rgba(42, 71, 94, 0.5);
+        }
+
+        .nav-item:hover {
+            background: rgba(103, 193, 245, 0.2);
+            color: white;
+            border-color: #67c1f5;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .tabs {
+            background: #0e1419;
+            border-bottom: 1px solid #2a475e;
+        }
+
+        .tab-list {
+            display: flex;
+            max-width: 940px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .tab {
+            padding: 15px 20px;
+            color: #8f98a0;
+            text-decoration: none;
+            border-bottom: 2px solid transparent;
+            font-size: 14px;
+        }
+
+        .tab.active, .tab:hover {
+            color: white;
+            border-bottom-color: #67c1f5;
+        }
+
+        .container {
+            max-width: 940px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .game-section {
+            background: #0a0e13;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+        }
+
+        .game-header {
+            background: linear-gradient(135deg, #1a1f26, #0e1419);
+            padding: 20px;
+            color: white;
+        }
+
+        .game-title {
+            font-size: 26px;
+            font-weight: normal;
+            margin-bottom: 10px;
+        }
+
+        .game-media {
+            position: relative;
+            height: 400px;
+            background: #0e1419;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .game-image-placeholder {
+            width: 100%;
+            height: 100%;
+            background: #2a475e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #67c1f5;
+            font-size: 18px;
+        }
+
+        .game-description {
+            padding: 20px;
+            background: #0e1419;
+        }
+
+        .game-summary {
+            color: #8f98a0;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .read-more-section {
+            margin-top: 20px;
+        }
+
+        .read-more-btn {
+            background: #2a475e;
+            color: #67c1f5;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        .read-more-btn:hover {
+            background: #67c1f5;
+            color: white;
+        }
+
+        .read-more-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+            color: #acb2b8;
+            line-height: 1.6;
+        }
+
+        .read-more-content.expanded {
+            max-height: 2000px;
+            padding-top: 10px;
+        }
+
+        .read-more-content em {
+            color: #67c1f5;
+            font-style: normal;
+            font-weight: bold;
+        }
+
+        .game-screenshot {
+            margin: 25px 0;
+        }
+
+        .game-screenshot .placeholder {
+            width: 100%;
+            height: 200px;
+            background: #2a475e;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #67c1f5;
+            font-size: 14px;
+        }
+
+        .purchase-section {
+            background: #0a0e13;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+        }
+
+        .purchase-header {
+            color: #67c1f5;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .price-section {
+            background: #4c6b22;
+            padding: 10px;
+            border-radius: 2px;
+            margin-bottom: 20px;
+        }
+
+        .discount-percent {
+            background: #4c6b22;
+            color: #beee11;
+            padding: 4px 8px;
+            border-radius: 2px;
+            font-size: 26px;
+            font-weight: bold;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .price-container {
+            display: inline-block;
+            vertical-align: top;
+        }
+
+        .original-price {
+            color: #738895;
+            text-decoration: line-through;
+            font-size: 12px;
+        }
+
+        .final-price {
+            color: #beee11;
+            font-size: 26px;
+            font-weight: bold;
+        }
+
+        .purchase-button {
+            width: 100%;
+            background: linear-gradient(to bottom, #75b022 0%, #588a1b 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 18px;
+            border-radius: 2px;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+
+        .purchase-button:hover {
+            background: linear-gradient(to bottom, #8bc53f 0%, #6aa621 100%);
+        }
+
+        .add-wishlist {
+            width: 100%;
+            background: #2a475e;
+            color: #67c1f5;
+            border: 1px solid #2a475e;
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+
+        .game-info {
+            margin-top: 20px;
+            border-top: 1px solid #2a475e;
+            padding-top: 20px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+
+        .info-label {
+            color: #556772;
+        }
+
+        .info-value {
+            color: #c6d4df;
+        }
+
+        .reviews-section {
+            background: #0e1419;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .reviews-header {
+            color: white;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .review-summary {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .review-score {
+            background: #d32f2f;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 2px;
+            font-size: 12px;
+        }
+
+        .review-count {
+            color: #8f98a0;
+            font-size: 12px;
+        }
+
+        .review-item {
+            background: #060a0e;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            border-left: 3px solid #1a1f26;
+        }
+
+        .review-header {
+            margin-bottom: 10px;
+        }
+
+        .review-recommendation {
+            color: #d32f2f;
+            font-size: 12px;
+            margin-right: 10px;
+        }
+
+        .review-text {
+            color: #acb2b8;
+            line-height: 1.4;
+            font-size: 13px;
+        }
+
+        .review-helpful {
+            color: #556772;
+            font-size: 11px;
+            margin-top: 8px;
+        }
+
+        /* 모바일 최적화 */
+        @media (max-width: 768px) {
+            .header-content {
+                padding: 0 10px;
+            }
+            
+            .steam-logo {
+                font-size: 20px;
+            }
+            
+            .nav-menu {
+                display: none;
+            }
+            
+            .user-info {
+                font-size: 12px;
+                gap: 10px;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            .game-title {
+                font-size: 20px;
+            }
+            
+            .game-media {
+                height: 250px;
+            }
+            
+            .game-header, .game-description {
+                padding: 15px;
+            }
+            
+            .tab-list {
+                padding: 0 10px;
+                overflow-x: auto;
+            }
+            
+            .tab {
+                padding: 12px 15px;
+                font-size: 12px;
+                white-space: nowrap;
+            }
+            
+            .review-item {
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+            
+            .review-text {
+                font-size: 13px;
+                line-height: 1.4;
+            }
+            
+            .price-section {
+                text-align: center;
+            }
+            
+            .discount-percent {
+                font-size: 20px;
+                margin-bottom: 5px;
+                display: block;
+                margin-right: 0;
+            }
+            
+            .price-container {
+                display: block;
+            }
+            
+            .final-price {
+                font-size: 22px;
+            }
+            
+            .game-screenshot .placeholder {
+                height: 150px;
+                font-size: 12px;
+            }
+        }
+    </style>
 </head>
 <body>
+    <header class="steam-header">
+        <div class="header-content">
+            <div class="steam-logo">STEAM</div>
+            <nav class="nav-menu">
+                <a href="#" class="nav-item">상점</a>
+                <a href="#" class="nav-item">라이브러리</a>
+                <a href="#" class="nav-item">커뮤니티</a>
+                <a href="#" class="nav-item">정보</a>
+                <a href="#" class="nav-item">지원</a>
+            </nav>
+            <div class="user-info">
+                <span>알림</span>
+                <span>위시리스트</span>
+                <span>사용자명</span>
+            </div>
+        </div>
+    </header>
 
-<div style="background:#008080;padding:10px;font-family:'MS Sans Serif',sans-serif;font-size:11px;min-height:310px;position:relative;overflow:hidden;box-sizing:border-box"><style>.i{text-align:center;width:120px;color:#fff;float:left;margin:5px}.i div{font-size:30px;margin-bottom:1px}.i span{font-size:10px;background:navy;color:white;padding:0 1px}.w{background:silver;border:2px solid;border-color:#fff #808080 #808080 #fff;width:320px;position:absolute;top:80px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;overflow:hidden}.t{background:navy;color:white;padding:2px 4px;font-weight:bold;display:flex;justify-content:space-between;align-items:center;height:18px;box-sizing:border-box;flex-shrink:0}.tb span{background:silver;color:black;border:1px solid;border-color:#fff #808080 #808080 #fff;width:12px;height:11px;display:inline-block;text-align:center;line-height:9px;font-size:9px;margin-left:1px}.c{padding:8px;background:white;color:black;flex-grow:1;border-top:1px solid #808080;border-left:1px solid #808080;display:flex;flex-direction:column;overflow-y:auto;min-height:0}.p{margin-bottom:8px;flex-shrink:0}.p p{margin:0 0 6px;line-height:1.3}.f{display:flex;flex-direction:column;flex-grow:1;min-height:0}.f textarea{flex-grow:1;padding:4px;border:1px solid #808080;font-family:inherit;font-size:10px;margin-bottom:6px;box-sizing:border-box;resize:vertical;min-height:50px;background:#fff}.f button{padding:3px 10px;background:silver;border:2px solid #fff #808080 #808080 #fff;font-family:inherit;font-size:10px;cursor:pointer;align-self:center;flex-shrink:0;min-height:22px}</style><a href="https://aichat98.github.io/lumo/" target="_blank" style="text-decoration:none"><div class="i"><div>🌎</div><span>캐릭터 생성기</span></div></a><div class="w"><div class="t"><span>Guestbook</span><div class="tb"><span>_</span><span>X</span></div></div><div class="c"><div class="p"><p><b>타입:</b> 꼴리는대로<br><b>성향:</b> #여성향 #인외 #아저씨<br><b>경고:</b> 비주류&더티 좋아합니다.✌️</p><hr style="border:0;border-top:1px solid silver"></div><form id="cF" class="f"><textarea id="cM" name="message" placeholder="따뜻한 한마디! (Leave a message!)" required></textarea><button type="submit" id="sB">보내기</button></form></div></div><script>let f=document.getElementById('cF'),b=document.getElementById('sB'),u="https://script.google.com/macros/s/AKfycbyrOvBsQ-U_WMyYKMmKF_gJb_wDKrZFrkQv_kpXNbR_QWVcQST8E3M1pkRo1E3JgxqF/exec";if(f&&b){f.addEventListener('submit',async e=>{e.preventDefault();let o=b.textContent;b.textContent='..';b.disabled=true;let m=document.getElementById('cM').value;if(!m.trim()){b.textContent='입력!';setTimeout(()=>{b.textContent=o;b.disabled=false},1e3);return}try{let d=new FormData();d.append('message',m);let s=await fetch(u,{method:'POST',body:d});if(!s.ok){console.error('SE:',s.status,s.statusText);let et=await s.text();console.error('SRT:',et);b.textContent='서버오류';setTimeout(()=>{b.textContent=o;b.disabled=false},2e3);return}let j=await s.json();b.textContent=j.status==='success'?'OK✨':'ERR';if(j.status==='success')f.reset()}catch(r){console.error('FE:',r);b.textContent='FAIL😥'}setTimeout(()=>{b.textContent=o;b.disabled=false},2e3)})}else{if(!f)console.error("NoForm#cF");if(!b)console.error("NoBtn#sB")}</script></div>
+    <div class="tabs">
+        <div class="tab-list">
+            <a href="#" class="tab active">개요</a>
+            <a href="#" class="tab">리뷰</a>
+            <a href="#" class="tab">관련 뉴스</a>
+            <a href="#" class="tab">가이드</a>
+        </div>
+    </div>
 
+    <div class="container">
+        <div class="game-section">
+            <div class="game-header">
+                <h1 class="game-title">푸룬푸룬 슬라임 왕자</h1>
+                <div style="color: #8f98a0; font-size: 14px;">날아라 게임즈</div>
+            </div>
+
+            <div class="game-media">
+                <div class="game-image-placeholder">
+                    🎮 게임 메인 이미지 (나중에 교체)
+                </div>
+            </div>
+
+            <div class="game-description">
+                <div class="game-summary">
+                    신비로운 슬라임 왕국의 왕자님과 함께하는 판타지 어드벤처! 
+                    귀여운 슬라임 왕자를 키우고, 왕국의 평화를 지켜보세요. 
+                    다양한 마법과 능력을 배우며 성장하는 RPG입니다.
+                    <br><br>
+                    <strong>주요 특징:</strong><br>
+                    • 귀여운 슬라임 캐릭터<br>
+                    • 간단한 조작으로 누구나 쉽게<br>
+                    • 다양한 마법 스킬 시스템<br>
+                    • 평화로운 왕국 건설<br>
+                    • 전연령 대상의 힐링 게임
+                    
+                    <div class="read-more-section">
+                        <button class="read-more-btn" onclick="toggleReadMore()">READ MORE</button>
+                        <div class="read-more-content" id="readMoreContent">
+                            <br><br>
+                            <strong>세계관 설정:</strong><br><br>
+                            
+                            푸룬푸룬 슬라임 왕국은 무지개빛 젤리 산맥과 미끄러운 점액 강으로 둘러싸인 신비로운 왕국입니다. 
+                            이곳의 주민들은 모두 다양한 색깔과 능력을 가진 슬라임들로 이루어져 있으며, 
+                            수백 년간 평화롭게 살아왔습니다.
+                            <br><br>
+                            
+                            하지만 어느 날, 악한 드라이 마법사가 나타나 모든 수분을 빼앗으려 합니다! 
+                            슬라임들이 말라가기 시작하자, 왕국의 유일한 희망인 푸룬푸룬 왕자가 모험을 떠나게 됩니다.
+                            <br><br>
+                            
+                            <strong>게임플레이:</strong><br><br>
+                            
+                            • <em>슬라임 변신 시스템</em>: 상황에 따라 물, 불, 땅, 바람의 속성으로 변신 가능<br>
+                            • <em>통통 점프 액션</em>: 슬라임의 탄성을 이용한 독특한 이동 방식<br>
+                            • <em>왕궁 건설 모드</em>: 자신만의 젤리 성을 꾸밀 수 있는 건축 시스템<br>
+                            • <em>친구 슬라임 수집</em>: 50여 종의 다양한 슬라임 동료들과 모험<br>
+                            • <em>미니게임 천국</em>: 슬라임 레이싱, 젤리 요리, 점액 미술 등 다양한 미니게임<br><br>
+                            
+                            <div class="game-screenshot">
+                                <div class="placeholder">📷 스크린샷 1: 다양한 미니게임들</div>
+                            </div>
+                            
+                            <strong>스토리 모드:</strong><br><br>
+                            
+                            Chapter 1: 왕자의 각성 - 드라이 마법사의 등장과 왕국의 위기<br>
+                            Chapter 2: 젤리 숲의 비밀 - 고대 슬라임 문명의 흔적을 찾아서<br>
+                            Chapter 3: 점액 동굴 탐험 - 신비한 크리스털 슬라임과의 만남<br>
+                            Chapter 4: 무지개 산맥 등반 - 전설의 수분 보석을 찾아서<br>
+                            Chapter 5: 최종 결전 - 드라이 마법사와의 대결, 왕국의 운명은?<br><br>
+                            
+                            <div class="game-screenshot">
+                                <div class="placeholder">📷 스크린샷 2: 협동 모드 플레이</div>
+                            </div>
+                            
+                            <strong>시스템 요구사항:</strong><br><br>
+                            
+                            • Windows 7 이상 (Windows 11 권장)<br>
+                            • 메모리: 최소 2GB RAM (권장 4GB)<br>
+                            • 그래픽: DirectX 9.0c 호환<br>
+                            • 저장공간: 500MB 이상<br>
+                            • 사운드: DirectX 호환 사운드카드<br>
+                            • 컨트롤러: Xbox 360 컨트롤러 지원<br><br>
+                            
+                            <strong>개발진 메시지:</strong><br><br>
+                            
+                            "안녕하세요! 날아라 게임즈입니다. 저희의 3번째 작품인 '푸룬푸룬 슬라임 왕자'를 
+                            플레이해 주셔서 감사합니다. 이전 작품인 '비둘기 공주'와 '햄스터 기사'에 이어 
+                            더욱 완성도 높은 게임을 만들기 위해 노력했습니다. 
+                            <br><br>
+                            비록 AAA급 게임은 아니지만, 저희만의 독특한 감성과 따뜻한 스토리로 
+                            여러분께 작은 행복을 드리고 싶었습니다. 앞으로도 더욱 발전하는 
+                            날아라 게임즈가 되겠습니다!"
+                            <br><br>
+                            <em>- 날아라 게임즈 개발팀 일동</em>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="purchase-section">
+            <div class="purchase-header">푸룬푸룬 슬라임 왕자 구매</div>
+            
+            <div class="price-section">
+                <span class="discount-percent">-90%</span>
+                <div class="price-container">
+                    <div class="original-price">₩ 19,000</div>
+                    <div class="final-price">₩ 1,900</div>
+                </div>
+            </div>
+
+            <button class="purchase-button">장바구니에 추가</button>
+            <button class="add-wishlist">위시리스트에 추가</button>
+
+            <div class="game-info">
+                <div class="info-row">
+                    <span class="info-label">출시 날짜:</span>
+                    <span class="info-value">2025년 5월 15일</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">개발자:</span>
+                    <span class="info-value">날아라 게임즈</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">배급사:</span>
+                    <span class="info-value">날아라 게임즈</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">태그:</span>
+                    <span class="info-value">캐주얼, 인디, RPG, 귀여움</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">언어:</span>
+                    <span class="info-value">한국어, 영어, 일본어</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="reviews-section">
+            <h3 class="reviews-header">고객 리뷰</h3>
+            <div class="review-summary">
+                <span class="review-score">대체로 부정적</span>
+                <span class="review-count">(리뷰 1,247개)</span>
+            </div>
+            
+            <div class="review-item">
+                <div class="review-header">
+                    <span class="review-recommendation">👎 추천하지 않음</span>
+                    <span style="color: #8f98a0; font-size: 12px;">플레이 시간: 0.3시간</span>
+                </div>
+                <div class="review-text">
+                    뭔 슬라임이 왕자야 ㅋㅋㅋㅋ 진짜 유치하네... 환불하려고 했는데 플레이 시간 넘어서 못하겠네요
+                </div>
+                <div class="review-helpful">이 리뷰가 도움이 되었나요? 예 (234) 아니요 (12)</div>
+            </div>
+
+            <div class="review-item">
+                <div class="review-header">
+                    <span class="review-recommendation">👎 추천하지 않음</span>
+                    <span style="color: #8f98a0; font-size: 12px;">플레이 시간: 0.1시간</span>
+                </div>
+                <div class="review-text">
+                    애들 게임인가? 튜토리얼도 성의없고 로그아웃 버튼도 못찾겠네... 뭐 이런게 다 게임이야
+                </div>
+                <div class="review-helpful">이 리뷰가 도움이 되었나요? 예 (189) 아니요 (8)</div>
+            </div>
+
+            <div class="review-item">
+                <div class="review-header">
+                    <span class="review-recommendation">👎 추천하지 않음</span>
+                    <span style="color: #8f98a0; font-size: 12px;">플레이 시간: 5분</span>
+                </div>
+                <div class="review-text">
+                    진짜 돈 아까움. 무료게임도 이것보단 낫겠다. 개발자 반성하세요
+                </div>
+                <div class="review-helpful">이 리뷰가 도움이 되었나요? 예 (298) 아니요 (7)</div>
+            </div>
+
+            <div class="review-item">
+                <div class="review-header">
+                    <span class="review-recommendation">👎 추천하지 않음</span>
+                    <span style="color: #8f98a0; font-size: 12px;">플레이 시간: 0.1시간</span>
+                </div>
+                <div class="review-text">
+                    뭔 로그아웃이 안돼? 게임 강제종료해야 나가짐. 이거 먹튀 아님?
+                </div>
+                <div class="review-helpful">이 리뷰가 도움이 되었나요? 예 (312) 아니요 (5)</div>
+            </div>
+
+            <div class="review-item">
+                <div class="review-header">
+                    <span class="review-recommendation">👎 추천하지 않음</span>
+                    <span style="color: #8f98a0; font-size: 12px;">플레이 시간: 0.8시간</span>
+                </div>
+                <div class="review-text">
+                    전작인 '비둘기 공주'도 이상했는데 이것도 마찬가지네요. 날아라 게임즈는 도대체 뭘 만들고 싶은 건지...
+                </div>
+                <div class="review-helpful">이 리뷰가 도움이 되었나요? 예 (167) 아니요 (12)</div>
+            </div>
+
+            <div class="review-item">
+                <div class="review-header">
+                    <span style="color: #66c0f4;">👍 추천</span>
+                    <span style="color: #8f98a0; font-size: 12px;">플레이 시간: 2.4시간</span>
+                </div>
+                <div class="review-text">
+                    의외로 힐링되는 게임... 슬라임이 생각보다 귀여워요. 아이들이랑 같이 하기 좋을듯
+                </div>
+                <div class="review-helpful">이 리뷰가 도움이 되었나요? 예 (23) 아니요 (89)</div>
+            </div>
+
+            <div class="review-item">
+                <div class="review-header">
+                    <span class="review-recommendation">👎 추천하지 않음</span>
+                    <span style="color: #8f98a0; font-size: 12px;">플레이 시간: 0.4시간</span>
+                </div>
+                <div class="review-text">
+                    2025년에 이런 퀄리티라니... 스마트폰 게임도 이것보단 잘 만들겠어요
+                </div>
+                <div class="review-helpful">이 리뷰가 도움이 되었나요? 예 (203) 아니요 (19)</div>
+            </div>
+
+            <div class="review-item">
+                <div class="review-header">
+                    <span class="review-recommendation">👎 추천하지 않음</span>
+                    <span style="color: #8f98a0; font-size: 12px;">플레이 시간: 0.2시간</span>
+                </div>
+                <div class="review-text">
+                    할인이라길래 샀는데... 역시 싼 게 비지떡이네요. 그래픽도 후지고 스토리도 없음
+                </div>
+                <div class="review-helpful">이 리뷰가 도움이 되었나요? 예 (156) 아니요 (15)</div>
+            </div>
+
+            <div class="review-item">
+                <div class="review-header">
+                    <span class="review-recommendation">👎 추천하지 않음</span>
+                    <span style="color: #8f98a0; font-size: 12px;">플레이 시간: 0.7시간</span>
+                </div>
+                <div class="review-text">
+                    버그도 많고 최적화도 안 돼있어요. 사이버펑크도 잘 돌아가는데 이 게임만 렉 걸림 ㅋㅋ
+                </div>
+                <div class="review-helpful">이 리뷰가 도움이 되었나요? 예 (145) 아니요 (11)</div>
+            </div>
+
+            <div class="review-item">
+                <div class="review-header">
+                    <span class="review-recommendation">👎 추천하지 않음</span>
+                    <span style="color: #8f98a0; font-size: 12px;">플레이 시간: 1.1시간</span>
+                </div>
+                <div class="review-text">
+                    친구가 선물해줘서 억지로 했는데... 1시간도 버티기 힘들었네요. 시간 낭비
+                </div>
+                <div class="review-helpful">이 리뷰가 도움이 되었나요? 예 (177) 아니요 (21)</div>
+            </div>
+
+            <div class="review-item">
+                <div class="review-header">
+                    <span class="review-recommendation">👎 추천하지 않음</span>
+                    <span style="color: #8f98a0; font-size: 12px;">플레이 시간: 0.6시간</span>
+                </div>
+                <div class="review-text">
+                    개발자가 게임을 대충 만든 게 티나네요. 이런 퀄리티로 돈 받고 파는 게 말이 됩니까?
+                </div>
+                <div class="review-helpful">이 리뷰가 도움이 되었나요? 예 (289) 아니요 (6)</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleReadMore() {
+            const content = document.getElementById('readMoreContent');
+            const button = document.querySelector('.read-more-btn');
+            
+            if (content.classList.contains('expanded')) {
+                content.classList.remove('expanded');
+                button.textContent = 'READ MORE';
+            } else {
+                content.classList.add('expanded');
+                button.textContent = 'READ LESS';
+            }
+        }
+    </script>
 </body>
 </html>
