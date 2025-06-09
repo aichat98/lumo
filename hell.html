@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💀 HELLGATE ☠️</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;700&family=Gowun+Batang:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: 
+                radial-gradient(circle at 25% 25%, #222 2px, transparent 2px),
+                radial-gradient(circle at 75% 75%, #333 1px, transparent 1px),
+                linear-gradient(45deg, #0a0a0a 25%, transparent 25%),
+                linear-gradient(-45deg, #0a0a0a 25%, transparent 25%),
+                radial-gradient(circle at 20% 80%, rgba(139, 0, 0, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(204, 68, 68, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255, 51, 51, 0.1) 0%, transparent 50%),
+                #000;
+            background-size: 30px 30px, 20px 20px, 40px 40px, 40px 40px, 400px 400px, 300px 300px, 200px 200px;
+            animation: backgroundMove 20s ease infinite;
+            color: #ddd;
+            font-family: 'Noto Serif KR', serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            touch-action: manipulation;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        @keyframes backgroundMove {
+            0%, 100% { 
+                background-position: 0 0, 0 0, 0 0, 0 0, 0% 50%, 100% 50%, 50% 0%; 
+            }
+            50% { 
+                background-position: 15px 15px, 10px 10px, 20px 20px, 20px 20px, 100% 50%, 0% 50%, 50% 100%; 
+            }
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            border: 3px solid #666;
+            background: linear-gradient(45deg, rgba(26, 26, 26, 0.9), rgba(42, 42, 42, 0.9));
+            padding: 30px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .title {
+            font-family: 'Gowun Batang', serif;
+            font-size: 2.5rem;
+            color: #cc4444;
+            text-shadow: 2px 2px 4px #000;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 5px;
+            font-weight: 300;
+        }
+        
+        .ornament-line {
+            font-size: 1.3rem;
+            color: #666;
+            margin: 15px 0;
+        }
+        
+        /* 사용약관 스타일 */
+        .terms-section {
+            margin-top: 15px;
+            text-align: center;
+        }
+        
+        .terms-toggle {
+            background: linear-gradient(45deg, rgba(42, 42, 42, 0.9), rgba(66, 66, 66, 0.9));
+            border: 2px solid #666;
+            padding: 8px 15px;
+            margin: 0 auto;
+            max-width: 250px;
+            cursor: pointer;
+            border-radius: 8px;
+            font-family: 'Gowun Batang', serif;
+            font-size: 0.7rem;
+            color: #777;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(3px);
+            opacity: 0.6;
+        }
+        
+        .terms-toggle:hover {
+            background: linear-gradient(45deg, rgba(66, 66, 66, 0.9), rgba(88, 88, 88, 0.9));
+            opacity: 1;
+            color: #cc6666;
+        }
+        
+        .terms-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+            background: linear-gradient(135deg, rgba(10, 10, 10, 0.95), rgba(26, 26, 26, 0.9));
+            border: 2px solid #666;
+            margin: 20px auto;
+            max-width: 700px;
+            border-radius: 8px;
+            backdrop-filter: blur(3px);
+        }
+        
+        .terms-content.open {
+            max-height: 800px;
+            padding: 25px;
+        }
+        
+        .terms-title {
+            font-family: 'Gowun Batang', serif;
+            font-size: 1.4rem;
+            color: #cc4444;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        
+        .terms-text {
+            font-size: 0.75rem;
+            color: #999;
+            line-height: 1.4;
+            text-align: left;
+        }
+        
+        .terms-text p {
+            margin-bottom: 12px;
+        }
+        
+        .terms-text strong {
+            color: #cc6666;
+        }
+        
+        .terms-warning {
+            background: rgba(204, 68, 68, 0.2);
+            border: 1px solid #cc4444;
+            padding: 12px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: 500;
+            margin: 15px 0;
+            font-size: 0.7rem;
+        }
+        
+        .terms-footer {
+            text-align: center;
+            font-size: 0.65rem;
+            color: #666;
+            margin-top: 15px;
+            font-style: italic;
+        }
+        
+        .section {
+            background: linear-gradient(135deg, rgba(26, 26, 26, 0.95), rgba(42, 42, 42, 0.9));
+            border: 2px solid #666;
+            margin: 30px 0;
+            padding: 25px;
+            position: relative;
+            border-radius: 8px;
+            backdrop-filter: blur(3px);
+        }
+        
+        .section::before {
+            content: '☠️';
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: #000;
+            padding: 0 10px;
+            font-size: 1.5rem;
+        }
+        
+        .section-title {
+            font-family: 'Gowun Batang', serif;
+            font-size: 1.6rem;
+            color: #cc4444;
+            text-align: center;
+            margin-bottom: 25px;
+            text-shadow: 1px 1px 2px #000;
+            font-weight: 700;
+        }
+        
+        .form-group {
+            margin: 20px 0;
+        }
+        
+        .form-label {
+            font-size: 1rem;
+            color: #bbb;
+            margin-bottom: 8px;
+            display: block;
+            font-weight: 400;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #666;
+            color: #ddd;
+            font-size: 1rem;
+            font-family: 'Noto Serif KR', serif;
+            border-radius: 4px;
+        }
+        
+        .form-input::placeholder {
+            color: #555;
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #cc4444;
+            background: rgba(17, 17, 17, 0.9);
+        }
+        
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        
+        .summon-button {
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(45deg, #666, #888);
+            border: 2px solid #999;
+            color: #fff;
+            font-family: 'Gowun Batang', serif;
+            font-size: 1.3rem;
+            cursor: pointer;
+            text-shadow: 1px 1px 2px #000;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            border-radius: 6px;
+            margin-top: 30px;
+            font-weight: 700;
+        }
+        
+        .summon-button:hover {
+            background: linear-gradient(45deg, #888, #aaa);
+            transform: scale(1.02);
+        }
+        
+        .demon-response {
+            background: linear-gradient(135deg, rgba(10, 10, 10, 0.95), rgba(26, 26, 26, 0.9));
+            border: 3px solid #cc4444;
+            padding: 25px;
+            margin-top: 30px;
+            display: none;
+            position: relative;
+            border-radius: 8px;
+            backdrop-filter: blur(3px);
+        }
+        
+        .demon-response::before {
+            content: '💀';
+            position: absolute;
+            margin-top: -40px;
+            margin-left: -10px;
+            background: #000;
+            padding: 0 10px;
+            font-size: 1.8rem;
+        }
+        
+        .demon-name {
+            font-family: 'Gowun Batang', serif;
+            font-size: 1.3rem;
+            color: #cc6666;
+            text-align: center;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 2px #000;
+            font-weight: 700;
+        }
+        
+        .demon-message {
+            font-size: 1rem;
+            color: #ccc;
+            line-height: 1.6;
+            font-weight: 300;
+        }
+        
+        .skull-divider {
+            text-align: center;
+            font-size: 1.8rem;
+            margin: 20px 0;
+            color: #666;
+        }
+        
+        .footer-text {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 40px;
+            font-style: italic;
+            font-weight: 300;
+        }
+        
+        .copy-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #2a5a2a;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 5px;
+            font-weight: 500;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.3s ease;
+            font-family: 'Gowun Batang', serif;
+        }
+        
+        .copy-notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        /* 치지직 효과들 */
+        .text-glitch {
+            animation: textGlitch 0.4s ease-in-out;
+        }
+        
+        @keyframes textGlitch {
+            0% { 
+                transform: translateX(0);
+                filter: hue-rotate(0deg);
+                text-shadow: none;
+            }
+            15% { 
+                transform: translateX(-3px) skewX(-5deg);
+                filter: hue-rotate(90deg);
+                text-shadow: 3px 0 #ff0000, -3px 0 #00ff00;
+            }
+            30% { 
+                transform: translateX(4px) skewX(8deg);
+                filter: hue-rotate(180deg);
+                text-shadow: -4px 0 #ff0000, 4px 0 #0000ff;
+            }
+            45% { 
+                transform: translateX(-2px) skewX(-3deg);
+                filter: hue-rotate(270deg);
+                text-shadow: 2px 0 #ff0000, -2px 0 #00ff00;
+            }
+            60% { 
+                transform: translateX(5px) skewX(10deg);
+                filter: hue-rotate(360deg);
+                text-shadow: -5px 0 #ff0000, 5px 0 #0000ff;
+            }
+            75% { 
+                transform: translateX(-1px) skewX(-2deg);
+                filter: hue-rotate(180deg);
+                text-shadow: 1px 0 #ff0000, -1px 0 #00ff00;
+            }
+            100% { 
+                transform: translateX(0);
+                filter: hue-rotate(0deg);
+                text-shadow: none;
+            }
+        }
+        .dark-ripple {
+            position: fixed;
+            border: 3px solid #cc4444;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1000;
+            transform: translate(-50%, -50%);
+        }
+        
+        @keyframes darkRipple {
+            0% {
+                width: 0;
+                height: 0;
+                opacity: 1;
+            }
+            100% {
+                width: 200px;
+                height: 200px;
+                opacity: 0;
+            }
+        }
+        
+        /* 흔들기 애니메이션 */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        .shake {
+            animation: shake 0.6s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="copy-notification" id="copyNotification">클립보드에 복사되었습니다!</div>
+    <div class="glitch-overlay" id="glitchOverlay"></div>
+    <div class="screen-flash" id="screenFlash"></div>
+    <div class="static-noise" id="staticNoise"></div>
+    
+    <div class="container">
+        <div class="header">
+            <div class="title">HELLGATE<br>☠️</div>
+            <div class="subtitle">현대식 악마 소환 시스템 v3.0</div>
+            <div class="ornament-line">☠️ ⚰️ 💀 ⚱️ 🗡️ ⚱️ 💀 ⚰️ ☠️</div>
+            <div class="terms-section">
+                <div class="terms-toggle" onclick="toggleTerms()">
+                    📜 사용약관 (반드시 읽어보세요) 📜
+                </div>
+                <div class="terms-content" id="terms-content">
+                    <div class="terms-title">지옥계 디지털 서비스 이용약관 v66.6</div>
+                    <div class="terms-text">
+                        <p><strong>제1조 (목적)</strong><br>
+                        본 약관은 베엘제붑 영주(이하 "회사")가 운영하는 HELLGATE 서비스 이용에 관한 것입니다. 회사는 지옥계 사업자등록번호 666-66-66666호로 등록된 정식 악마입니다.</p>
+                        
+                        <p><strong>제2조 (서비스 제공)</strong><br>
+                        회사는 24시간 365일 서비스를 제공하나, 지옥계 정전, 용암 범람, 사탄 님의 기분, 천계의 방해공작 등으로 인한 서비스 중단 시 책임지지 않습니다.</p>
+                        
+                        <p><strong>제3조 (개인정보 처리)</strong><br>
+                        수집된 영혼 정보는 지옥계 개인정보보호법에 따라 영구 보관됩니다. 본인의 동의 없이 천계, 연옥, 기타 차원에 판매하지 않습니다. (단, 사탄 님이 원하시면 예외)</p>
+                        
+                        <p><strong>제4조 (환불정책)</strong><br>
+                        영혼 거래는 쿨링오프 대상이 아닙니다. 소원이 마음에 들지 않아도 환불 불가하며, 컴플레인 접수 시 추가 저주가 발동될 수 있습니다.</p>
+                        
+                        <p><strong>제5조 (면책조항)</strong><br>
+                        - 소원 성취 과정에서 발생하는 부작용(머리카락 빠짐, 갑작스러운 럭키, 치킨 중독 등)에 대해 회사는 책임지지 않습니다<br>
+                        - 저주가 엉뚱한 사람에게 적용되어도 회사 과실이 아닙니다 (현대 기술 적응 중)<br>
+                        - 와이파이, USB 등 21세기 기술 관련 마법은 성공률 50% 이하입니다</p>
+                        
+                        <p><strong>제6조 (금지행위)</strong><br>
+                        다음 행위 시 즉시 계약 해지 및 영혼 몰수:<br>
+                        - 베엘제붑을 "베짱이", "벨제붑", "잘못된 발음"으로 부르는 행위<br>
+                        - 지옥 고객센터에 민원 넣기 (1577-6666)<br>
+                        - 카카오톡으로 친구 신청하기</p>
+                        
+                        <p><strong>제7조 (기타)</strong><br>
+                        본 계약서는 지옥계 민법 적용을 받으며, 분쟁 발생 시 지옥 중앙법원이 관할합니다. 단, 변호사는 모두 악마이므로 승소 확률 0%입니다.</p>
+                        
+                        <p class="terms-warning">
+                            ⚠️ 주의: 본 약관에 동의하는 순간 여러분의 브라우저 히스토리는 베엘제붑이 모니터링합니다. 야한 거 봤으면 미리 삭제하세요. ⚠️
+                        </p>
+                        
+                        <p class="terms-footer">
+                            마지막 업데이트: 지옥력 2024년 13월 32일<br>
+                            베엘제붑 영주 (인간계 적응 훈련 중) 
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">저주 발동 의식</div>
+            
+            <div class="form-group">
+                <label class="form-label">💀 저주받을 놈의 이름</label>
+                <input type="text" class="form-input" id="target-name" placeholder="여기에 그 놈의 이름을 새겨라...">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">☠️ 어떤 저주를 내릴 것인가?</label>
+                <textarea class="form-input form-textarea" id="curse-type" placeholder="예: 와이파이 영원히 끊기기, 음식배달 맨날 늦기, USB 평생 뒤집어서 꽂기..."></textarea>
+            </div>
+        </div>
+        
+        <div class="skull-divider">💀 ⚰️ 💀 ⚰️ 💀</div>
+        
+        <div class="section">
+            <div class="section-title">지옥 계약서</div>
+            
+            <div class="form-group">
+                <label class="form-label">🔥 간절한 소원</label>
+                <textarea class="form-input form-textarea" id="wish" placeholder="무엇을 원하는가? 돈? 사랑? 복수? 인스타 팔로워? 아니면 그냥... 치킨?"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">⚰️ 대가로 뭘 줄 건데?</label>
+                <input type="text" class="form-input" id="offering" placeholder="영혼은 너무 뻔하고... 창의적으로 생각해봐">
+            </div>
+        </div>
+        
+        <button class="summon-button" onclick="summonDemon()">
+            ☠️ OPEN HELLGATE ☠️
+        </button>
+        
+        <div class="demon-response" id="demon-response">
+            <div class="demon-name">완전히 혼란스러운 베엘제붑 영주<br>
+            <span style="font-size: 0.8rem; color: #999;">(인간계 경력 0년차)</span></div>
+            <div class="demon-message" id="demon-message"></div>
+        </div>
+        
+        <div class="footer-text">
+            ⚰️ "고난을 통해 지옥으로" ⚰️
+        </div>
+    </div>
+
+    <script>
+        // 사용약관 토글 함수를 맨 위에 정의!
+        function toggleTerms() {
+            const termsContent = document.getElementById('terms-content');
+            termsContent.classList.toggle('open');
+            
+            // 토글할 때마다 치지직!
+            document.body.style.filter = 'hue-rotate(180deg) invert(0.3)';
+            setTimeout(() => document.body.style.filter = 'none', 100);
+        }
+        
+        const demonResponses = {
+            // 키워드별 특화 대사들 - wifi, 와이파이, 와파
+            wifi: [
+                "아! '와이파이'라는 마법 신호구나! 예전에는 연기로 신호를 보냈는데... 이 보이지 않는 마법의 끈을 끊어주겠다! 그런데... 공유기가 뭐지?",
+                "와이파이! 이 현대의 마법망이로군! 지옥에도 도입하려고 했는데 자꾸 끊어져서... 아무튼 그 놈의 인터넷이 영원히 로딩만 하게 해주마!",
+                "어? 와이파이가 뭔가? 아! 무선 마법 통신이구나! 그 놈이 영원히 '연결 중...' 상태에 갇히게 해주겠다!"
+            ],
+            usb: [
+                "USB... 정말 신기한 현대 저주로군! '항상 뒤집어서 꽂기'라니... 이게 얼마나 절망적인 일인지는 모르겠지만 그렇게 해주마!",
+                "크하하! USB 저주! 이건 정말 현대적이다! 그 놈이 평생 3번씩 뒤집어야 꽂을 수 있게 해주겠어!",
+                "USB 뒤집기 저주? 지옥에서도 소문난 21세기 최고의 고문이로군! 그 놈은 영원히 고통받을 것이다!"
+            ],
+            배달: [
+                "음식 배달이 늦는다고? 크하하! 예전에는 그냥 적들을 굶겼는데, 요즘엔 '기다리게 하는' 세련된 고문이 있구나!",
+                "배달... 음식을 가져다주는 현대의 마법사들이로군! 그들이 그 놈을 영원히 기다리게 해주겠다!",
+                "배민? 쿠팡이츠? 이게 다 뭔가? 아무튼 그 놈의 모든 배달이 2시간씩 늦게 해주마!"
+            ],
+            돈: [
+                "돈이라... 좋다! 그런데 요즘은 플라스틱 카드도 쓴다던데? 시대가 많이 바뀌었다... 아무튼 네 금고를 채워주마!",
+                "황금을 원하는구나! 지옥 금고에서 좀 빼다 줄게... 근데 비트코인은 뭐냐? 컴퓨터 안에 들어있는 돈이라고?",
+                "돈... 인간계의 영원한 욕망이로군! 크하하! 하지만 현금일까? 계좌이체일까? 요즘은 페이도 있다던데?"
+            ],
+            사랑: [
+                "사랑이라... 아, 이건 예전부터 있던 건데! 하지만 지옥계 법률로는 진짜 사랑은 조작할 수 없다. 대신 네 '매력도'를 높여주겠다!",
+                "로맨스를 원하는구나! 요즘은 어떻게 만날까? 틴더? 카톡? 예전에는 편지였는데... 시대가 참 많이 바뀌었다!",
+                "사랑... 지옥에서도 복잡한 감정이야. 연애는 할 수 있게 해줄 수 있지만... 진심은 본인이 만들어야 해!"
+            ],
+            치킨: [
+                "치킨을 원한다고? 이게 뭔가? 새로운 종류의 황금 보물인가? 이 신성한 '치킨'을 구해다 주겠다!",
+                "치킨! 현대인의 성배로군! 후라이드인가? 양념인가? 아니면 간장? 선택의 기로에서 고민하게 해주겠다!",
+                "치킨... 닭을 튀긴 것이구나! 지옥 주방에서도 만들어 볼까? 불은 충분하니까!"
+            ],
+            // 범용 대사들
+            general: [
+                "흠... 현대 인간의 고충을 알겠구나. 내가 뭘 도와줄 수 있을지 모르겠지만 최선을 다해보겠다!",
+                "오케이! 21세기 악마도 적응력이 중요하지! 이 디지털 시대에 발맞춰 네 소원을 들어주마!",
+                "요즘 지옥도 현대화하고 있어서... 네 문제는 뭔가? 인터넷 관련? 아니면 인간관계?",
+                "크하하! 현대의 고민이 참 독특하군! 예전에는 단순했는데... 요즘은 복잡해!",
+                "새로운 시대, 새로운 저주! 내가 비록 초보지만 열심히 해보겠다!",
+                "현대식 악마 서비스 받고 있는 거야! 뭔가 이상하면 지옥 고객센터에 문의해!",
+                "21세기 악마는 친절해야 한다고 상사가... 아무튼 네 문제를 해결해주마!",
+                "요즘 세상 참 살기 힘들지? 내가 도와줄게! 그런데 스마트폰은 어떻게 쓰는 거지?"
+            ],
+            empty: [
+                "어? 뭔가 적어야 하는 거 아닌가? 내 때는 피와 제물이 필요했는데...",
+                "인간아, 최소한 뭔가는 써야 내가 일을 하지! 그런데 이 인터넷이라는 게 편리하긴 하네.",
+                "공백으로 소환? 옛날엔 3일 밤낮으로 주문을 외워야 했는데!",
+                "뭐지? 빈 칸만 있네? 혹시 이것도 현대의 새로운 소환법인가? '미니멀리즘'이라는 걸 적용한 건가?",
+                "어라? 입력이 없네? 설마 마음으로 전달하라는 건가? 아직 텔레파시는 배우지 못했는데...",
+                "엥? 진짜 아무것도 안 쓰고 버튼을 누른 거야? 용감하긴 하다... 그래도 힌트라도 줘야 내가 뭘 해야 할지 알지!",
+                "이상하군... 예전엔 양피지에 피로 써야 했는데, 이젠 디지털 입력창도 비워둔 채로 소환하다니..."
+            ]
+        };
+        
+        function getSmartResponse(targetName, curseType, wish, offering) {
+            const allText = (targetName + ' ' + curseType + ' ' + wish + ' ' + offering).toLowerCase();
+            
+            // 키워드 매칭 체크
+            if (allText.includes('와이파이') || allText.includes('wifi') || allText.includes('와파') || allText.includes('인터넷')) {
+                return demonResponses.wifi[Math.floor(Math.random() * demonResponses.wifi.length)];
+            }
+            if (allText.includes('usb') || allText.includes('유에스비')) {
+                return demonResponses.usb[Math.floor(Math.random() * demonResponses.usb.length)];
+            }
+            if (allText.includes('배달') || allText.includes('배민') || allText.includes('음식')) {
+                return demonResponses.배달[Math.floor(Math.random() * demonResponses.배달.length)];
+            }
+            if (allText.includes('돈') || allText.includes('돈벌기') || allText.includes('부자') || allText.includes('로또')) {
+                return demonResponses.돈[Math.floor(Math.random() * demonResponses.돈.length)];
+            }
+            if (allText.includes('사랑') || allText.includes('연애') || allText.includes('남친') || allText.includes('여친')) {
+                return demonResponses.사랑[Math.floor(Math.random() * demonResponses.사랑.length)];
+            }
+            if (allText.includes('치킨') || allText.includes('닭') || allText.includes('후라이드') || allText.includes('양념')) {
+                return demonResponses.치킨[Math.floor(Math.random() * demonResponses.치킨.length)];
+            }
+            
+            // 키워드 매칭 안되면 범용 대사
+            return demonResponses.general[Math.floor(Math.random() * demonResponses.general.length)];
+        }
+        
+        function summonDemon() {
+            // 강력한 치지직 콤보!
+            const glitchSequence = [
+                () => document.body.style.filter = 'hue-rotate(180deg) saturate(5) brightness(2)',
+                () => document.body.style.filter = 'invert(1) contrast(3)',
+                () => document.body.style.filter = 'hue-rotate(90deg) saturate(0) brightness(0.5)',
+                () => document.body.style.filter = 'invert(1) hue-rotate(270deg)',
+                () => document.body.style.filter = 'saturate(10) contrast(5)',
+                () => document.body.style.filter = 'none'
+            ];
+            
+            glitchSequence.forEach((effect, index) => {
+                setTimeout(effect, index * 80);
+            });
+            
+            // 추가 치지직들
+            setTimeout(() => {
+                document.body.style.filter = 'hue-rotate(45deg) invert(0.8)';
+                setTimeout(() => document.body.style.filter = 'none', 60);
+            }, 800);
+            
+            setTimeout(() => {
+                document.body.style.filter = 'contrast(8) brightness(0.3)';
+                setTimeout(() => document.body.style.filter = 'none', 40);
+            }, 1200);
+            
+            const targetName = document.getElementById('target-name').value.trim();
+            const curseType = document.getElementById('curse-type').value.trim();
+            const wish = document.getElementById('wish').value.trim();
+            const offering = document.getElementById('offering').value.trim();
+            
+            const responseDiv = document.getElementById('demon-response');
+            const messageDiv = document.getElementById('demon-message');
+            
+            let response = "";
+            
+            // 빈 칸 체크
+            if (!targetName && !curseType && !wish && !offering) {
+                response = demonResponses.empty[Math.floor(Math.random() * demonResponses.empty.length)];
+            } else {
+                // 스마트 응답 생성
+                response = getSmartResponse(targetName, curseType, wish, offering);
+            }
+            
+            // 흔들기 효과
+            document.body.classList.add('shake');
+            setTimeout(() => {
+                document.body.classList.remove('shake');
+            }, 600);
+            
+            messageDiv.textContent = "";
+            responseDiv.style.display = "block";
+            responseDiv.scrollIntoView({ behavior: 'smooth' });
+            
+            let i = 0;
+            const typeWriter = () => {
+                if (i < response.length) {
+                    messageDiv.textContent += response.charAt(i);
+                    
+                    // 타이핑 중 랜덤 치지직 (20% 확률)
+                    if (Math.random() < 0.2) {
+                        const randomGlitch = [
+                            'hue-rotate(180deg)',
+                            'invert(1)',
+                            'saturate(8) contrast(3)',
+                            'brightness(3) contrast(0.5)',
+                            'hue-rotate(90deg) invert(0.7)'
+                        ];
+                        const effect = randomGlitch[Math.floor(Math.random() * randomGlitch.length)];
+                        document.body.style.filter = effect;
+                        setTimeout(() => document.body.style.filter = 'none', 50);
+                    }
+                    
+                    i++;
+                    setTimeout(typeWriter, 25);
+                }
+            };
+            
+            setTimeout(() => {
+                typeWriter();
+                
+                // 타이핑 완료 후 글씨 치지직 추가!
+                setTimeout(() => {
+                    triggerTextGlitches();
+                }, 500);
+                
+                setTimeout(() => {
+                    copyToClipboard(targetName, curseType, wish, offering);
+                }, response.length * 25 + 1000);
+            }, 700);
+        }
+        
+        function copyToClipboard(targetName, curseType, wish, offering) {
+            let copyText = "";
+            
+            if (targetName || curseType) {
+                copyText += "## 저주\n";
+                if (targetName) copyText += `대상: ${targetName}\n`;
+                if (curseType) copyText += `내용: ${curseType}\n`;
+                copyText += "\n";
+            }
+            
+            if (wish || offering) {
+                copyText += "## 계약서\n";
+                if (wish) copyText += `소원: ${wish}\n`;
+                if (offering) copyText += `대가: ${offering}\n`;
+            }
+            
+            // 베엘제붑 대사는 복사하지 않음!
+            
+            navigator.clipboard.writeText(copyText).then(() => {
+                showCopyNotification();
+            }).catch(() => {
+                const textArea = document.createElement('textarea');
+                textArea.value = copyText;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showCopyNotification();
+            });
+        }
+        
+        function showCopyNotification() {
+            const notification = document.getElementById('copyNotification');
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // 클릭 파문 효과
+        function createRipple(x, y) {
+            for (let i = 0; i < 3; i++) {
+                const ripple = document.createElement('div');
+                ripple.className = 'dark-ripple';
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                ripple.style.animation = 'darkRipple 1s ease-out forwards';
+                ripple.style.animationDelay = i * 0.2 + 's';
+                document.body.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 1000 + i * 200);
+            }
+        }
+        
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('button') || e.target.closest('input') || e.target.closest('textarea')) return;
+            createRipple(e.clientX, e.clientY);
+        });
+        
+        document.addEventListener('touchstart', function(e) {
+            if (e.target.closest('button') || e.target.closest('input') || e.target.closest('textarea')) return;
+            e.preventDefault();
+            createRipple(e.touches[0].clientX, e.touches[0].clientY);
+        });
+        
+        // 랜덤 치지직 시작 (페이지 로드 3초 후)
+        setTimeout(() => {
+            setInterval(() => {
+                if (Math.random() < 0.4) { // 40% 확률
+                    const randomEffects = [
+                        'hue-rotate(360deg)',
+                        'invert(0.8)',
+                        'saturate(5) brightness(2)',
+                        'contrast(3) brightness(0.7)',
+                        'hue-rotate(180deg) invert(0.5)'
+                    ];
+                    const effect = randomEffects[Math.floor(Math.random() * randomEffects.length)];
+                    document.body.style.filter = effect;
+                    setTimeout(() => document.body.style.filter = 'none', 100);
+                }
+            }, Math.random() * 8000 + 3000); // 3-11초마다
+        }, 3000);
+        
+        // 글씨 치지직 함수
+        function triggerTextGlitches() {
+            const textElements = [
+                '.title',
+                '.section-title', 
+                '.demon-name',
+                '.form-label',
+                '.summon-button',
+                '.ornament-line'
+            ];
+            
+            // 3-5개 랜덤 선택 (개수 증가!)
+            const numGlitches = Math.floor(Math.random() * 3) + 3; // 3~5개로 증가!
+            const selectedTexts = [];
+            
+            for (let i = 0; i < numGlitches; i++) {
+                const randomSelector = textElements[Math.floor(Math.random() * textElements.length)];
+                const elements = document.querySelectorAll(randomSelector);
+                if (elements.length > 0) {
+                    const randomElement = elements[Math.floor(Math.random() * elements.length)];
+                    if (!selectedTexts.includes(randomElement)) {
+                        selectedTexts.push(randomElement);
+                    }
+                }
+            }
+            
+            // 선택된 텍스트들 치지직
+            selectedTexts.forEach((element, index) => {
+                setTimeout(() => {
+                    element.classList.add('text-glitch');
+                    setTimeout(() => {
+                        element.classList.remove('text-glitch');
+                    }, 400);
+                }, index * 100); // 0.1초씩 딜레이
+            });
+        }
+        
+        // 자동 글씨 치지직 (3-7초마다 더 자주!)
+        setTimeout(() => {
+            setInterval(() => {
+                if (Math.random() < 0.7) { // 70% 확률로 증가!
+                    triggerTextGlitches();
+                }
+            }, Math.random() * 4000 + 3000); // 3-7초마다로 단축!
+        }, 2000); // 시작도 2초로 단축!
+    </script>
+</body>
+</html>
