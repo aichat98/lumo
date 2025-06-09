@@ -1,0 +1,1504 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>레트로 글리치 GIF 메이커 v2.0</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(45deg, #ff006e, #8338ec, #3a86ff);
+            background-size: 400% 400%;
+            animation: gradientShift 8s ease infinite;
+            min-height: 100vh;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px #ff006e, 0 0 40px #8338ec;
+            animation: glitchText 2s infinite;
+        }
+
+        @keyframes glitchText {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        .upload-area {
+            border: 3px dashed #ff006e;
+            border-radius: 15px;
+            padding: 50px;
+            text-align: center;
+            margin-bottom: 30px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: #8338ec;
+            transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(255, 0, 110, 0.5);
+        }
+
+        .upload-area.dragover {
+            background: rgba(255, 0, 110, 0.2);
+            border-color: #3a86ff;
+        }
+
+        .upload-text {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-btn {
+            background: linear-gradient(45deg, #ff006e, #8338ec);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Courier New', monospace;
+        }
+
+        .upload-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+
+        .text-controls {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 0, 110, 0.3);
+        }
+
+        .text-controls h3 {
+            color: #ff006e;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.3rem;
+            text-shadow: 0 0 10px #ff006e;
+        }
+
+        .text-input-group {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .text-input {
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #ff006e;
+            border-radius: 8px;
+            padding: 10px;
+            color: white;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: #8338ec;
+            box-shadow: 0 0 15px rgba(255, 0, 110, 0.5);
+        }
+
+        .add-text-btn {
+            background: linear-gradient(45deg, #3a86ff, #06ffa5);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s ease;
+        }
+
+        .add-text-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(58, 134, 255, 0.5);
+        }
+
+        .text-style-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .style-input {
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid #8338ec;
+            border-radius: 6px;
+            padding: 8px;
+            color: white;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .animation-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .animation-btn {
+            background: linear-gradient(45deg, #8338ec, #ff006e);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .animation-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(131, 56, 236, 0.5);
+        }
+
+        .animation-btn.active {
+            background: linear-gradient(45deg, #06ffa5, #3a86ff);
+            box-shadow: 0 0 15px rgba(6, 255, 165, 0.6);
+        }
+
+        .text-list {
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .text-item {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #8338ec;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .remove-text-btn {
+            background: #ff4081;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .canvas-container {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+            gap: 20px;
+        }
+
+        .canvas-wrapper {
+            text-align: center;
+        }
+
+        .canvas-label {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #ff006e;
+            text-shadow: 0 0 10px #ff006e;
+        }
+
+        canvas {
+            border: 2px solid #ff006e;
+            border-radius: 10px;
+            max-width: 400px;
+            max-height: 400px;
+            box-shadow: 0 0 30px rgba(255, 0, 110, 0.3);
+        }
+
+        .effects-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .effect-group {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 0, 110, 0.3);
+        }
+
+        .effect-group h3 {
+            color: #ff006e;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.3rem;
+            text-shadow: 0 0 10px #ff006e;
+        }
+
+        .effect-btn {
+            width: 100%;
+            padding: 12px;
+            margin: 5px 0;
+            background: linear-gradient(45deg, #333, #555);
+            color: white;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .effect-btn:hover {
+            background: linear-gradient(45deg, #ff006e, #8338ec);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 0, 110, 0.4);
+        }
+
+        .effect-btn.active {
+            background: linear-gradient(45deg, #ff006e, #8338ec);
+            border-color: #3a86ff;
+            box-shadow: 0 0 15px rgba(255, 0, 110, 0.6);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s ease;
+        }
+
+        .preview-btn {
+            background: linear-gradient(45deg, #3a86ff, #06ffa5);
+            color: white;
+        }
+
+        .generate-btn {
+            background: linear-gradient(45deg, #ff006e, #ffbe0b);
+            color: white;
+        }
+
+        .clear-btn {
+            background: linear-gradient(45deg, #ff4081, #f44336);
+            color: white;
+        }
+
+        .control-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+
+        .progress-container {
+            margin: 20px 0;
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #ff006e, #8338ec);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-size: 1rem;
+            color: #ff006e;
+        }
+
+        .result-area {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .download-link {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #06ffa5, #3a86ff);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .download-link:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(6, 255, 165, 0.5);
+        }
+
+        @media (max-width: 768px) {
+            .canvas-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .effects-panel {
+                grid-template-columns: 1fr;
+            }
+            
+            .title {
+                font-size: 2rem;
+            }
+
+            .text-input-group {
+                grid-template-columns: 1fr;
+            }
+
+            .text-style-controls {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">🌈 레트로 글리치 GIF 메이커 v2.0 🌈</h1>
+        
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-text">🖼️ 이미지를 드래그하거나 클릭해서 업로드하세요!</div>
+            <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                📁 파일 선택
+            </button>
+            <input type="file" id="fileInput" class="file-input" accept="image/*">
+        </div>
+
+        <div class="text-controls">
+            <h3>📝 텍스트 추가</h3>
+            <div class="text-input-group">
+                <input type="text" id="textInput" class="text-input" placeholder="Click! 같은 텍스트 입력...">
+                <button class="add-text-btn" onclick="addText()">텍스트 추가</button>
+            </div>
+            <div class="text-style-controls">
+                <input type="number" id="fontSize" class="style-input" placeholder="크기" value="40" min="10" max="100">
+                <input type="color" id="textColor" class="style-input" value="#ff006e">
+                <select id="fontFamily" class="style-input">
+                    <option value="Courier New">Courier New</option>
+                    <option value="Arial">Arial</option>
+                    <option value="Impact">Impact</option>
+                    <option value="Comic Sans MS">Comic Sans</option>
+                </select>
+                <select id="textStyle" class="style-input">
+                    <option value="normal">일반</option>
+                    <option value="bold">굵게</option>
+                    <option value="italic">기울임</option>
+                </select>
+            </div>
+            <div class="animation-controls">
+                <button class="animation-btn active" data-animation="slideUp" onclick="setTextAnimation(this)">⬆️ 아래서 등장</button>
+                <button class="animation-btn" data-animation="blink" onclick="setTextAnimation(this)">✨ 고장난 전구</button>
+                <button class="animation-btn" data-animation="pulse" onclick="setTextAnimation(this)">💗 맥박</button>
+                <button class="animation-btn" data-animation="bounce" onclick="setTextAnimation(this)">🏀 튀어오르기</button>
+                <button class="animation-btn" data-animation="rainbow" onclick="setTextAnimation(this)">🌈 무지개</button>
+                <button class="animation-btn" data-animation="none" onclick="setTextAnimation(this)">🚫 애니메이션 없음</button>
+            </div>
+            <div class="text-list" id="textList"></div>
+        </div>
+
+        <div class="canvas-container">
+            <div class="canvas-wrapper">
+                <div class="canvas-label">원본 이미지</div>
+                <canvas id="originalCanvas" width="400" height="400"></canvas>
+            </div>
+            <div class="canvas-wrapper">
+                <div class="canvas-label">미리보기</div>
+                <canvas id="previewCanvas" width="400" height="400"></canvas>
+            </div>
+        </div>
+
+        <div class="effects-panel">
+            <div class="effect-group">
+                <h3>🎨 글리치 효과</h3>
+                <button class="effect-btn" data-effect="rgbSplit">RGB 채널 분리</button>
+                <button class="effect-btn" data-effect="digitalNoise">디지털 노이즈</button>
+                <button class="effect-btn" data-effect="scanlines">스캔라인</button>
+                <button class="effect-btn" data-effect="pixelShift">픽셀 시프트</button>
+            </div>
+
+            <div class="effect-group">
+                <h3>📼 VHS 스타일</h3>
+                <button class="effect-btn" data-effect="vhsBlur">VHS 블러</button>
+                <button class="effect-btn" data-effect="tracking">트래킹 노이즈</button>
+                <button class="effect-btn" data-effect="vintage">빈티지 색감</button>
+                <button class="effect-btn" data-effect="chromatic">색수차</button>
+            </div>
+
+            <div class="effect-group">
+                <h3>🌊 왜곡 효과</h3>
+                <button class="effect-btn" data-effect="wave">물결 왜곡</button>
+                <button class="effect-btn" data-effect="fisheye">어안렌즈</button>
+                <button class="effect-btn" data-effect="stretch">스트레치</button>
+                <button class="effect-btn" data-effect="ripple">파문 효과</button>
+            </div>
+
+            <div class="effect-group">
+                <h3>✨ 네온 & 홀로그램</h3>
+                <button class="effect-btn" data-effect="neon">네온 글로우</button>
+                <button class="effect-btn" data-effect="hologram">홀로그램</button>
+                <button class="effect-btn" data-effect="rainbow">무지개 글리치</button>
+                <button class="effect-btn" data-effect="dotMatrix">도트 매트릭스</button>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="control-btn preview-btn" onclick="previewEffects()">🎬 미리보기</button>
+            <button class="control-btn generate-btn" onclick="generateGIF()">🎁 GIF 생성</button>
+            <button class="control-btn clear-btn" onclick="clearEffects()">🗑️ 초기화</button>
+        </div>
+
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">GIF 생성 중...</div>
+        </div>
+
+        <div class="result-area" id="resultArea"></div>
+    </div>
+
+    <script>
+        let originalImage = null;
+        let activeEffects = [];
+        let animationId = null;
+        let frameCount = 0;
+        let textElements = [];
+        let selectedAnimation = 'slideUp';
+
+        const originalCanvas = document.getElementById('originalCanvas');
+        const previewCanvas = document.getElementById('previewCanvas');
+        const originalCtx = originalCanvas.getContext('2d');
+        const previewCtx = previewCanvas.getContext('2d');
+
+        // 파일 업로드 처리
+        const fileInput = document.getElementById('fileInput');
+        const uploadArea = document.getElementById('uploadArea');
+
+        fileInput.addEventListener('change', handleFile);
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile({ target: { files: files } });
+            }
+        });
+
+        function handleFile(event) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        originalImage = img;
+                        drawOriginalImage();
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function drawOriginalImage() {
+            if (!originalImage) return;
+            
+            const canvas = originalCanvas;
+            const ctx = originalCtx;
+            
+            // 캔버스 크기 조정
+            const maxSize = 400;
+            let { width, height } = originalImage;
+            
+            if (width > height) {
+                if (width > maxSize) {
+                    height = (height * maxSize) / width;
+                    width = maxSize;
+                }
+            } else {
+                if (height > maxSize) {
+                    width = (width * maxSize) / height;
+                    height = maxSize;
+                }
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            previewCanvas.width = width;
+            previewCanvas.height = height;
+            
+            ctx.clearRect(0, 0, width, height);
+            ctx.drawImage(originalImage, 0, 0, width, height);
+            
+            // 미리보기도 초기화
+            previewCtx.clearRect(0, 0, width, height);
+            previewCtx.drawImage(originalImage, 0, 0, width, height);
+            drawTexts(previewCtx, 0);
+        }
+
+        // 애니메이션 선택
+        function setTextAnimation(button) {
+            document.querySelectorAll('.animation-btn').forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            selectedAnimation = button.dataset.animation;
+        }
+
+        // 텍스트 관리
+        function addText() {
+            const textInput = document.getElementById('textInput');
+            const text = textInput.value.trim();
+            
+            if (!text) {
+                alert('텍스트를 입력해주세요!');
+                return;
+            }
+
+            const fontSize = parseInt(document.getElementById('fontSize').value);
+            const textColor = document.getElementById('textColor').value;
+            const fontFamily = document.getElementById('fontFamily').value;
+            const textStyle = document.getElementById('textStyle').value;
+
+            const textElement = {
+                id: Date.now(),
+                text: text,
+                x: previewCanvas.width / 2,
+                y: previewCanvas.height - 80, // 중앙 하단에 배치
+                fontSize: fontSize,
+                color: textColor,
+                fontFamily: fontFamily,
+                style: textStyle,
+                animation: selectedAnimation,
+                isDragging: false
+            };
+
+            textElements.push(textElement);
+            textInput.value = '';
+            updateTextList();
+            drawOriginalImage();
+        }
+
+        function removeText(id) {
+            textElements = textElements.filter(text => text.id !== id);
+            updateTextList();
+            drawOriginalImage();
+        }
+
+        function updateTextList() {
+            const textList = document.getElementById('textList');
+            textList.innerHTML = '';
+            
+            textElements.forEach(textElement => {
+                const item = document.createElement('div');
+                item.className = 'text-item';
+                item.innerHTML = `
+                    <span>${textElement.text} (${textElement.animation})</span>
+                    <button class="remove-text-btn" onclick="removeText(${textElement.id})">삭제</button>
+                `;
+                textList.appendChild(item);
+            });
+        }
+
+        function drawTexts(ctx, frame) {
+            textElements.forEach(textElement => {
+                ctx.save();
+                
+                let fontWeight = textElement.style === 'bold' ? 'bold' : 'normal';
+                let fontStyle = textElement.style === 'italic' ? 'italic' : 'normal';
+                
+                ctx.font = `${fontStyle} ${fontWeight} ${textElement.fontSize}px ${textElement.fontFamily}`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                // 애니메이션 적용
+                let x = textElement.x;
+                let y = textElement.y;
+                let alpha = 1;
+                let scale = 1;
+                let color = textElement.color;
+                
+                switch(textElement.animation) {
+                    case 'slideUp':
+                        // 아래에서 위로 등장
+                        const slideProgress = Math.min(1, frame / 30);
+                        y = textElement.y + (50 * (1 - slideProgress));
+                        alpha = slideProgress;
+                        break;
+                        
+                    case 'blink':
+                        // 고장난 전구처럼 천천히 불규칙하게 깜빡
+                        const slowTime = frame * 0.03; // 훨씬 느리게
+                        if (Math.sin(slowTime * 7) < -0.9) {
+                            alpha = 0.1;  // 깜빡 꺼짐
+                        } else if (Math.sin(slowTime * 11) < -0.7) {
+                            alpha = 0.4;  // 살짝 어둠
+                        } else if (Math.sin(slowTime * 13) < -0.3) {
+                            alpha = 0.7;  // 중간 밝기
+                        } else {
+                            alpha = 1.0;  // 완전히 켜짐
+                        }
+                        break;
+                        
+                    case 'pulse':
+                        // 맥박처럼 크기 변화
+                        scale = 1 + Math.sin(frame * 0.2) * 0.2;
+                        break;
+                        
+                    case 'bounce':
+                        // 튀어오르기
+                        y = textElement.y - Math.abs(Math.sin(frame * 0.15)) * 20;
+                        break;
+                        
+                    case 'rainbow':
+                        // 무지개 색상 변화
+                        const hue = (frame * 5) % 360;
+                        color = `hsl(${hue}, 100%, 60%)`;
+                        break;
+                        
+                    case 'none':
+                    default:
+                        // 애니메이션 없음
+                        break;
+                }
+                
+                // 투명도 적용
+                ctx.globalAlpha = alpha;
+                
+                // 스케일 적용
+                if (scale !== 1) {
+                    ctx.translate(x, y);
+                    ctx.scale(scale, scale);
+                    ctx.translate(-x, -y);
+                }
+                
+                // 텍스트 색상 설정
+                ctx.fillStyle = color;
+                
+                // 글로우 효과
+                ctx.shadowColor = color;
+                ctx.shadowBlur = 15 + Math.sin(frame * 0.1) * 5;
+                
+                // 텍스트 그리기
+                ctx.fillText(textElement.text, x, y);
+                
+                // 아웃라인 추가
+                ctx.shadowBlur = 0;
+                ctx.strokeStyle = '#000000';
+                ctx.lineWidth = 3;
+                ctx.strokeText(textElement.text, x, y);
+                
+                // 추가 글로우 레이어
+                ctx.globalAlpha = alpha * 0.3;
+                ctx.shadowColor = color;
+                ctx.shadowBlur = 25;
+                ctx.fillText(textElement.text, x, y);
+                
+                ctx.restore();
+            });
+        }
+
+        // 효과 버튼 처리
+        document.querySelectorAll('.effect-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const effect = btn.dataset.effect;
+                if (activeEffects.includes(effect)) {
+                    activeEffects = activeEffects.filter(e => e !== effect);
+                    btn.classList.remove('active');
+                } else {
+                    activeEffects.push(effect);
+                    btn.classList.add('active');
+                }
+            });
+        });
+
+        // 효과 함수들
+        function applyRGBSplit(imageData, intensity = 5) {
+            const data = imageData.data;
+            const width = imageData.width;
+            const height = imageData.height;
+            const newData = new Uint8ClampedArray(data);
+            
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    const i = (y * width + x) * 4;
+                    
+                    const rShift = Math.floor(intensity * Math.sin(frameCount * 0.1));
+                    const rIndex = (y * width + Math.max(0, Math.min(width - 1, x + rShift))) * 4;
+                    
+                    const bShift = Math.floor(intensity * Math.cos(frameCount * 0.1));
+                    const bIndex = (y * width + Math.max(0, Math.min(width - 1, x + bShift))) * 4;
+                    
+                    newData[i] = data[rIndex];
+                    newData[i + 1] = data[i + 1];
+                    newData[i + 2] = data[bIndex + 2];
+                    newData[i + 3] = data[i + 3];
+                }
+            }
+            
+            return new ImageData(newData, width, height);
+        }
+
+        function applyDigitalNoise(imageData, intensity = 0.1) {
+            const data = imageData.data;
+            const newData = new Uint8ClampedArray(data);
+            
+            for (let i = 0; i < data.length; i += 4) {
+                if (Math.random() < intensity) {
+                    const noise = Math.random() * 255;
+                    newData[i] = noise;
+                    newData[i + 1] = noise;
+                    newData[i + 2] = noise;
+                }
+            }
+            
+            return new ImageData(newData, imageData.width, imageData.height);
+        }
+
+        function applyScanlines(imageData) {
+            const data = imageData.data;
+            const width = imageData.width;
+            const height = imageData.height;
+            const newData = new Uint8ClampedArray(data);
+            
+            for (let y = 0; y < height; y += 2) {
+                for (let x = 0; x < width; x++) {
+                    const i = (y * width + x) * 4;
+                    newData[i] *= 0.7;
+                    newData[i + 1] *= 0.7;
+                    newData[i + 2] *= 0.7;
+                }
+            }
+            
+            return new ImageData(newData, width, height);
+        }
+
+        function applyPixelShift(imageData) {
+            const data = imageData.data;
+            const width = imageData.width;
+            const height = imageData.height;
+            const newData = new Uint8ClampedArray(data);
+            
+            const shiftAmount = Math.floor(5 * Math.sin(frameCount * 0.2));
+            
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    const i = (y * width + x) * 4;
+                    const sourceX = Math.max(0, Math.min(width - 1, x + shiftAmount));
+                    const sourceI = (y * width + sourceX) * 4;
+                    
+                    newData[i] = data[sourceI];
+                    newData[i + 1] = data[sourceI + 1];
+                    newData[i + 2] = data[sourceI + 2];
+                    newData[i + 3] = data[sourceI + 3];
+                }
+            }
+            
+            return new ImageData(newData, width, height);
+        }
+
+        function applyVHSBlur(imageData) {
+            const data = imageData.data;
+            const width = imageData.width;
+            const height = imageData.height;
+            const newData = new Uint8ClampedArray(data);
+            
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    const i = (y * width + x) * 4;
+                    let r = 0, g = 0, b = 0;
+                    let count = 0;
+                    
+                    for (let dx = -2; dx <= 2; dx++) {
+                        const nx = Math.max(0, Math.min(width - 1, x + dx));
+                        const ni = (y * width + nx) * 4;
+                        r += data[ni];
+                        g += data[ni + 1];
+                        b += data[ni + 2];
+                        count++;
+                    }
+                    
+                    newData[i] = r / count;
+                    newData[i + 1] = g / count;
+                    newData[i + 2] = b / count;
+                    newData[i + 3] = data[i + 3];
+                }
+            }
+            
+            return new ImageData(newData, width, height);
+        }
+
+        function applyTracking(imageData) {
+            const data = imageData.data;
+            const width = imageData.width;
+            const height = imageData.height;
+            const newData = new Uint8ClampedArray(data);
+            
+            for (let i = 0; i < 5; i++) {
+                const x = Math.floor(Math.random() * width);
+                for (let y = 0; y < height; y++) {
+                    const index = (y * width + x) * 4;
+                    newData[index] = Math.random() * 255;
+                    newData[index + 1] = Math.random() * 255;
+                    newData[index + 2] = Math.random() * 255;
+                }
+            }
+            
+            return new ImageData(newData, width, height);
+        }
+
+        function applyVintage(imageData) {
+            const data = imageData.data;
+            const newData = new Uint8ClampedArray(data);
+            
+            for (let i = 0; i < data.length; i += 4) {
+                let r = data[i];
+                let g = data[i + 1];
+                let b = data[i + 2];
+                
+                newData[i] = Math.min(255, (r * 0.393) + (g * 0.769) + (b * 0.189));
+                newData[i + 1] = Math.min(255, (r * 0.349) + (g * 0.686) + (b * 0.168));
+                newData[i + 2] = Math.min(255, (r * 0.272) + (g * 0.534) + (b * 0.131));
+                newData[i + 3] = data[i + 3];
+            }
+            
+            return new ImageData(newData, imageData.width, imageData.height);
+        }
+
+        function applyChromatic(imageData) {
+            const data = imageData.data;
+            const width = imageData.width;
+            const height = imageData.height;
+            const newData = new Uint8ClampedArray(data);
+            
+            const offset = Math.sin(frameCount * 0.1) * 3;
+            
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    const i = (y * width + x) * 4;
+                    
+                    const rX = Math.max(0, Math.min(width - 1, x + offset));
+                    const bX = Math.max(0, Math.min(width - 1, x - offset));
+                    
+                    const rI = (y * width + Math.floor(rX)) * 4;
+                    const bI = (y * width + Math.floor(bX)) * 4;
+                    
+                    newData[i] = data[rI];
+                    newData[i + 1] = data[i + 1];
+                    newData[i + 2] = data[bI + 2];
+                    newData[i + 3] = data[i + 3];
+                }
+            }
+            
+            return new ImageData(newData, width, height);
+        }
+
+        function applyWave(imageData) {
+            const data = imageData.data;
+            const width = imageData.width;
+            const height = imageData.height;
+            const newData = new Uint8ClampedArray(data);
+            
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    const i = (y * width + x) * 4;
+                    const waveX = x + Math.sin(y * 0.1 + frameCount * 0.1) * 10;
+                    const sourceX = Math.max(0, Math.min(width - 1, Math.floor(waveX)));
+                    const sourceI = (y * width + sourceX) * 4;
+                    
+                    newData[i] = data[sourceI];
+                    newData[i + 1] = data[sourceI + 1];
+                    newData[i + 2] = data[sourceI + 2];
+                    newData[i + 3] = data[sourceI + 3];
+                }
+            }
+            
+            return new ImageData(newData, width, height);
+        }
+
+        function applyFisheye(imageData) {
+            const data = imageData.data;
+            const width = imageData.width;
+            const height = imageData.height;
+            const newData = new Uint8ClampedArray(data);
+            
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const radius = Math.min(centerX, centerY);
+            
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    const i = (y * width + x) * 4;
+                    
+                    const dx = x - centerX;
+                    const dy = y - centerY;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < radius) {
+                        const distortion = Math.sin(distance / radius * Math.PI / 2);
+                        const sourceX = centerX + dx * distortion;
+                        const sourceY = centerY + dy * distortion;
+                        
+                        const sX = Math.max(0, Math.min(width - 1, Math.floor(sourceX)));
+                        const sY = Math.max(0, Math.min(height - 1, Math.floor(sourceY)));
+                        const sourceI = (sY * width + sX) * 4;
+                        
+                        newData[i] = data[sourceI];
+                        newData[i + 1] = data[sourceI + 1];
+                        newData[i + 2] = data[sourceI + 2];
+                        newData[i + 3] = data[sourceI + 3];
+                    }
+                }
+            }
+            
+            return new ImageData(newData, width, height);
+        }
+
+        function applyStretch(imageData) {
+            const data = imageData.data;
+            const width = imageData.width;
+            const height = imageData.height;
+            const newData = new Uint8ClampedArray(data);
+            
+            const stretchFactor = Math.sin(frameCount * 0.05) * 0.3 + 1;
+            
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    const i = (y * width + x) * 4;
+                    const sourceX = Math.floor(x / stretchFactor);
+                    
+                    if (sourceX >= 0 && sourceX < width) {
+                        const sourceI = (y * width + sourceX) * 4;
+                        newData[i] = data[sourceI];
+                        newData[i + 1] = data[sourceI + 1];
+                        newData[i + 2] = data[sourceI + 2];
+                        newData[i + 3] = data[sourceI + 3];
+                    }
+                }
+            }
+            
+            return new ImageData(newData, width, height);
+        }
+
+        function applyRipple(imageData) {
+            const data = imageData.data;
+            const width = imageData.width;
+            const height = imageData.height;
+            const newData = new Uint8ClampedArray(data);
+            
+            const centerX = width / 2;
+            const centerY = height / 2;
+            
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    const i = (y * width + x) * 4;
+                    
+                    const dx = x - centerX;
+                    const dy = y - centerY;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    const ripple = Math.sin(distance * 0.1 - frameCount * 0.2) * 5;
+                    const angle = Math.atan2(dy, dx);
+                    
+                    const sourceX = centerX + (distance + ripple) * Math.cos(angle);
+                    const sourceY = centerY + (distance + ripple) * Math.sin(angle);
+                    
+                    const sX = Math.max(0, Math.min(width - 1, Math.floor(sourceX)));
+                    const sY = Math.max(0, Math.min(height - 1, Math.floor(sourceY)));
+                    const sourceI = (sY * width + sX) * 4;
+                    
+                    newData[i] = data[sourceI];
+                    newData[i + 1] = data[sourceI + 1];
+                    newData[i + 2] = data[sourceI + 2];
+                    newData[i + 3] = data[sourceI + 3];
+                }
+            }
+            
+            return new ImageData(newData, width, height);
+        }
+
+        function applyNeon(imageData) {
+            const data = imageData.data;
+            const newData = new Uint8ClampedArray(data);
+            
+            for (let i = 0; i < data.length; i += 4) {
+                const brightness = (data[i] + data[i + 1] + data[i + 2]) / 3;
+                const intensity = Math.sin(frameCount * 0.1) * 0.5 + 0.5;
+                
+                if (brightness > 128) {
+                    newData[i] = Math.min(255, data[i] + 100 * intensity);
+                    newData[i + 1] = Math.min(255, data[i + 1] + 50 * intensity);
+                    newData[i + 2] = Math.min(255, data[i + 2] + 150 * intensity);
+                } else {
+                    newData[i] = data[i];
+                    newData[i + 1] = data[i + 1];
+                    newData[i + 2] = data[i + 2];
+                }
+                newData[i + 3] = data[i + 3];
+            }
+            
+            return new ImageData(newData, imageData.width, imageData.height);
+        }
+
+        function applyHologram(imageData) {
+            const data = imageData.data;
+            const newData = new Uint8ClampedArray(data);
+            
+            for (let i = 0; i < data.length; i += 4) {
+                const hue = (frameCount * 2) % 360;
+                const sat = 0.8;
+                const val = (data[i] + data[i + 1] + data[i + 2]) / 3 / 255;
+                
+                const c = val * sat;
+                const x = c * (1 - Math.abs(((hue / 60) % 2) - 1));
+                const m = val - c;
+                
+                let r, g, b;
+                if (hue < 60) { r = c; g = x; b = 0; }
+                else if (hue < 120) { r = x; g = c; b = 0; }
+                else if (hue < 180) { r = 0; g = c; b = x; }
+                else if (hue < 240) { r = 0; g = x; b = c; }
+                else if (hue < 300) { r = x; g = 0; b = c; }
+                else { r = c; g = 0; b = x; }
+                
+                newData[i] = (r + m) * 255;
+                newData[i + 1] = (g + m) * 255;
+                newData[i + 2] = (b + m) * 255;
+                newData[i + 3] = data[i + 3];
+            }
+            
+            return new ImageData(newData, imageData.width, imageData.height);
+        }
+
+        function applyRainbow(imageData) {
+            const data = imageData.data;
+            const newData = new Uint8ClampedArray(data);
+            
+            for (let i = 0; i < data.length; i += 4) {
+                const brightness = (data[i] + data[i + 1] + data[i + 2]) / 3;
+                const hue = (frameCount * 3 + i / 4) % 360;
+                
+                if (brightness > 100) {
+                    const rad = (hue * Math.PI) / 180;
+                    newData[i] = Math.min(255, brightness + Math.sin(rad) * 100);
+                    newData[i + 1] = Math.min(255, brightness + Math.sin(rad + 2.094) * 100);
+                    newData[i + 2] = Math.min(255, brightness + Math.sin(rad + 4.188) * 100);
+                } else {
+                    newData[i] = data[i];
+                    newData[i + 1] = data[i + 1];
+                    newData[i + 2] = data[i + 2];
+                }
+                newData[i + 3] = data[i + 3];
+            }
+            
+            return new ImageData(newData, imageData.width, imageData.height);
+        }
+
+        function applyDotMatrix(imageData) {
+            const data = imageData.data;
+            const width = imageData.width;
+            const height = imageData.height;
+            const newData = new Uint8ClampedArray(data);
+            
+            const dotSize = 4;
+            
+            for (let y = 0; y < height; y += dotSize) {
+                for (let x = 0; x < width; x += dotSize) {
+                    let avgR = 0, avgG = 0, avgB = 0, count = 0;
+                    
+                    for (let dy = 0; dy < dotSize && y + dy < height; dy++) {
+                        for (let dx = 0; dx < dotSize && x + dx < width; dx++) {
+                            const i = ((y + dy) * width + (x + dx)) * 4;
+                            avgR += data[i];
+                            avgG += data[i + 1];
+                            avgB += data[i + 2];
+                            count++;
+                        }
+                    }
+                    
+                    if (count > 0) {
+                        avgR /= count;
+                        avgG /= count;
+                        avgB /= count;
+                        
+                        const brightness = (avgR + avgG + avgB) / 3;
+                        const dotRadius = (brightness / 255) * (dotSize / 2);
+                        
+                        for (let dy = 0; dy < dotSize && y + dy < height; dy++) {
+                            for (let dx = 0; dx < dotSize && x + dx < width; dx++) {
+                                const distance = Math.sqrt((dx - dotSize/2) ** 2 + (dy - dotSize/2) ** 2);
+                                const i = ((y + dy) * width + (x + dx)) * 4;
+                                
+                                if (distance <= dotRadius) {
+                                    newData[i] = avgR;
+                                    newData[i + 1] = avgG;
+                                    newData[i + 2] = avgB;
+                                    newData[i + 3] = 255;
+                                } else {
+                                    newData[i] = 0;
+                                    newData[i + 1] = 0;
+                                    newData[i + 2] = 0;
+                                    newData[i + 3] = 255;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return new ImageData(newData, width, height);
+        }
+
+        function applyEffects(imageData) {
+            let result = new ImageData(
+                new Uint8ClampedArray(imageData.data),
+                imageData.width,
+                imageData.height
+            );
+            
+            activeEffects.forEach(effect => {
+                switch(effect) {
+                    case 'rgbSplit':
+                        result = applyRGBSplit(result);
+                        break;
+                    case 'digitalNoise':
+                        result = applyDigitalNoise(result);
+                        break;
+                    case 'scanlines':
+                        result = applyScanlines(result);
+                        break;
+                    case 'pixelShift':
+                        result = applyPixelShift(result);
+                        break;
+                    case 'vhsBlur':
+                        result = applyVHSBlur(result);
+                        break;
+                    case 'tracking':
+                        result = applyTracking(result);
+                        break;
+                    case 'vintage':
+                        result = applyVintage(result);
+                        break;
+                    case 'chromatic':
+                        result = applyChromatic(result);
+                        break;
+                    case 'wave':
+                        result = applyWave(result);
+                        break;
+                    case 'fisheye':
+                        result = applyFisheye(result);
+                        break;
+                    case 'stretch':
+                        result = applyStretch(result);
+                        break;
+                    case 'ripple':
+                        result = applyRipple(result);
+                        break;
+                    case 'neon':
+                        result = applyNeon(result);
+                        break;
+                    case 'hologram':
+                        result = applyHologram(result);
+                        break;
+                    case 'rainbow':
+                        result = applyRainbow(result);
+                        break;
+                    case 'dotMatrix':
+                        result = applyDotMatrix(result);
+                        break;
+                }
+            });
+            
+            return result;
+        }
+
+        function previewEffects() {
+            if (!originalImage) {
+                alert('먼저 이미지를 업로드해주세요!');
+                return;
+            }
+            
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+            
+            function animate() {
+                frameCount++;
+                
+                previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+                previewCtx.drawImage(originalImage, 0, 0, previewCanvas.width, previewCanvas.height);
+                
+                // 텍스트 먼저 그리기
+                drawTexts(previewCtx, frameCount);
+                
+                // 효과 적용
+                if (activeEffects.length > 0) {
+                    let imageData = previewCtx.getImageData(0, 0, previewCanvas.width, previewCanvas.height);
+                    imageData = applyEffects(imageData);
+                    previewCtx.putImageData(imageData, 0, 0);
+                }
+                
+                animationId = requestAnimationFrame(animate);
+            }
+            
+            animate();
+        }
+
+        function generateGIF() {
+            if (!originalImage) {
+                alert('먼저 이미지를 업로드해주세요!');
+                return;
+            }
+            
+            const progressContainer = document.getElementById('progressContainer');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            
+            progressContainer.style.display = 'block';
+            progressFill.style.width = '0%';
+            progressText.textContent = 'GIF 생성 준비 중...';
+            
+            const gif = new GIF({
+                workers: 2,
+                quality: 10,
+                width: previewCanvas.width,
+                height: previewCanvas.height,
+                workerScript: 'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js'
+            });
+            
+            const totalFrames = 40;
+            let currentFrame = 0;
+            
+            // 임시 캔버스 생성
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = previewCanvas.width;
+            tempCanvas.height = previewCanvas.height;
+            
+            function addFrame() {
+                if (currentFrame >= totalFrames) {
+                    progressText.textContent = 'GIF 파일 생성 중...';
+                    gif.render();
+                    return;
+                }
+                
+                frameCount = currentFrame;
+                
+                // 프레임 생성
+                tempCtx.clearRect(0, 0, tempCanvas.width, tempCanvas.height);
+                tempCtx.drawImage(originalImage, 0, 0, tempCanvas.width, tempCanvas.height);
+                
+                // 텍스트 그리기
+                drawTexts(tempCtx, currentFrame);
+                
+                // 효과 적용
+                if (activeEffects.length > 0) {
+                    let imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+                    imageData = applyEffects(imageData);
+                    tempCtx.putImageData(imageData, 0, 0);
+                }
+                
+                gif.addFrame(tempCanvas, { delay: 100 });
+                
+                currentFrame++;
+                const progress = (currentFrame / totalFrames) * 90;
+                progressFill.style.width = progress + '%';
+                progressText.textContent = `프레임 생성 중... ${currentFrame}/${totalFrames}`;
+                
+                setTimeout(addFrame, 30);
+            }
+            
+            gif.on('finished', function(blob) {
+                progressContainer.style.display = 'none';
+                
+                const url = URL.createObjectURL(blob);
+                const resultArea = document.getElementById('resultArea');
+                
+                resultArea.innerHTML = `
+                    <h3 style="color: #ff006e; margin-bottom: 20px;">🎉 GIF 생성 완료!</h3>
+                    <img src="${url}" style="max-width: 400px; border: 2px solid #ff006e; border-radius: 10px; margin: 20px;">
+                    <br>
+                    <a href="${url}" download="retro-glitch.gif" class="download-link">
+                        💾 GIF 다운로드
+                    </a>
+                `;
+            });
+            
+            gif.on('progress', function(p) {
+                const progress = 90 + (p * 10);
+                progressFill.style.width = progress + '%';
+            });
+            
+            addFrame();
+        }
+
+        function clearEffects() {
+            activeEffects = [];
+            textElements = [];
+            document.querySelectorAll('.effect-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            updateTextList();
+            
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+            
+            if (originalImage) {
+                previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+                previewCtx.drawImage(originalImage, 0, 0, previewCanvas.width, previewCanvas.height);
+            }
+            
+            document.getElementById('progressContainer').style.display = 'none';
+            document.getElementById('resultArea').innerHTML = '';
+        }
+
+        // 마우스 드래그로 텍스트 위치 조정
+        let draggedText = null;
+        let lastMousePos = { x: 0, y: 0 };
+
+        previewCanvas.addEventListener('mousedown', function(e) {
+            const rect = previewCanvas.getBoundingClientRect();
+            const mouseX = (e.clientX - rect.left) * (previewCanvas.width / rect.width);
+            const mouseY = (e.clientY - rect.top) * (previewCanvas.height / rect.height);
+            
+            // 텍스트 클릭 감지 (역순으로 체크해서 맨 위 텍스트부터)
+            for (let i = textElements.length - 1; i >= 0; i--) {
+                const text = textElements[i];
+                const textWidth = text.fontSize * text.text.length * 0.6; // 대략적인 텍스트 너비
+                
+                if (mouseX >= text.x - textWidth/2 && mouseX <= text.x + textWidth/2 &&
+                    mouseY >= text.y - text.fontSize/2 && mouseY <= text.y + text.fontSize/2) {
+                    draggedText = text;
+                    text.isDragging = true;
+                    lastMousePos = { x: mouseX, y: mouseY };
+                    previewCanvas.style.cursor = 'grabbing';
+                    break;
+                }
+            }
+        });
+
+        previewCanvas.addEventListener('mousemove', function(e) {
+            const rect = previewCanvas.getBoundingClientRect();
+            const mouseX = (e.clientX - rect.left) * (previewCanvas.width / rect.width);
+            const mouseY = (e.clientY - rect.top) * (previewCanvas.height / rect.height);
+            
+            if (draggedText && draggedText.isDragging) {
+                // 텍스트 위치 업데이트
+                draggedText.x = Math.max(50, Math.min(previewCanvas.width - 50, mouseX));
+                draggedText.y = Math.max(30, Math.min(previewCanvas.height - 30, mouseY));
+                
+                // 즉시 다시 그리기
+                if (!animationId) {
+                    previewCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+                    previewCtx.drawImage(originalImage, 0, 0, previewCanvas.width, previewCanvas.height);
+                    drawTexts(previewCtx, frameCount || 0);
+                }
+            } else {
+                // 마우스 커서 변경 (텍스트 위에 있을 때)
+                let onText = false;
+                for (let text of textElements) {
+                    const textWidth = text.fontSize * text.text.length * 0.6;
+                    if (mouseX >= text.x - textWidth/2 && mouseX <= text.x + textWidth/2 &&
+                        mouseY >= text.y - text.fontSize/2 && mouseY <= text.y + text.fontSize/2) {
+                        onText = true;
+                        break;
+                    }
+                }
+                previewCanvas.style.cursor = onText ? 'grab' : 'default';
+            }
+        });
+
+        previewCanvas.addEventListener('mouseup', function(e) {
+            if (draggedText) {
+                draggedText.isDragging = false;
+                draggedText = null;
+                previewCanvas.style.cursor = 'default';
+            }
+        });
+
+        // 캔버스 밖으로 마우스가 나갔을 때도 드래그 종료
+        previewCanvas.addEventListener('mouseleave', function(e) {
+            if (draggedText) {
+                draggedText.isDragging = false;
+                draggedText = null;
+                previewCanvas.style.cursor = 'default';
+            }
+        });
+    </script>
+</body>
+</html>
