@@ -241,6 +241,7 @@
             line-height: 1.6;
             padding: 12px;
             min-height: 100px;
+            white-space: pre-wrap;
         }
 
         .timeline-section {
@@ -279,14 +280,25 @@
 
         .timeline-dot {
             position: absolute;
-            left: 24px;
+            left: 22px;
             top: 5px;
             width: 12px;
             height: 12px;
             border-radius: 50%;
             background: #333;
             border: 3px solid white;
-            box-shadow: 0 0 0 2px #333;
+        }
+
+        .timeline-dot::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            border-radius: 50%;
+            border: 2px solid #333;
+            pointer-events: none;
         }
 
         .timeline-date {
@@ -570,16 +582,12 @@
             <div class="character-details">
                 <div class="detail-section">
                     <div class="detail-title">Backstory</div>
-                    <div class="detail-content" id="char1-past">
-                        캐릭터의 과거 이야기가 들어갑니다.
-                    </div>
+                    <div class="detail-content" id="char1-past">캐릭터의 과거 이야기가 들어갑니다.</div>
                 </div>
                 
                 <div class="detail-section">
                     <div class="detail-title">Etc.</div>
-                    <div class="detail-content" id="char1-features">
-                        캐릭터의 말버릇, 버릇, 기타 설정 등 자유롭게 설명해주세요.
-                    </div>
+                    <div class="detail-content" id="char1-features">캐릭터의 독특한 특징이나 습관, 버릇을 설명해주세요.</div>
                 </div>
             </div>
         </div>
@@ -643,16 +651,12 @@
             <div class="character-details">
                 <div class="detail-section">
                     <div class="detail-title">Backstory</div>
-                    <div class="detail-content" id="char2-past">
-                        캐릭터 B의 과거 이야기가 들어갑니다.
-                    </div>
+                    <div class="detail-content" id="char2-past">캐릭터 B의 과거 이야기가 들어갑니다.</div>
                 </div>
                 
                 <div class="detail-section">
                     <div class="detail-title">Etc.</div>
-                    <div class="detail-content" id="char2-features">
-                        캐릭터 B의 말버릇, 버릇, 기타 설정 등 자유롭게 설명해주세요.
-                    </div>
+                    <div class="detail-content" id="char2-features">캐릭터 B의 독특한 특징이나 습관, 버릇을 설명해주세요.</div>
                 </div>
             </div>
         </div>
@@ -692,6 +696,17 @@
 
             <div class="form-row">
                 <div class="form-group">
+                    <label class="form-label">A 이름</label>
+                    <input type="text" class="form-input" id="input-char1-name" value="캐릭터 A">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">B 이름</label>
+                    <input type="text" class="form-input" id="input-char2-name" value="캐릭터 B">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
                     <label class="form-label">A 기본정보</label>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
                         <input type="text" class="form-input" id="input-char1-gender" placeholder="성별" value="남성" style="padding: 8px;">
@@ -717,62 +732,62 @@
 
             <div class="form-row">
                 <div class="form-group">
-                    <label class="form-label">A 성격 키워드</label>
+                    <label class="form-label">캐릭터 A 성격 키워드</label>
                     <input type="text" class="form-input" id="input-char1-keywords" placeholder="성격1, 성격2, 성격3" value="성격1, 성격2, 성격3">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">B 성격 키워드</label>
+                    <label class="form-label">캐릭터 B 성격 키워드</label>
                     <input type="text" class="form-input" id="input-char2-keywords" placeholder="성격1, 성격2, 성격3" value="성격1, 성격2, 성격3">
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
-                    <label class="form-label">A 과거</label>
+                    <label class="form-label">캐릭터 A Backstory</label>
                     <textarea class="form-input form-textarea" id="input-char1-past" placeholder="캐릭터의 과거 이야기">캐릭터의 과거 이야기가 들어갑니다.</textarea>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">B 과거</label>
+                    <label class="form-label">캐릭터 B Backstory</label>
                     <textarea class="form-input form-textarea" id="input-char2-past" placeholder="캐릭터의 과거 이야기">캐릭터 B의 과거 이야기가 들어갑니다.</textarea>
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
-                    <label class="form-label">A 특징</label>
+                    <label class="form-label">캐릭터 A Etc.</label>
                     <textarea class="form-input form-textarea" id="input-char1-features" placeholder="캐릭터의 특징이나 습관">캐릭터의 독특한 특징이나 습관, 버릇을 설명해주세요.</textarea>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">B 특징</label>
+                    <label class="form-label">캐릭터 B Etc.</label>
                     <textarea class="form-input form-textarea" id="input-char2-features" placeholder="캐릭터의 특징이나 습관">캐릭터 B의 독특한 특징이나 습관, 버릇을 설명해주세요.</textarea>
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
-                    <label class="form-label">A 프로필 이미지</label>
+                    <label class="form-label">캐릭터 A 프로필 이미지</label>
                     <input type="file" class="form-input" id="input-char1-image" accept="image/*" onchange="handleImageUpload('char1', this)">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">B 프로필 이미지</label>
+                    <label class="form-label">캐릭터 B 프로필 이미지</label>
                     <input type="file" class="form-input" id="input-char2-image" accept="image/*" onchange="handleImageUpload('char2', this)">
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
-                    <label class="form-label">A → B 한마디</label>
-                    <textarea class="form-input form-textarea" id="input-char1-speech">한마디, 호칭 등</textarea>
+                    <label class="form-label">캐릭터 A → B 한마디</label>
+                    <textarea class="form-input form-textarea" id="input-char1-speech">캐릭터 A가 캐릭터 B에게 하는 말</textarea>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">B → A 한마디</label>
-                    <textarea class="form-input form-textarea" id="input-char2-speech">한마디, 호칭 등</textarea>
+                    <label class="form-label">캐릭터 B → A 한마디</label>
+                    <textarea class="form-input form-textarea" id="input-char2-speech">캐릭터 B가 캐릭터 A에게 하는 말</textarea>
                 </div>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
-                    <label class="form-label">A 컬러차트</label>
+                    <label class="form-label">캐릭터 A 컬러차트</label>
                     <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 5px;">
                         <div style="flex: 1; min-width: 50px;">
                             <input type="color" class="form-input" id="input-char1-hair" value="#8B4513" onchange="updateCharacterColors()" style="width: 100%; height: 40px; padding: 0; min-width: 50px;">
@@ -789,7 +804,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">B 컬러차트</label>
+                    <label class="form-label">캐릭터 B 컬러차트</label>
                     <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 5px;">
                         <div style="flex: 1; min-width: 50px;">
                             <input type="color" class="form-input" id="input-char2-hair" value="#8B4513" onchange="updateCharacterColors()" style="width: 100%; height: 40px; padding: 0; min-width: 50px;">
@@ -809,17 +824,17 @@
 
             <div class="form-row">
                 <div class="form-group">
-                    <label class="form-label">A 이모지</label>
+                    <label class="form-label">캐릭터 A 이모지</label>
                     <input type="text" class="form-input" id="input-char1-emoji" value="🐱" onchange="updateEmojis()" maxlength="2" style="text-align: center; font-size: 18px;">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">B 이모지</label>
+                    <label class="form-label">캐릭터 B 이모지</label>
                     <input type="text" class="form-input" id="input-char2-emoji" value="🐰" onchange="updateEmojis()" maxlength="2" style="text-align: center; font-size: 18px;">
                 </div>
             </div>
 
             <div class="form-group">
-                <label class="form-label">타임라인 편집</label>
+                <label class="form-label">Timeline 편집</label>
                 <div id="timeline-form-container">
                     <div class="timeline-form-item" style="border: 1px solid #eee; padding: 15px; margin-bottom: 15px; background: #fafafa;">
                         <div style="display: grid; grid-template-columns: 120px 1fr; gap: 10px; margin-bottom: 10px;">
@@ -851,7 +866,7 @@
                         <button type="button" onclick="removeTimelineItem(2)" style="background: #ff4444; color: white; border: none; padding: 5px 10px; font-size: 12px; margin-top: 10px;">삭제</button>
                     </div>
                 </div>
-                <button type="button" onclick="addTimelineItem()" style="width: 100%; padding: 10px; background: #f0f0f0; border: 1px solid #ddd; margin-top: 10px;">+ 타임라인 추가</button>
+                <button type="button" onclick="addTimelineItem()" style="width: 100%; padding: 10px; background: #f0f0f0; border: 1px solid #ddd; margin-top: 10px;">+ Timeline 추가</button>
             </div>
         </div>
     </div>
@@ -894,24 +909,38 @@
             document.getElementById('input-char1-speech').value = document.getElementById('char1-speech').textContent;
             document.getElementById('input-char2-speech').value = document.getElementById('char2-speech').textContent;
             
-            // 기본정보 업데이트
-            const char1Age = document.getElementById('char1-age').textContent;
-            const char1Height = document.getElementById('char1-height').textContent;
-            const char1Job = document.getElementById('char1-job').textContent;
-            const char2Age = document.getElementById('char2-age').textContent;
-            const char2Height = document.getElementById('char2-height').textContent;
-            const char2Job = document.getElementById('char2-job').textContent;
+            // 기본정보 업데이트 - HTML에서 현재 값 추출
+            const char1BasicDiv = document.querySelector('#char1-name').closest('.profile-info').querySelector('.character-basic');
+            const char2BasicDiv = document.querySelector('#char2-name').closest('.profile-info').querySelector('.character-basic');
             
-            document.getElementById('input-char1-age').value = char1Age;
-            document.getElementById('input-char1-height').value = char1Height + 'cm';
-            document.getElementById('input-char1-job').value = char1Job;
-            document.getElementById('input-char2-age').value = char2Age;
-            document.getElementById('input-char2-height').value = char2Height + 'cm';
-            document.getElementById('input-char2-job').value = char2Job;
+            // 현재 표시된 값들 파싱
+            const char1BasicText = char1BasicDiv.children[0].textContent;
+            const char2BasicText = char2BasicDiv.children[0].textContent;
+            
+            const char1Parts = char1BasicText.split(' | ');
+            const char2Parts = char2BasicText.split(' | ');
+            
+            if (char1Parts.length >= 3) {
+                document.getElementById('input-char1-gender').value = char1Parts[0];
+                document.getElementById('input-char1-age').value = char1Parts[1].replace('세', '');
+                document.getElementById('input-char1-height').value = char1Parts[2];
+            }
+            
+            if (char2Parts.length >= 3) {
+                document.getElementById('input-char2-gender').value = char2Parts[0];
+                document.getElementById('input-char2-age').value = char2Parts[1].replace('세', '');
+                document.getElementById('input-char2-height').value = char2Parts[2];
+            }
+            
+            document.getElementById('input-char1-job').value = char1BasicDiv.children[1].textContent;
+            document.getElementById('input-char2-job').value = char2BasicDiv.children[1].textContent;
             
             // 키워드, 과거, 특징 업데이트
-            document.getElementById('input-char1-keywords').value = Array.from(document.getElementById('char1-keywords').querySelectorAll('.keyword-tag')).map(tag => tag.textContent).join(', ');
-            document.getElementById('input-char2-keywords').value = Array.from(document.getElementById('char2-keywords').querySelectorAll('.keyword-tag')).map(tag => tag.textContent).join(', ');
+            const char1Keywords = Array.from(document.getElementById('char1-keywords').querySelectorAll('.keyword-tag')).map(tag => tag.textContent).join(', ');
+            const char2Keywords = Array.from(document.getElementById('char2-keywords').querySelectorAll('.keyword-tag')).map(tag => tag.textContent).join(', ');
+            
+            document.getElementById('input-char1-keywords').value = char1Keywords;
+            document.getElementById('input-char2-keywords').value = char2Keywords;
             document.getElementById('input-char1-past').value = document.getElementById('char1-past').textContent;
             document.getElementById('input-char2-past').value = document.getElementById('char2-past').textContent;
             document.getElementById('input-char1-features').value = document.getElementById('char1-features').textContent;
@@ -1284,7 +1313,11 @@
             
             dots.forEach(dot => {
                 dot.style.backgroundColor = color;
-                dot.style.boxShadow = `0 0 0 2px ${color}`;
+                // 바깥 테두리도 함께 변경
+                const outerBorder = dot.querySelector('div');
+                if (outerBorder) {
+                    outerBorder.style.borderColor = color;
+                }
             });
             
             dates.forEach(date => {
@@ -1337,6 +1370,30 @@
                 title.style.backgroundColor = lightColor;
             });
 
+            // 이모지 동그라미 테두리 색상 변경
+            const avatars = document.querySelectorAll('.character-avatar');
+            avatars.forEach(avatar => {
+                // 더 정확한 선택자로 이모지 동그라미 찾기
+                const emojiCircles = avatar.querySelectorAll('div[style*="border-radius: 50%"][style*="border:"]');
+                emojiCircles.forEach(circle => {
+                    let style = circle.getAttribute('style');
+                    // 다양한 border 패턴에 대응
+                    style = style.replace(/border:\s*2px\s+solid\s+[^;]+;?/g, `border: 2px solid ${color};`);
+                    style = style.replace(/border-color:\s*[^;]+;?/g, `border-color: ${color};`);
+                    circle.setAttribute('style', style);
+                });
+                
+                // 혹시 놓친 경우를 위해 더 넓은 범위로 찾기
+                const allDivs = avatar.querySelectorAll('div');
+                allDivs.forEach(div => {
+                    const style = div.getAttribute('style') || '';
+                    if (style.includes('border-radius: 50%') && style.includes('border:')) {
+                        let newStyle = style.replace(/border:\s*2px\s+solid\s+[^;]+;?/g, `border: 2px solid ${color};`);
+                        div.setAttribute('style', newStyle);
+                    }
+                });
+            });
+
             // 페어 헤더 구분선 색상 변경
             const pairHeader = document.querySelector('.pair-header');
             if (pairHeader) {
@@ -1387,7 +1444,9 @@
                 const color = document.getElementById('input-pair-color').value;
                 
                 itemEl.innerHTML = `
-                    <div class="timeline-dot" style="background-color: ${color}; box-shadow: 0 0 0 2px ${color};"></div>
+                    <div class="timeline-dot" style="background-color: ${color};">
+                        <div style="position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px; border-radius: 50%; border: 2px solid ${color}; pointer-events: none;"></div>
+                    </div>
                     <div class="timeline-date" style="background-color: ${color};">${item.date}</div>
                     <div class="timeline-title-text">${item.title}</div>
                     <div class="timeline-desc">${item.desc}</div>
@@ -1396,6 +1455,12 @@
                 
                 container.appendChild(itemEl);
             });
+            
+            // 타임라인 라인 길이를 마지막 아이템에 맞춰 조정
+            if (timelineData.length > 0) {
+                const lastPosition = timelineData.length === 1 ? 50 : 100;
+                timeline.style.height = `${lastPosition}%`;
+            }
         }
 
         function addTimelineItem() {
