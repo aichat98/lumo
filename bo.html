@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>페어틀 제작기</title>
     <style>
+        :root {
+            --primary-color: #333;
+            --light-color: rgba(51, 51, 51, 0.1);
+            --speech-color: rgba(51, 51, 51, 0.2);
+            --emoji-border-color: #ccc;
+        }
+
+        * { box-sizing: border-box; }
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f5f5f5;
@@ -29,10 +38,11 @@
             position: relative;
         }
 
+        /* Header */
         .pair-header {
             grid-column: 1 / -1;
             text-align: center;
-            border-bottom: 2px solid #333;
+            border-bottom: 2px solid var(--primary-color, #333);
             padding-bottom: 15px;
         }
 
@@ -49,6 +59,7 @@
             margin-top: 6px;
         }
 
+        /* Character Profile */
         .character-profile {
             text-align: center;
             border: 1px solid #eee;
@@ -66,64 +77,14 @@
             font-size: 0.8em;
             margin-bottom: 15px;
             position: relative;
-        }
-
-        /* 컬러차트 (왼쪽 상단) */
-        .color-chart {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 3px;
-            z-index: 10;
-        }
-
-        .color-square {
-            width: 20px;
-            height: 20px;
-            border: 2px solid white;
-            border-radius: 3px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-        }
-
-        .color-square.hair {
-            background: #8B4513;
-        }
-
-        .color-square.eyes {
-            background: #4169E1;
-        }
-
-        .color-square.skin {
-            background: #FDBCB4;
-        }
-
-        /* 이모지 동그라미 (오른쪽 상단) */
-        .emoji-circle {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            background: rgba(128,128,128,0.8);
-            border: 2px solid white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            z-index: 10;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            background-size: cover;
+            background-position: center;
         }
 
         .character-avatar.has-image::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             background: linear-gradient(to bottom, 
                 rgba(255,255,255,0) 0%, 
                 rgba(255,255,255,0) 50%, 
@@ -132,6 +93,39 @@
             );
             pointer-events: none;
             z-index: 1;
+        }
+
+        .color-chart {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            display: grid;
+            gap: 3px;
+            z-index: 10;
+        }
+
+        .color-square {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+        }
+
+        .emoji-circle {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid var(--emoji-border-color, #ccc);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            z-index: 10;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
 
         .profile-content {
@@ -170,7 +164,7 @@
         }
 
         .keyword-tag {
-            background: #f0f0f0;
+            background: var(--light-color, #f0f0f0);
             color: #555;
             padding: 3px 8px;
             font-size: 0.65em;
@@ -180,7 +174,7 @@
         .character-speech {
             margin-top: 15px;
             padding: 12px 15px;
-            background: #e0e0e0;
+            background: var(--speech-color, #e0e0e0);
             border-radius: 15px;
             position: relative;
             font-size: 0.8em;
@@ -188,32 +182,28 @@
             line-height: 1.3;
         }
 
-        .character-speech.left::after {
+        .character-speech::after {
             content: '';
             position: absolute;
-            left: -7px;
             top: 50%;
             transform: translateY(-50%);
             width: 0;
             height: 0;
             border-top: 5px solid transparent;
             border-bottom: 5px solid transparent;
-            border-right: 7px solid #e0e0e0;
+        }
+
+        .character-speech.left::after {
+            left: -7px;
+            border-right: 7px solid var(--speech-color, #e0e0e0);
         }
 
         .character-speech.right::after {
-            content: '';
-            position: absolute;
             right: -7px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 0;
-            height: 0;
-            border-top: 5px solid transparent;
-            border-bottom: 5px solid transparent;
-            border-left: 7px solid #e0e0e0;
+            border-left: 7px solid var(--speech-color, #e0e0e0);
         }
 
+        /* Character Details */
         .character-details {
             display: flex;
             flex-direction: column;
@@ -231,7 +221,7 @@
             font-weight: 600;
             color: #333;
             padding: 10px 12px;
-            background: #f8f8f8;
+            background: var(--light-color, #f8f8f8);
             border-bottom: 1px solid #eee;
         }
 
@@ -244,6 +234,7 @@
             white-space: pre-wrap;
         }
 
+        /* Timeline */
         .timeline-section {
             border: 1px solid #ddd;
             background: white;
@@ -267,9 +258,9 @@
             position: absolute;
             left: 30px;
             top: 0;
-            bottom: 0;
             width: 2px;
-            background: #333;
+            background: var(--primary-color, #333);
+            height: 85%;
         }
 
         .timeline-item {
@@ -280,25 +271,21 @@
 
         .timeline-dot {
             position: absolute;
-            left: 22px;
+            left: 25px;
             top: 5px;
             width: 12px;
             height: 12px;
             border-radius: 50%;
-            background: #333;
+            background: var(--primary-color, #333);
             border: 3px solid white;
         }
 
         .timeline-dot::after {
             content: '';
             position: absolute;
-            top: -5px;
-            left: -5px;
-            right: -5px;
-            bottom: -5px;
+            top: -5px; left: -5px; right: -5px; bottom: -5px;
             border-radius: 50%;
-            border: 2px solid #333;
-            pointer-events: none;
+            border: 2px solid var(--primary-color, #333);
         }
 
         .timeline-date {
@@ -307,7 +294,7 @@
             color: white;
             margin-bottom: 4px;
             padding: 3px 8px;
-            background: #333;
+            background: var(--primary-color, #333);
             display: inline-block;
             border-radius: 3px;
         }
@@ -335,7 +322,7 @@
             display: block;
         }
 
-        /* 스티커 관련 스타일 */
+        /* Stickers */
         .fairtle-sticker {
             position: absolute;
             cursor: move;
@@ -353,10 +340,7 @@
             pointer-events: none;
         }
 
-        .fairtle-sticker:hover {
-            border-color: #007bff;
-        }
-
+        .fairtle-sticker:hover,
         .fairtle-sticker.selected {
             border-color: #007bff;
         }
@@ -366,10 +350,12 @@
             top: -8px;
             right: -8px;
             display: none;
+            flex-direction: column;
+            gap: 4px;
         }
 
         .fairtle-sticker.selected .sticker-controls {
-            display: block;
+            display: flex;
         }
 
         .sticker-delete {
@@ -385,6 +371,25 @@
             align-items: center;
             justify-content: center;
             z-index: 101;
+        }
+
+        .sticker-rotate {
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            font-size: 10px;
+            cursor: grab;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 101;
+        }
+
+        .sticker-rotate:active {
+            cursor: grabbing;
         }
 
         .resize-handle {
@@ -405,35 +410,33 @@
             display: block;
         }
 
-        .edit-button {
+        /* UI Controls */
+        .edit-button, .download-button {
             position: fixed;
             bottom: 30px;
-            right: 30px;
             background: #333;
             color: white;
             border: none;
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            font-size: 20px;
+            font-size: 16px;
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             z-index: 1000;
         }
 
-        .download-button {
-            position: fixed;
-            bottom: 30px;
-            left: 30px;
-            background: #666;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            font-size: 14px;
-            cursor: pointer;
-            z-index: 1000;
+        .edit-button {
+            right: 30px;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 20px;
         }
 
+        .download-button {
+            left: 30px;
+            padding: 12px 20px;
+        }
+
+        /* Edit Panel */
         .edit-panel {
             position: fixed;
             bottom: 0;
@@ -495,7 +498,6 @@
             padding: 12px;
             border: 1px solid #ddd;
             font-size: 14px;
-            box-sizing: border-box;
         }
 
         .form-textarea {
@@ -542,6 +544,66 @@
         .sticker-preview:hover {
             border-color: #007bff;
         }
+
+        .timeline-form-item {
+            border: 1px solid #eee;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #fafafa;
+        }
+
+        .color-input-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .color-input-item {
+            flex: 1;
+            min-width: 50px;
+        }
+
+        .color-input-item input {
+            width: 100%;
+            height: 40px;
+            padding: 0;
+            border-radius: 4px;
+        }
+
+        .color-input-label {
+            font-size: 11px;
+            color: #666;
+            text-align: center;
+            margin-top: 2px;
+        }
+
+        .basic-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .basic-info-grid input {
+            padding: 8px;
+        }
+
+        .btn-add {
+            width: 100%;
+            padding: 10px;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        .btn-delete {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            font-size: 12px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -551,23 +613,24 @@
             <div class="pair-subtitle" id="pair-subtitle">캐릭터 A × 캐릭터 B</div>
         </div>
         
+        <!-- 캐릭터 A -->
         <div class="character-section">
             <div class="character-profile">
-                <div class="character-avatar">
-                    <div style="position: absolute; top: 10px; left: 10px; z-index: 10;">
-                        <div style="width: 20px; height: 20px; background: #8B4513; margin-bottom: 3px; border-radius: 3px; box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></div>
-                        <div style="width: 20px; height: 20px; background: #4169E1; margin-bottom: 3px; border-radius: 3px; box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></div>
-                        <div style="width: 20px; height: 20px; background: #FDBCB4; border-radius: 3px; box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></div>
+                <div class="character-avatar" id="char1-avatar">
+                    <div class="color-chart">
+                        <div class="color-square" id="char1-hair-color" style="background: #8B4513;"></div>
+                        <div class="color-square" id="char1-eyes-color" style="background: #4169E1;"></div>
+                        <div class="color-square" id="char1-skin-color" style="background: #FDBCB4;"></div>
                     </div>
-                    <div style="position: absolute; top: 10px; right: 10px; width: 35px; height: 35px; background: white; border: 2px solid #ccc; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; z-index: 10; box-shadow: 0 1px 2px rgba(0,0,0,0.2);">🐱</div>
+                    <div class="emoji-circle" id="char1-emoji">🐱</div>
                     프로필 이미지
                 </div>
                 <div class="profile-content">
                     <div class="profile-info">
                         <div class="character-name" id="char1-name">캐릭터 A</div>
-                        <div class="character-basic">
-                            <div>남성 | <span id="char1-age">20</span>세 | <span id="char1-height">175</span>cm</div>
-                            <div id="char1-job">학생</div>
+                        <div class="character-basic" id="char1-basic">
+                            <div>남성 | 20세 | 175cm</div>
+                            <div>학생</div>
                         </div>
                     </div>
                     <div class="character-keywords" id="char1-keywords">
@@ -589,60 +652,37 @@
                     <div class="detail-title">Etc.</div>
                     <div class="detail-content" id="char1-features">캐릭터의 독특한 특징이나 습관, 버릇을 설명해주세요.</div>
                 </div>
+                
+                <div class="character-extra-sections" id="char1-extra-sections"></div>
             </div>
         </div>
 
+        <!-- Timeline -->
         <div class="timeline-section">
             <div class="timeline-title">Timeline</div>
             <div class="timeline-container" id="timeline-container">
                 <div class="timeline-line"></div>
-                
-                <div class="timeline-item" style="top: 0%">
-                    <div class="timeline-dot">
-                        <div style="position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px; border-radius: 50%; border: 2px solid #333; pointer-events: none;"></div>
-                    </div>
-                    <div class="timeline-date">1999-06</div>
-                    <div class="timeline-title-text">첫 만남</div>
-                    <div class="timeline-desc">우연히 같은 카페에서 마주치게 되면서 시작된 인연</div>
-                </div>
-                
-                <div class="timeline-item" style="top: 30%">
-                    <div class="timeline-dot">
-                        <div style="position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px; border-radius: 50%; border: 2px solid #333; pointer-events: none;"></div>
-                    </div>
-                    <div class="timeline-date">2000-03</div>
-                    <div class="timeline-title-text">갈등</div>
-                    <div class="timeline-desc">서로 다른 가치관으로 인한 첫 번째 큰 갈등이 발생</div>
-                </div>
-                
-                <div class="timeline-item" style="top: 100%">
-                    <div class="timeline-dot">
-                        <div style="position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px; border-radius: 50%; border: 2px solid #333; pointer-events: none;"></div>
-                    </div>
-                    <div class="timeline-date">2020-01</div>
-                    <div class="timeline-title-text">화해</div>
-                    <div class="timeline-desc">오랜 시간이 지난 후 우연히 재회하게 되면서 새로운 관계를 시작</div>
-                </div>
             </div>
         </div>
 
+        <!-- 캐릭터 B -->
         <div class="character-section">
             <div class="character-profile">
-                <div class="character-avatar">
-                    <div style="position: absolute; top: 10px; left: 10px; width: 35px; height: 35px; background: white; border: 2px solid #ccc; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; z-index: 10; box-shadow: 0 1px 2px rgba(0,0,0,0.2);">🐰</div>
-                    <div style="position: absolute; top: 10px; right: 10px; z-index: 10;">
-                        <div style="width: 20px; height: 20px; background: #8B4513; margin-bottom: 3px; border-radius: 3px; box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></div>
-                        <div style="width: 20px; height: 20px; background: #4169E1; margin-bottom: 3px; border-radius: 3px; box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></div>
-                        <div style="width: 20px; height: 20px; background: #FDBCB4; border-radius: 3px; box-shadow: 0 1px 2px rgba(0,0,0,0.2);"></div>
+                <div class="character-avatar" id="char2-avatar">
+                    <div class="emoji-circle" id="char2-emoji" style="left: 10px; right: auto;">🐰</div>
+                    <div class="color-chart" style="left: auto; right: 10px;">
+                        <div class="color-square" id="char2-hair-color" style="background: #8B4513;"></div>
+                        <div class="color-square" id="char2-eyes-color" style="background: #4169E1;"></div>
+                        <div class="color-square" id="char2-skin-color" style="background: #FDBCB4;"></div>
                     </div>
                     프로필 이미지
                 </div>
                 <div class="profile-content">
                     <div class="profile-info">
                         <div class="character-name" id="char2-name">캐릭터 B</div>
-                        <div class="character-basic">
-                            <div>여성 | <span id="char2-age">22</span>세 | <span id="char2-height">180</span>cm</div>
-                            <div id="char2-job">직장인</div>
+                        <div class="character-basic" id="char2-basic">
+                            <div>여성 | 22세 | 180cm</div>
+                            <div>직장인</div>
                         </div>
                     </div>
                     <div class="character-keywords" id="char2-keywords">
@@ -664,42 +704,61 @@
                     <div class="detail-title">Etc.</div>
                     <div class="detail-content" id="char2-features">캐릭터 B의 독특한 특징이나 습관, 버릇을 설명해주세요.</div>
                 </div>
+                
+                <div class="character-extra-sections" id="char2-extra-sections"></div>
             </div>
         </div>
     </div>
 
-    <button class="edit-button" onclick="toggleEdit()">✏️</button>
-    <button class="download-button" onclick="downloadImage()">📥 저장</button>
+    <button class="edit-button" onclick="app.toggleEdit()">✏️</button>
+    <button class="download-button" onclick="app.downloadImage()">📥 저장</button>
 
     <div class="edit-panel" id="edit-panel">
         <div class="edit-panel-header">
             <div class="edit-panel-title">페어틀 편집</div>
-            <button class="close-button" onclick="closeEdit()">×</button>
+            <button class="close-button" onclick="app.closeEdit()">×</button>
         </div>
         <div class="edit-content">
+            <!-- 페어명 -->
             <div class="form-group">
                 <label class="form-label">페어명</label>
                 <input type="text" class="form-input" id="input-pair-title" value="SAMPLE PAIR">
             </div>
 
+            <!-- 페어 부제목 -->
             <div class="form-group">
                 <label class="form-label">페어 부제목</label>
                 <input type="text" class="form-input" id="input-pair-subtitle" value="캐릭터 A × 캐릭터 B">
             </div>
 
+            <!-- 페어 대표컬러 -->
             <div class="form-group">
                 <label class="form-label">페어 대표컬러</label>
-                <input type="color" class="form-input" id="input-pair-color" value="#333333" onchange="updateColors()" style="height: 50px; padding: 5px; cursor: pointer;">
+                <input type="color" class="form-input" id="input-pair-color" value="#333333" style="height: 50px; padding: 5px; cursor: pointer;">
             </div>
 
+            <!-- 스티커 추가 -->
             <div class="form-group">
                 <label class="form-label">스티커 추가</label>
-                <input type="file" class="form-input" id="input-sticker-upload" accept="image/*" multiple onchange="handleStickerUpload(this)">
+                <input type="file" class="form-input" id="input-sticker-upload" accept="image/*" multiple>
                 <div id="sticker-preview-container" class="sticker-preview-container">
                     <div style="width: 100%; text-align: center; color: #999; font-size: 12px;">스티커를 업로드하면 여기에 표시되고, 클릭해서 페어틀에 추가할 수 있습니다</div>
                 </div>
             </div>
 
+            <!-- A/B 프로필 이미지 -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">A 프로필 이미지</label>
+                    <input type="file" class="form-input" id="input-char1-image" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">B 프로필 이미지</label>
+                    <input type="file" class="form-input" id="input-char2-image" accept="image/*">
+                </div>
+            </div>
+
+            <!-- A/B 이름 -->
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">A 이름</label>
@@ -711,499 +770,612 @@
                 </div>
             </div>
 
+            <!-- A/B 기본정보 -->
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">A 기본정보</label>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-                        <input type="text" class="form-input" id="input-char1-gender" placeholder="성별" value="남성" style="padding: 8px;">
-                        <input type="text" class="form-input" id="input-char1-age" placeholder="나이" value="20" style="padding: 8px;">
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <input type="text" class="form-input" id="input-char1-height" placeholder="키" value="175cm" style="padding: 8px;">
-                        <input type="text" class="form-input" id="input-char1-job" placeholder="직업" value="학생" style="padding: 8px;">
+                    <div class="basic-info-grid">
+                        <input type="text" class="form-input" id="input-char1-gender" placeholder="성별" value="남성">
+                        <input type="text" class="form-input" id="input-char1-age" placeholder="나이" value="20">
+                        <input type="text" class="form-input" id="input-char1-height" placeholder="키" value="175cm">
+                        <input type="text" class="form-input" id="input-char1-job" placeholder="직업" value="학생">
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">B 기본정보</label>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-                        <input type="text" class="form-input" id="input-char2-gender" placeholder="성별" value="여성" style="padding: 8px;">
-                        <input type="text" class="form-input" id="input-char2-age" placeholder="나이" value="22" style="padding: 8px;">
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <input type="text" class="form-input" id="input-char2-height" placeholder="키" value="180cm" style="padding: 8px;">
-                        <input type="text" class="form-input" id="input-char2-job" placeholder="직업" value="직장인" style="padding: 8px;">
+                    <div class="basic-info-grid">
+                        <input type="text" class="form-input" id="input-char2-gender" placeholder="성별" value="여성">
+                        <input type="text" class="form-input" id="input-char2-age" placeholder="나이" value="22">
+                        <input type="text" class="form-input" id="input-char2-height" placeholder="키" value="180cm">
+                        <input type="text" class="form-input" id="input-char2-job" placeholder="직업" value="직장인">
                     </div>
                 </div>
             </div>
 
+            <!-- A/B 성격 키워드 -->
             <div class="form-row">
                 <div class="form-group">
-                    <label class="form-label">캐릭터 A 성격 키워드</label>
+                    <label class="form-label">A 성격 키워드</label>
                     <input type="text" class="form-input" id="input-char1-keywords" placeholder="성격1, 성격2, 성격3" value="성격1, 성격2, 성격3">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">캐릭터 B 성격 키워드</label>
+                    <label class="form-label">B 성격 키워드</label>
                     <input type="text" class="form-input" id="input-char2-keywords" placeholder="성격1, 성격2, 성격3" value="성격1, 성격2, 성격3">
                 </div>
             </div>
 
+            <!-- A/B 컬러차트 -->
             <div class="form-row">
                 <div class="form-group">
-                    <label class="form-label">캐릭터 A Backstory</label>
-                    <textarea class="form-input form-textarea" id="input-char1-past" placeholder="캐릭터의 과거 이야기">캐릭터의 과거 이야기가 들어갑니다.</textarea>
+                    <label class="form-label">A 컬러차트</label>
+                    <div class="color-input-group">
+                        <div class="color-input-item">
+                            <input type="color" class="form-input" id="input-char1-hair" value="#8B4513">
+                            <div class="color-input-label">머리</div>
+                        </div>
+                        <div class="color-input-item">
+                            <input type="color" class="form-input" id="input-char1-eyes" value="#4169E1">
+                            <div class="color-input-label">눈</div>
+                        </div>
+                        <div class="color-input-item">
+                            <input type="color" class="form-input" id="input-char1-skin" value="#FDBCB4">
+                            <div class="color-input-label">피부</div>
+                        </div>
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">캐릭터 B Backstory</label>
-                    <textarea class="form-input form-textarea" id="input-char2-past" placeholder="캐릭터의 과거 이야기">캐릭터 B의 과거 이야기가 들어갑니다.</textarea>
+                    <label class="form-label">B 컬러차트</label>
+                    <div class="color-input-group">
+                        <div class="color-input-item">
+                            <input type="color" class="form-input" id="input-char2-hair" value="#8B4513">
+                            <div class="color-input-label">머리</div>
+                        </div>
+                        <div class="color-input-item">
+                            <input type="color" class="form-input" id="input-char2-eyes" value="#4169E1">
+                            <div class="color-input-label">눈</div>
+                        </div>
+                        <div class="color-input-item">
+                            <input type="color" class="form-input" id="input-char2-skin" value="#FDBCB4">
+                            <div class="color-input-label">피부</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
+            <!-- A/B 이모지 -->
             <div class="form-row">
                 <div class="form-group">
-                    <label class="form-label">캐릭터 A Etc.</label>
-                    <textarea class="form-input form-textarea" id="input-char1-features" placeholder="캐릭터의 특징이나 습관">캐릭터의 독특한 특징이나 습관, 버릇을 설명해주세요.</textarea>
+                    <label class="form-label">A 이모지</label>
+                    <input type="text" class="form-input" id="input-char1-emoji" value="🐱" maxlength="2" style="text-align: center; font-size: 18px;">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">캐릭터 B Etc.</label>
-                    <textarea class="form-input form-textarea" id="input-char2-features" placeholder="캐릭터의 특징이나 습관">캐릭터 B의 독특한 특징이나 습관, 버릇을 설명해주세요.</textarea>
+                    <label class="form-label">B 이모지</label>
+                    <input type="text" class="form-input" id="input-char2-emoji" value="🐰" maxlength="2" style="text-align: center; font-size: 18px;">
                 </div>
             </div>
 
+            <!-- A→B/B→A 한마디 -->
             <div class="form-row">
                 <div class="form-group">
-                    <label class="form-label">캐릭터 A 프로필 이미지</label>
-                    <input type="file" class="form-input" id="input-char1-image" accept="image/*" onchange="handleImageUpload('char1', this)">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">캐릭터 B 프로필 이미지</label>
-                    <input type="file" class="form-input" id="input-char2-image" accept="image/*" onchange="handleImageUpload('char2', this)">
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">캐릭터 A → B 한마디</label>
+                    <label class="form-label">A → B 한마디</label>
                     <textarea class="form-input form-textarea" id="input-char1-speech">캐릭터 A가 캐릭터 B에게 하는 말</textarea>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">캐릭터 B → A 한마디</label>
+                    <label class="form-label">B → A 한마디</label>
                     <textarea class="form-input form-textarea" id="input-char2-speech">캐릭터 B가 캐릭터 A에게 하는 말</textarea>
                 </div>
             </div>
 
+            <!-- A/B Backstory -->
             <div class="form-row">
                 <div class="form-group">
-                    <label class="form-label">캐릭터 A 컬러차트</label>
-                    <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 5px;">
-                        <div style="flex: 1; min-width: 50px;">
-                            <input type="color" class="form-input" id="input-char1-hair" value="#8B4513" onchange="updateCharacterColors()" style="width: 100%; height: 40px; padding: 0; min-width: 50px;">
-                            <div style="font-size: 11px; color: #666; text-align: center; margin-top: 2px;">머리</div>
-                        </div>
-                        <div style="flex: 1; min-width: 50px;">
-                            <input type="color" class="form-input" id="input-char1-eyes" value="#4169E1" onchange="updateCharacterColors()" style="width: 100%; height: 40px; padding: 0; min-width: 50px;">
-                            <div style="font-size: 11px; color: #666; text-align: center; margin-top: 2px;">눈</div>
-                        </div>
-                        <div style="flex: 1; min-width: 50px;">
-                            <input type="color" class="form-input" id="input-char1-skin" value="#FDBCB4" onchange="updateCharacterColors()" style="width: 100%; height: 40px; padding: 0; min-width: 50px;">
-                            <div style="font-size: 11px; color: #666; text-align: center; margin-top: 2px;">피부</div>
-                        </div>
-                    </div>
+                    <label class="form-label">A Backstory</label>
+                    <textarea class="form-input form-textarea" id="input-char1-past" placeholder="캐릭터의 과거 이야기">캐릭터의 과거 이야기가 들어갑니다.</textarea>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">캐릭터 B 컬러차트</label>
-                    <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 5px;">
-                        <div style="flex: 1; min-width: 50px;">
-                            <input type="color" class="form-input" id="input-char2-hair" value="#8B4513" onchange="updateCharacterColors()" style="width: 100%; height: 40px; padding: 0; min-width: 50px;">
-                            <div style="font-size: 11px; color: #666; text-align: center; margin-top: 2px;">머리</div>
-                        </div>
-                        <div style="flex: 1; min-width: 50px;">
-                            <input type="color" class="form-input" id="input-char2-eyes" value="#4169E1" onchange="updateCharacterColors()" style="width: 100%; height: 40px; padding: 0; min-width: 50px;">
-                            <div style="font-size: 11px; color: #666; text-align: center; margin-top: 2px;">눈</div>
-                        </div>
-                        <div style="flex: 1; min-width: 50px;">
-                            <input type="color" class="form-input" id="input-char2-skin" value="#FDBCB4" onchange="updateCharacterColors()" style="width: 100%; height: 40px; padding: 0; min-width: 50px;">
-                            <div style="font-size: 11px; color: #666; text-align: center; margin-top: 2px;">피부</div>
-                        </div>
-                    </div>
+                    <label class="form-label">B Backstory</label>
+                    <textarea class="form-input form-textarea" id="input-char2-past" placeholder="캐릭터의 과거 이야기">캐릭터 B의 과거 이야기가 들어갑니다.</textarea>
                 </div>
             </div>
 
+            <!-- A/B Etc. -->
             <div class="form-row">
                 <div class="form-group">
-                    <label class="form-label">캐릭터 A 이모지</label>
-                    <input type="text" class="form-input" id="input-char1-emoji" value="🐱" onchange="updateEmojis()" maxlength="2" style="text-align: center; font-size: 18px;">
+                    <label class="form-label">A Etc.</label>
+                    <textarea class="form-input form-textarea" id="input-char1-features" placeholder="캐릭터의 특징이나 습관">캐릭터의 독특한 특징이나 습관, 버릇을 설명해주세요.</textarea>
+                    <div id="char1-extra-form" style="margin-top: 15px;"></div>
+                    <button type="button" onclick="app.addExtraSection('char1')" style="width: 100%; padding: 8px; background: #f0f0f0; border: 1px solid #ddd; margin-top: 10px; cursor: pointer; font-size: 12px;">+ 섹션 추가</button>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">캐릭터 B 이모지</label>
-                    <input type="text" class="form-input" id="input-char2-emoji" value="🐰" onchange="updateEmojis()" maxlength="2" style="text-align: center; font-size: 18px;">
+                    <label class="form-label">B Etc.</label>
+                    <textarea class="form-input form-textarea" id="input-char2-features" placeholder="캐릭터의 특징이나 습관">캐릭터 B의 독특한 특징이나 습관, 버릇을 설명해주세요.</textarea>
+                    <div id="char2-extra-form" style="margin-top: 15px;"></div>
+                    <button type="button" onclick="app.addExtraSection('char2')" style="width: 100%; padding: 8px; background: #f0f0f0; border: 1px solid #ddd; margin-top: 10px; cursor: pointer; font-size: 12px;">+ 섹션 추가</button>
                 </div>
             </div>
 
+            <!-- Timeline 편집 -->
             <div class="form-group">
                 <label class="form-label">Timeline 편집</label>
-                <div id="timeline-form-container">
-                    <div class="timeline-form-item" style="border: 1px solid #eee; padding: 15px; margin-bottom: 15px; background: #fafafa;">
-                        <div style="display: grid; grid-template-columns: 120px 1fr; gap: 10px; margin-bottom: 10px;">
-                            <input type="text" class="form-input" placeholder="YYYY-MM" value="1999-06" onchange="updateTimelineItem(0, 'date', this.value)">
-                            <input type="text" class="form-input" placeholder="제목" value="첫 만남" onchange="updateTimelineItem(0, 'title', this.value)">
-                        </div>
-                        <textarea class="form-input form-textarea" placeholder="설명" onchange="updateTimelineItem(0, 'desc', this.value)">우연히 같은 카페에서 마주치게 되면서 시작된 인연</textarea>
-                        <input type="file" class="form-input" accept="image/*" onchange="updateTimelineImage(0, this)" style="margin-top: 10px;">
-                        <button type="button" onclick="removeTimelineItem(0)" style="background: #ff4444; color: white; border: none; padding: 5px 10px; font-size: 12px; margin-top: 10px;">삭제</button>
-                    </div>
-
-                    <div class="timeline-form-item" style="border: 1px solid #eee; padding: 15px; margin-bottom: 15px; background: #fafafa;">
-                        <div style="display: grid; grid-template-columns: 120px 1fr; gap: 10px; margin-bottom: 10px;">
-                            <input type="text" class="form-input" placeholder="YYYY-MM" value="2000-03" onchange="updateTimelineItem(1, 'date', this.value)">
-                            <input type="text" class="form-input" placeholder="제목" value="갈등" onchange="updateTimelineItem(1, 'title', this.value)">
-                        </div>
-                        <textarea class="form-input form-textarea" placeholder="설명" onchange="updateTimelineItem(1, 'desc', this.value)">서로 다른 가치관으로 인한 첫 번째 큰 갈등이 발생</textarea>
-                        <input type="file" class="form-input" accept="image/*" onchange="updateTimelineImage(1, this)" style="margin-top: 10px;">
-                        <button type="button" onclick="removeTimelineItem(1)" style="background: #ff4444; color: white; border: none; padding: 5px 10px; font-size: 12px; margin-top: 10px;">삭제</button>
-                    </div>
-
-                    <div class="timeline-form-item" style="border: 1px solid #eee; padding: 15px; margin-bottom: 15px; background: #fafafa;">
-                        <div style="display: grid; grid-template-columns: 120px 1fr; gap: 10px; margin-bottom: 10px;">
-                            <input type="text" class="form-input" placeholder="YYYY-MM" value="2020-01" onchange="updateTimelineItem(2, 'date', this.value)">
-                            <input type="text" class="form-input" placeholder="제목" value="화해" onchange="updateTimelineItem(2, 'title', this.value)">
-                        </div>
-                        <textarea class="form-input form-textarea" placeholder="설명" onchange="updateTimelineItem(2, 'desc', this.value)">오랜 시간이 지난 후 우연히 재회하게 되면서 새로운 관계를 시작</textarea>
-                        <input type="file" class="form-input" accept="image/*" onchange="updateTimelineImage(2, this)" style="margin-top: 10px;">
-                        <button type="button" onclick="removeTimelineItem(2)" style="background: #ff4444; color: white; border: none; padding: 5px 10px; font-size: 12px; margin-top: 10px;">삭제</button>
-                    </div>
-                </div>
-                <button type="button" onclick="addTimelineItem()" style="width: 100%; padding: 10px; background: #f0f0f0; border: 1px solid #ddd; margin-top: 10px;">+ Timeline 추가</button>
+                <div id="timeline-form-container"></div>
+                <button type="button" class="btn-add" onclick="app.addTimelineItem()">+ Timeline 추가</button>
             </div>
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
-        let timelineData = [
-            { date: '1999-06', title: '첫 만남', desc: '우연히 같은 카페에서 마주치게 되면서 시작된 인연', image: null },
-            { date: '2000-03', title: '갈등', desc: '서로 다른 가치관으로 인한 첫 번째 큰 갈등이 발생', image: null },
-            { date: '2020-01', title: '화해', desc: '오랜 시간이 지난 후 우연히 재회하게 되면서 새로운 관계를 시작', image: null }
-        ];
+        // 앱 전체 관리 객체
+        const app = {
+            // 데이터
+            timelineData: [
+                { date: '1999-06', title: '첫 만남', desc: '우연히 같은 카페에서 마주치게 되면서 시작된 인연', image: null },
+                { date: '2000-03', title: '갈등', desc: '서로 다른 가치관으로 인한 첫 번째 큰 갈등이 발생', image: null },
+                { date: '2020-01', title: '화해', desc: '오랜 시간이 지난 후 우연히 재회하게 되면서 새로운 관계를 시작', image: null }
+            ],
+            stickerData: [],
+            placedStickers: [],
+            selectedSticker: null,
+            isDragging: false,
+            isResizing: false,
+            isRotating: false,
+            dragOffset: { x: 0, y: 0 },
+            rotateStartAngle: 0,
+            extraSections: { char1: [], char2: [] }, // 추가 섹션 데이터
 
-        let stickerData = []; // 업로드된 스티커들
-        let placedStickers = []; // 페어틀에 배치된 스티커들
-        let selectedSticker = null;
-        let isDragging = false;
-        let isResizing = false;
-        let dragOffset = { x: 0, y: 0 };
+            // 초기화
+            init() {
+                this.setupEventListeners();
+                this.updateTimelineDisplay();
+                this.updateTimelineForm();
+                this.updateColors(); // 초기 컬러 적용
+            },
 
-        function toggleEdit() {
-            const panel = document.getElementById('edit-panel');
-            if (panel.classList.contains('active')) {
-                panel.classList.remove('active');
-            } else {
-                panel.classList.add('active');
-                updateInputs();
-            }
-        }
+            // 이벤트 리스너 설정
+            setupEventListeners() {
+                // 입력 필드 이벤트
+                const inputs = [
+                    'input-pair-title', 'input-pair-subtitle', 'input-char1-name', 'input-char2-name',
+                    'input-char1-gender', 'input-char1-age', 'input-char1-height', 'input-char1-job',
+                    'input-char2-gender', 'input-char2-age', 'input-char2-height', 'input-char2-job',
+                    'input-char1-keywords', 'input-char2-keywords', 'input-char1-past', 'input-char2-past',
+                    'input-char1-features', 'input-char2-features', 'input-char1-speech', 'input-char2-speech'
+                ];
 
-        function closeEdit() {
-            const panel = document.getElementById('edit-panel');
-            panel.classList.remove('active');
-        }
+                inputs.forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.addEventListener('input', () => this.updatePreview());
+                    }
+                });
 
-        function updateInputs() {
-            document.getElementById('input-pair-title').value = document.getElementById('pair-title').textContent;
-            document.getElementById('input-pair-subtitle').value = document.getElementById('pair-subtitle').textContent;
-            document.getElementById('input-char1-name').value = document.getElementById('char1-name').textContent;
-            document.getElementById('input-char2-name').value = document.getElementById('char2-name').textContent;
-            document.getElementById('input-char1-speech').value = document.getElementById('char1-speech').textContent;
-            document.getElementById('input-char2-speech').value = document.getElementById('char2-speech').textContent;
-            
-            // 기본정보 업데이트 - HTML에서 현재 값 추출
-            const char1BasicDiv = document.querySelector('#char1-name').closest('.profile-info').querySelector('.character-basic');
-            const char2BasicDiv = document.querySelector('#char2-name').closest('.profile-info').querySelector('.character-basic');
-            
-            // 현재 표시된 값들 파싱
-            const char1BasicText = char1BasicDiv.children[0].textContent;
-            const char2BasicText = char2BasicDiv.children[0].textContent;
-            
-            const char1Parts = char1BasicText.split(' | ');
-            const char2Parts = char2BasicText.split(' | ');
-            
-            if (char1Parts.length >= 3) {
-                document.getElementById('input-char1-gender').value = char1Parts[0];
-                document.getElementById('input-char1-age').value = char1Parts[1].replace('세', '');
-                document.getElementById('input-char1-height').value = char1Parts[2];
-            }
-            
-            if (char2Parts.length >= 3) {
-                document.getElementById('input-char2-gender').value = char2Parts[0];
-                document.getElementById('input-char2-age').value = char2Parts[1].replace('세', '');
-                document.getElementById('input-char2-height').value = char2Parts[2];
-            }
-            
-            document.getElementById('input-char1-job').value = char1BasicDiv.children[1].textContent;
-            document.getElementById('input-char2-job').value = char2BasicDiv.children[1].textContent;
-            
-            // 키워드, 과거, 특징 업데이트
-            const char1Keywords = Array.from(document.getElementById('char1-keywords').querySelectorAll('.keyword-tag')).map(tag => tag.textContent).join(', ');
-            const char2Keywords = Array.from(document.getElementById('char2-keywords').querySelectorAll('.keyword-tag')).map(tag => tag.textContent).join(', ');
-            
-            document.getElementById('input-char1-keywords').value = char1Keywords;
-            document.getElementById('input-char2-keywords').value = char2Keywords;
-            document.getElementById('input-char1-past').value = document.getElementById('char1-past').textContent;
-            document.getElementById('input-char2-past').value = document.getElementById('char2-past').textContent;
-            document.getElementById('input-char1-features').value = document.getElementById('char1-features').textContent;
-            document.getElementById('input-char2-features').value = document.getElementById('char2-features').textContent;
-        }
-
-        function updatePreview() {
-            document.getElementById('pair-title').textContent = document.getElementById('input-pair-title').value;
-            document.getElementById('pair-subtitle').textContent = document.getElementById('input-pair-subtitle').value;
-            document.getElementById('char1-name').textContent = document.getElementById('input-char1-name').value;
-            document.getElementById('char2-name').textContent = document.getElementById('input-char2-name').value;
-            document.getElementById('char1-speech').textContent = document.getElementById('input-char1-speech').value;
-            document.getElementById('char2-speech').textContent = document.getElementById('input-char2-speech').value;
-            
-            // 기본정보 업데이트
-            const char1Gender = document.getElementById('input-char1-gender').value;
-            const char1Age = document.getElementById('input-char1-age').value;
-            const char1Height = document.getElementById('input-char1-height').value;
-            const char1Job = document.getElementById('input-char1-job').value;
-            
-            const char2Gender = document.getElementById('input-char2-gender').value;
-            const char2Age = document.getElementById('input-char2-age').value;
-            const char2Height = document.getElementById('input-char2-height').value;
-            const char2Job = document.getElementById('input-char2-job').value;
-            
-            // 캐릭터 A 기본정보 업데이트
-            const char1BasicEl = document.querySelector('#char1-name').closest('.profile-info').querySelector('.character-basic');
-            char1BasicEl.innerHTML = `<div>${char1Gender} | <span id="char1-age">${char1Age}</span>세 | <span id="char1-height">${char1Height.replace('cm', '')}</span>cm</div><div id="char1-job">${char1Job}</div>`;
-            
-            // 캐릭터 B 기본정보 업데이트
-            const char2BasicEl = document.querySelector('#char2-name').closest('.profile-info').querySelector('.character-basic');
-            char2BasicEl.innerHTML = `<div>${char2Gender} | <span id="char2-age">${char2Age}</span>세 | <span id="char2-height">${char2Height.replace('cm', '')}</span>cm</div><div id="char2-job">${char2Job}</div>`;
-            
-            // 키워드 업데이트
-            updateKeywords('char1', document.getElementById('input-char1-keywords').value);
-            updateKeywords('char2', document.getElementById('input-char2-keywords').value);
-            
-            // 과거/특징 업데이트
-            document.getElementById('char1-past').textContent = document.getElementById('input-char1-past').value;
-            document.getElementById('char2-past').textContent = document.getElementById('input-char2-past').value;
-            document.getElementById('char1-features').textContent = document.getElementById('input-char1-features').value;
-            document.getElementById('char2-features').textContent = document.getElementById('input-char2-features').value;
-        }
-
-        function updateKeywords(charType, keywordsText) {
-            const keywordsContainer = document.getElementById(`${charType}-keywords`);
-            const keywords = keywordsText.split(',').map(k => k.trim()).filter(k => k);
-            
-            keywordsContainer.innerHTML = '';
-            keywords.forEach(keyword => {
-                const tag = document.createElement('span');
-                tag.className = 'keyword-tag';
-                tag.textContent = keyword;
-                keywordsContainer.appendChild(tag);
-            });
-        }
-
-        // 스티커 업로드 처리
-        function handleStickerUpload(input) {
-            const files = input.files;
-            const container = document.getElementById('sticker-preview-container');
-            
-            if (stickerData.length === 0) {
-                container.innerHTML = '';
-            }
-            
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                const reader = new FileReader();
+                // 컬러 이벤트
+                document.getElementById('input-pair-color').addEventListener('change', () => this.updateColors());
                 
-                reader.onload = function(e) {
-                    const stickerId = `sticker-${Date.now()}-${Math.random()}`;
-                    stickerData.push({
-                        id: stickerId,
-                        src: e.target.result,
-                        name: file.name
-                    });
-                    
-                    createStickerPreview(stickerId, e.target.result);
+                const colorInputs = ['char1-hair', 'char1-eyes', 'char1-skin', 'char2-hair', 'char2-eyes', 'char2-skin'];
+                colorInputs.forEach(id => {
+                    const element = document.getElementById(`input-${id}`);
+                    if (element) {
+                        element.addEventListener('change', () => this.updateCharacterColors());
+                    }
+                });
+
+                // 이모지 이벤트
+                document.getElementById('input-char1-emoji').addEventListener('input', () => this.updateEmojis());
+                document.getElementById('input-char2-emoji').addEventListener('input', () => this.updateEmojis());
+
+                // 이미지 업로드 이벤트
+                document.getElementById('input-char1-image').addEventListener('change', (e) => this.handleImageUpload('char1', e));
+                document.getElementById('input-char2-image').addEventListener('change', (e) => this.handleImageUpload('char2', e));
+
+                // 스티커 업로드 이벤트
+                document.getElementById('input-sticker-upload').addEventListener('change', (e) => this.handleStickerUpload(e));
+
+                // 마우스 이벤트
+                document.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+                document.addEventListener('mouseup', () => this.handleMouseUp());
+                document.addEventListener('keydown', (e) => this.handleKeyDown(e));
+
+                // 페어틀 카드 클릭
+                document.getElementById('fairtle-card').addEventListener('click', (e) => this.handleCardClick(e));
+            },
+
+            // UI 컨트롤
+            toggleEdit() {
+                const panel = document.getElementById('edit-panel');
+                if (panel.classList.contains('active')) {
+                    panel.classList.remove('active');
+                } else {
+                    panel.classList.add('active');
+                    this.updateInputs();
+                }
+            },
+
+            closeEdit() {
+                document.getElementById('edit-panel').classList.remove('active');
+            },
+
+            // 입력값을 폼에 업데이트
+            updateInputs() {
+                const pairs = [
+                    ['pair-title', 'input-pair-title'],
+                    ['pair-subtitle', 'input-pair-subtitle'],
+                    ['char1-name', 'input-char1-name'],
+                    ['char2-name', 'input-char2-name'],
+                    ['char1-speech', 'input-char1-speech'],
+                    ['char2-speech', 'input-char2-speech'],
+                    ['char1-past', 'input-char1-past'],
+                    ['char2-past', 'input-char2-past'],
+                    ['char1-features', 'input-char1-features'],
+                    ['char2-features', 'input-char2-features']
+                ];
+
+                pairs.forEach(([sourceId, targetId]) => {
+                    const source = document.getElementById(sourceId);
+                    const target = document.getElementById(targetId);
+                    if (source && target) {
+                        target.value = source.textContent;
+                    }
+                });
+
+                // 기본정보 파싱
+                this.parseBasicInfo('char1');
+                this.parseBasicInfo('char2');
+
+                // 키워드 파싱
+                this.parseKeywords('char1');
+                this.parseKeywords('char2');
+            },
+
+            parseBasicInfo(charType) {
+                const basicEl = document.getElementById(`${charType}-basic`);
+                if (!basicEl) return;
+
+                const basicText = basicEl.children[0].textContent;
+                const job = basicEl.children[1].textContent;
+                const parts = basicText.split(' | ');
+
+                if (parts.length >= 3) {
+                    document.getElementById(`input-${charType}-gender`).value = parts[0];
+                    document.getElementById(`input-${charType}-age`).value = parts[1].replace('세', '');
+                    document.getElementById(`input-${charType}-height`).value = parts[2];
+                }
+                document.getElementById(`input-${charType}-job`).value = job;
+            },
+
+            parseKeywords(charType) {
+                const keywordsEl = document.getElementById(`${charType}-keywords`);
+                if (!keywordsEl) return;
+
+                const keywords = Array.from(keywordsEl.querySelectorAll('.keyword-tag'))
+                    .map(tag => tag.textContent).join(', ');
+                document.getElementById(`input-${charType}-keywords`).value = keywords;
+            },
+
+            // 미리보기 업데이트
+            updatePreview() {
+                // 기본 텍스트 업데이트
+                const updates = [
+                    ['input-pair-title', 'pair-title'],
+                    ['input-pair-subtitle', 'pair-subtitle'],
+                    ['input-char1-name', 'char1-name'],
+                    ['input-char2-name', 'char2-name'],
+                    ['input-char1-speech', 'char1-speech'],
+                    ['input-char2-speech', 'char2-speech'],
+                    ['input-char1-past', 'char1-past'],
+                    ['input-char2-past', 'char2-past'],
+                    ['input-char1-features', 'char1-features'],
+                    ['input-char2-features', 'char2-features']
+                ];
+
+                updates.forEach(([sourceId, targetId]) => {
+                    const source = document.getElementById(sourceId);
+                    const target = document.getElementById(targetId);
+                    if (source && target) {
+                        target.textContent = source.value;
+                    }
+                });
+
+                // 기본정보 업데이트
+                this.updateBasicInfo('char1');
+                this.updateBasicInfo('char2');
+
+                // 키워드 업데이트
+                this.updateKeywords('char1');
+                this.updateKeywords('char2');
+            },
+
+            updateBasicInfo(charType) {
+                const gender = document.getElementById(`input-${charType}-gender`).value;
+                const age = document.getElementById(`input-${charType}-age`).value;
+                const height = document.getElementById(`input-${charType}-height`).value;
+                const job = document.getElementById(`input-${charType}-job`).value;
+
+                const basicEl = document.getElementById(`${charType}-basic`);
+                if (basicEl) {
+                    basicEl.innerHTML = `
+                        <div>${gender} | ${age}세 | ${height.replace('cm', '')}cm</div>
+                        <div>${job}</div>
+                    `;
+                }
+            },
+
+            updateKeywords(charType) {
+                const keywordsText = document.getElementById(`input-${charType}-keywords`).value;
+                const keywordsEl = document.getElementById(`${charType}-keywords`);
+                if (!keywordsEl) return;
+
+                const keywords = keywordsText.split(',').map(k => k.trim()).filter(k => k);
+                keywordsEl.innerHTML = '';
+                keywords.forEach(keyword => {
+                    const tag = document.createElement('span');
+                    tag.className = 'keyword-tag';
+                    tag.textContent = keyword;
+                    keywordsEl.appendChild(tag);
+                });
+            },
+
+            // 컬러 업데이트
+            updateColors() {
+                const color = document.getElementById('input-pair-color').value;
+                const root = document.documentElement;
+                
+                root.style.setProperty('--primary-color', color);
+                root.style.setProperty('--light-color', this.hexToRgba(color, 0.1));
+                root.style.setProperty('--speech-color', this.hexToRgba(color, 0.2));
+                
+                // 이모지 동그라미 테두리 색상 (대표컬러를 60% 투명도로 진하게)
+                root.style.setProperty('--emoji-border-color', this.hexToRgba(color, 0.6));
+            },
+
+            updateCharacterColors() {
+                const colors = ['char1-hair', 'char1-eyes', 'char1-skin', 'char2-hair', 'char2-eyes', 'char2-skin'];
+                colors.forEach(colorId => {
+                    const input = document.getElementById(`input-${colorId}`);
+                    const target = document.getElementById(`${colorId}-color`);
+                    if (input && target) {
+                        target.style.background = input.value;
+                    }
+                });
+            },
+
+            updateEmojis() {
+                const char1Emoji = document.getElementById('input-char1-emoji').value;
+                const char2Emoji = document.getElementById('input-char2-emoji').value;
+                
+                document.getElementById('char1-emoji').textContent = char1Emoji;
+                document.getElementById('char2-emoji').textContent = char2Emoji;
+            },
+
+            hexToRgba(hex, alpha) {
+                const r = parseInt(hex.slice(1, 3), 16);
+                const g = parseInt(hex.slice(3, 5), 16);
+                const b = parseInt(hex.slice(5, 7), 16);
+                return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+            },
+
+            // 두 색상을 섞는 함수 (회색 베이스에 대표컬러 섞기용)
+            mixColors(baseColor, mixColor, ratio) {
+                const base = {
+                    r: parseInt(baseColor.slice(1, 3), 16),
+                    g: parseInt(baseColor.slice(3, 5), 16),
+                    b: parseInt(baseColor.slice(5, 7), 16)
+                };
+                const mix = {
+                    r: parseInt(mixColor.slice(1, 3), 16),
+                    g: parseInt(mixColor.slice(3, 5), 16),
+                    b: parseInt(mixColor.slice(5, 7), 16)
+                };
+                
+                const result = {
+                    r: Math.round(base.r * (1 - ratio) + mix.r * ratio),
+                    g: Math.round(base.g * (1 - ratio) + mix.g * ratio),
+                    b: Math.round(base.b * (1 - ratio) + mix.b * ratio)
+                };
+                
+                return `rgb(${result.r}, ${result.g}, ${result.b})`;
+            },
+
+            // 이미지 업로드
+            handleImageUpload(charType, event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const avatarEl = document.getElementById(`${charType}-avatar`);
+                    if (avatarEl) {
+                        avatarEl.style.backgroundImage = `url(${e.target.result})`;
+                        avatarEl.classList.add('has-image');
+                        // 텍스트 노드 제거
+                        Array.from(avatarEl.childNodes)
+                            .filter(node => node.nodeType === 3)
+                            .forEach(node => node.remove());
+                    }
                 };
                 reader.readAsDataURL(file);
-            }
-        }
+            },
 
-        // 스티커 미리보기 생성
-        function createStickerPreview(stickerId, src) {
-            const container = document.getElementById('sticker-preview-container');
-            const previewDiv = document.createElement('div');
-            previewDiv.className = 'sticker-preview';
-            previewDiv.onclick = () => addStickerToCard(stickerId, src);
-            
-            const img = document.createElement('img');
-            img.src = src;
-            img.alt = 'sticker';
-            
-            previewDiv.appendChild(img);
-            container.appendChild(previewDiv);
-        }
-
-        // 페어틀 카드에 스티커 추가
-        function addStickerToCard(stickerId, src) {
-            const fairtle = document.getElementById('fairtle-card');
-            const stickerEl = document.createElement('div');
-            const placedId = `placed-${Date.now()}-${Math.random()}`;
-            
-            // 이미지 미리 로드하여 안전하게 처리
-            const tempImg = new Image();
-            tempImg.crossOrigin = "anonymous";
-            tempImg.onload = function() {
-                const aspectRatio = this.width / this.height;
-                const baseSize = 80;
-                let width, height;
+            // 스티커 관련
+            handleStickerUpload(event) {
+                const files = event.target.files;
+                const container = document.getElementById('sticker-preview-container');
                 
-                if (aspectRatio > 1) {
-                    width = baseSize;
-                    height = baseSize / aspectRatio;
-                } else {
-                    width = baseSize * aspectRatio;
-                    height = baseSize;
+                if (this.stickerData.length === 0) {
+                    container.innerHTML = '';
                 }
-                
-                stickerEl.className = 'fairtle-sticker';
-                stickerEl.id = placedId;
-                stickerEl.style.left = '100px';
-                stickerEl.style.top = '100px';
-                stickerEl.style.width = width + 'px';
-                stickerEl.style.height = height + 'px';
-                stickerEl.style.zIndex = '100';
-                stickerEl.dataset.aspectRatio = aspectRatio;
-                
-                // 더 안전한 HTML 구조
-                const imgEl = document.createElement('img');
-                imgEl.src = src;
-                imgEl.style.cssText = 'width: 100%; height: 100%; object-fit: contain; display: block; pointer-events: none;';
-                imgEl.draggable = false;
-                
-                const controlsEl = document.createElement('div');
-                controlsEl.className = 'sticker-controls';
-                controlsEl.innerHTML = `<button class="sticker-delete" onclick="removeSticker('${placedId}')" title="삭제">×</button>`;
-                
-                const resizeEl = document.createElement('div');
-                resizeEl.className = 'resize-handle';
-                resizeEl.onmousedown = (e) => startResize(e, placedId);
-                
-                stickerEl.appendChild(imgEl);
-                stickerEl.appendChild(controlsEl);
-                stickerEl.appendChild(resizeEl);
-                
-                // 이벤트 리스너 추가
-                stickerEl.onmousedown = (e) => startDrag(e, placedId);
-                stickerEl.onclick = (e) => {
-                    e.stopPropagation();
-                    selectSticker(placedId);
-                };
-                
-                fairtle.appendChild(stickerEl);
-                
-                placedStickers.push({
-                    id: placedId,
-                    originalId: stickerId,
-                    src: src,
-                    x: 100,
-                    y: 100,
-                    width: width,
-                    height: height,
-                    aspectRatio: aspectRatio
+
+                Array.from(files).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const stickerId = `sticker-${Date.now()}-${Math.random()}`;
+                        this.stickerData.push({
+                            id: stickerId,
+                            src: e.target.result,
+                            name: file.name
+                        });
+                        this.createStickerPreview(stickerId, e.target.result);
+                    };
+                    reader.readAsDataURL(file);
                 });
+            },
+
+            createStickerPreview(stickerId, src) {
+                const container = document.getElementById('sticker-preview-container');
+                const previewDiv = document.createElement('div');
+                previewDiv.className = 'sticker-preview';
+                previewDiv.onclick = () => this.addStickerToCard(stickerId, src);
                 
-                selectSticker(placedId);
+                const img = document.createElement('img');
+                img.src = src;
+                img.alt = 'sticker';
                 
-                // 이미지 로드 완료 후 강제 리페인트
-                setTimeout(() => {
-                    stickerEl.style.display = 'block';
-                }, 10);
-            };
-            
-            tempImg.onerror = function() {
-                console.error('스티커 이미지 로드 실패:', src);
-                alert('스티커 이미지를 로드할 수 없습니다.');
-            };
-            
-            tempImg.src = src;
-        }
+                previewDiv.appendChild(img);
+                container.appendChild(previewDiv);
+            },
 
-        // 스티커 선택
-        function selectSticker(stickerId) {
-            // 기존 선택 해제
-            document.querySelectorAll('.fairtle-sticker.selected').forEach(el => {
-                el.classList.remove('selected');
-            });
-            
-            // 새로운 스티커 선택
-            const stickerEl = document.getElementById(stickerId);
-            if (stickerEl) {
-                stickerEl.classList.add('selected');
-                selectedSticker = stickerId;
-            }
-        }
+            addStickerToCard(stickerId, src) {
+                const fairtle = document.getElementById('fairtle-card');
+                const stickerEl = document.createElement('div');
+                const placedId = `placed-${Date.now()}-${Math.random()}`;
 
-        // 드래그 시작
-        function startDrag(e, stickerId) {
-            if (e.target.classList.contains('resize-handle') || e.target.classList.contains('sticker-delete')) {
-                return;
-            }
-            
-            e.preventDefault();
-            isDragging = true;
-            selectedSticker = stickerId;
-            selectSticker(stickerId);
-            
-            const stickerEl = document.getElementById(stickerId);
-            const rect = stickerEl.getBoundingClientRect();
-            const fairtle = document.getElementById('fairtle-card');
-            const fairtleRect = fairtle.getBoundingClientRect();
-            
-            dragOffset.x = e.clientX - rect.left;
-            dragOffset.y = e.clientY - rect.top;
-        }
+                const tempImg = new Image();
+                tempImg.onload = () => {
+                    const aspectRatio = tempImg.width / tempImg.height;
+                    const baseSize = 80;
+                    const width = aspectRatio > 1 ? baseSize : baseSize * aspectRatio;
+                    const height = aspectRatio > 1 ? baseSize / aspectRatio : baseSize;
 
-        // 리사이즈 시작
-        function startResize(e, stickerId) {
-            e.stopPropagation();
-            e.preventDefault();
-            isResizing = true;
-            selectedSticker = stickerId;
-            selectSticker(stickerId);
-        }
+                    stickerEl.className = 'fairtle-sticker';
+                    stickerEl.id = placedId;
+                    stickerEl.style.cssText = `left: 100px; top: 100px; width: ${width}px; height: ${height}px;`;
+                    stickerEl.dataset.aspectRatio = aspectRatio;
 
-        // 마우스 이동 이벤트
-        document.addEventListener('mousemove', (e) => {
-            if (isDragging && selectedSticker) {
-                const stickerEl = document.getElementById(selectedSticker);
+                    const imgEl = document.createElement('img');
+                    imgEl.src = src;
+                    imgEl.draggable = false;
+
+                    const controlsEl = document.createElement('div');
+                    controlsEl.className = 'sticker-controls';
+                    controlsEl.innerHTML = `
+                        <button class="sticker-delete" onclick="app.removeSticker('${placedId}')" title="삭제">×</button>
+                        <button class="sticker-rotate" onmousedown="app.startRotate(event, '${placedId}')" title="드래그해서 회전">↻</button>
+                    `;
+
+                    const resizeEl = document.createElement('div');
+                    resizeEl.className = 'resize-handle';
+                    resizeEl.onmousedown = (e) => this.startResize(e, placedId);
+
+                    stickerEl.appendChild(imgEl);
+                    stickerEl.appendChild(controlsEl);
+                    stickerEl.appendChild(resizeEl);
+
+                    stickerEl.onmousedown = (e) => this.startDrag(e, placedId);
+                    stickerEl.onclick = (e) => {
+                        e.stopPropagation();
+                        this.selectSticker(placedId);
+                    };
+
+                    fairtle.appendChild(stickerEl);
+                    
+                    this.placedStickers.push({
+                        id: placedId,
+                        originalId: stickerId,
+                        src: src,
+                        x: 100, y: 100,
+                        width: width, height: height,
+                        aspectRatio: aspectRatio,
+                        rotation: 0
+                    });
+
+                    this.selectSticker(placedId);
+                };
+                tempImg.src = src;
+            },
+
+            selectSticker(stickerId) {
+                document.querySelectorAll('.fairtle-sticker.selected')
+                    .forEach(el => el.classList.remove('selected'));
+                
+                const stickerEl = document.getElementById(stickerId);
+                if (stickerEl) {
+                    stickerEl.classList.add('selected');
+                    this.selectedSticker = stickerId;
+                }
+            },
+
+            removeSticker(stickerId) {
+                const stickerEl = document.getElementById(stickerId);
+                if (stickerEl) stickerEl.remove();
+                
+                this.placedStickers = this.placedStickers.filter(s => s.id !== stickerId);
+                
+                if (this.selectedSticker === stickerId) {
+                    this.selectedSticker = null;
+                }
+            },
+
+            startDrag(e, stickerId) {
+                if (e.target.classList.contains('resize-handle') || 
+                    e.target.classList.contains('sticker-delete') ||
+                    e.target.classList.contains('sticker-rotate')) return;
+                
+                e.preventDefault();
+                this.isDragging = true;
+                this.selectedSticker = stickerId;
+                this.selectSticker(stickerId);
+                
+                const stickerEl = document.getElementById(stickerId);
+                const rect = stickerEl.getBoundingClientRect();
+                
+                this.dragOffset.x = e.clientX - rect.left;
+                this.dragOffset.y = e.clientY - rect.top;
+            },
+
+            startResize(e, stickerId) {
+                e.stopPropagation();
+                e.preventDefault();
+                this.isResizing = true;
+                this.selectedSticker = stickerId;
+                this.selectSticker(stickerId);
+            },
+
+            handleMouseMove(e) {
+                if (this.isDragging && this.selectedSticker) {
+                    this.dragSticker(e);
+                } else if (this.isResizing && this.selectedSticker) {
+                    this.resizeSticker(e);
+                } else if (this.isRotating && this.selectedSticker) {
+                    this.rotateSticker(e);
+                }
+            },
+
+            dragSticker(e) {
+                const stickerEl = document.getElementById(this.selectedSticker);
                 const fairtle = document.getElementById('fairtle-card');
                 const fairtleRect = fairtle.getBoundingClientRect();
                 
-                let newX = e.clientX - fairtleRect.left - dragOffset.x;
-                let newY = e.clientY - fairtleRect.top - dragOffset.y;
+                let newX = e.clientX - fairtleRect.left - this.dragOffset.x;
+                let newY = e.clientY - fairtleRect.top - this.dragOffset.y;
                 
-                // 경계 체크
                 newX = Math.max(0, Math.min(newX, fairtle.offsetWidth - stickerEl.offsetWidth));
                 newY = Math.max(0, Math.min(newY, fairtle.offsetHeight - stickerEl.offsetHeight));
                 
                 stickerEl.style.left = newX + 'px';
                 stickerEl.style.top = newY + 'px';
                 
-                // placedStickers 배열 업데이트
-                const sticker = placedStickers.find(s => s.id === selectedSticker);
+                const sticker = this.placedStickers.find(s => s.id === this.selectedSticker);
                 if (sticker) {
                     sticker.x = newX;
                     sticker.y = newY;
                 }
-            } else if (isResizing && selectedSticker) {
-                const stickerEl = document.getElementById(selectedSticker);
+            },
+
+            resizeSticker(e) {
+                const stickerEl = document.getElementById(this.selectedSticker);
                 const fairtle = document.getElementById('fairtle-card');
                 const stickerRect = stickerEl.getBoundingClientRect();
                 
-                // 원본 비율 유지하면서 크기 조절
                 const aspectRatio = parseFloat(stickerEl.dataset.aspectRatio) || 1;
                 const startX = parseFloat(stickerEl.style.left);
                 const startY = parseFloat(stickerEl.style.top);
@@ -1211,11 +1383,9 @@
                 let newWidth = e.clientX - stickerRect.left;
                 let newHeight = newWidth / aspectRatio;
                 
-                // 최소/최대 크기 제한
                 newWidth = Math.max(20, Math.min(newWidth, 200));
                 newHeight = newWidth / aspectRatio;
                 
-                // 페어틀 경계 체크
                 const maxRight = fairtle.offsetWidth - startX;
                 const maxBottom = fairtle.offsetHeight - startY;
                 
@@ -1231,437 +1401,313 @@
                 stickerEl.style.width = newWidth + 'px';
                 stickerEl.style.height = newHeight + 'px';
                 
-                // placedStickers 배열 업데이트
-                const sticker = placedStickers.find(s => s.id === selectedSticker);
+                const sticker = this.placedStickers.find(s => s.id === this.selectedSticker);
                 if (sticker) {
                     sticker.width = newWidth;
                     sticker.height = newHeight;
                 }
-            }
-        });
+            },
 
-        // 마우스 업 이벤트
-        document.addEventListener('mouseup', () => {
-            isDragging = false;
-            isResizing = false;
-        });
+            handleMouseUp() {
+                this.isDragging = false;
+                this.isResizing = false;
+                this.isRotating = false;
+            },
 
-        // 페어틀 카드 클릭시 스티커 선택 해제
-        document.getElementById('fairtle-card').addEventListener('click', (e) => {
-            if (e.target.id === 'fairtle-card' || e.target.closest('.fairtle-sticker') === null) {
-                document.querySelectorAll('.fairtle-sticker.selected').forEach(el => {
-                    el.classList.remove('selected');
+            handleKeyDown(e) {
+                if (e.key === 'Delete' && this.selectedSticker) {
+                    this.removeSticker(this.selectedSticker);
+                }
+            },
+
+            handleCardClick(e) {
+                if (e.target.id === 'fairtle-card' || !e.target.closest('.fairtle-sticker')) {
+                    document.querySelectorAll('.fairtle-sticker.selected')
+                        .forEach(el => el.classList.remove('selected'));
+                    this.selectedSticker = null;
+                }
+            },
+
+            // 타임라인 관련
+            updateTimelineDisplay() {
+                const container = document.getElementById('timeline-container');
+                const existingItems = container.querySelectorAll('.timeline-item');
+                existingItems.forEach(item => item.remove());
+
+                this.timelineData.forEach((item, index) => {
+                    const position = this.timelineData.length === 1 ? 50 : 
+                        (index / (this.timelineData.length - 1)) * 100;
+                    
+                    const itemEl = document.createElement('div');
+                    itemEl.className = 'timeline-item';
+                    itemEl.style.top = `${position}%`;
+                    
+                    itemEl.innerHTML = `
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-date">${item.date}</div>
+                        <div class="timeline-title-text">${item.title}</div>
+                        <div class="timeline-desc">${item.desc}</div>
+                        ${item.image ? `<img src="${item.image}" class="timeline-image" alt="타임라인 이미지">` : ''}
+                    `;
+                    
+                    container.appendChild(itemEl);
                 });
-                selectedSticker = null;
-            }
-        });
 
-        // 스티커 삭제
-        function removeSticker(stickerId) {
-            const stickerEl = document.getElementById(stickerId);
-            if (stickerEl) {
-                stickerEl.remove();
-            }
-            
-            placedStickers = placedStickers.filter(s => s.id !== stickerId);
-            
-            if (selectedSticker === stickerId) {
-                selectedSticker = null;
-            }
-        }
+                // 타임라인 선을 마지막 아이템에 맞춰 조정
+                const timeline = container.querySelector('.timeline-line');
+                if (timeline && this.timelineData.length > 0) {
+                    const lastPosition = this.timelineData.length === 1 ? 50 : 100;
+                    timeline.style.height = `${lastPosition}%`;
+                }
+            },
 
-        // 키보드 이벤트 (Delete 키로 선택된 스티커 삭제)
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Delete' && selectedSticker) {
-                removeSticker(selectedSticker);
-            }
-        });
+            updateTimelineForm() {
+                const container = document.getElementById('timeline-form-container');
+                container.innerHTML = '';
+                
+                this.timelineData.forEach((item, index) => {
+                    const formEl = document.createElement('div');
+                    formEl.className = 'timeline-form-item';
+                    formEl.innerHTML = `
+                        <div style="display: grid; grid-template-columns: 120px 1fr; gap: 10px; margin-bottom: 10px;">
+                            <input type="text" class="form-input" placeholder="YYYY-MM" value="${item.date}" 
+                                onchange="app.updateTimelineItem(${index}, 'date', this.value)">
+                            <input type="text" class="form-input" placeholder="제목" value="${item.title}" 
+                                onchange="app.updateTimelineItem(${index}, 'title', this.value)">
+                        </div>
+                        <textarea class="form-input form-textarea" placeholder="설명" 
+                            onchange="app.updateTimelineItem(${index}, 'desc', this.value)">${item.desc}</textarea>
+                        <input type="file" class="form-input" accept="image/*" 
+                            onchange="app.updateTimelineImage(${index}, this)" style="margin-top: 10px;">
+                        <button type="button" class="btn-delete" onclick="app.removeTimelineItem(${index})">삭제</button>
+                    `;
+                    container.appendChild(formEl);
+                });
+            },
 
-        function handleImageUpload(charType, input) {
-            const file = input.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const avatarElement = document.querySelector(`#char${charType === 'char1' ? '1' : '2'}-name`).closest('.character-profile').querySelector('.character-avatar');
-                    avatarElement.style.backgroundImage = `url(${e.target.result})`;
-                    avatarElement.style.backgroundSize = 'cover';
-                    avatarElement.style.backgroundPosition = 'center';
-                    
-                    const textNodes = Array.from(avatarElement.childNodes).filter(node => node.nodeType === 3);
-                    textNodes.forEach(node => node.remove());
-                    
-                    avatarElement.classList.add('has-image');
+            updateTimelineItem(index, field, value) {
+                this.timelineData[index][field] = value;
+                this.updateTimelineDisplay();
+            },
+
+            updateTimelineImage(index, input) {
+                const file = input.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        this.timelineData[index].image = e.target.result;
+                        this.updateTimelineDisplay();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            },
+
+            addTimelineItem() {
+                this.timelineData.push({
+                    date: '2024-01',
+                    title: '새 이벤트',
+                    desc: '새로운 타임라인 이벤트 설명을 입력해주세요.',
+                    image: null
+                });
+                this.updateTimelineDisplay();
+                this.updateTimelineForm();
+            },
+
+            removeTimelineItem(index) {
+                this.timelineData.splice(index, 1);
+                this.updateTimelineDisplay();
+                this.updateTimelineForm();
+            },
+
+            addExtraSection(charType) {
+                const sectionId = `${charType}-extra-${Date.now()}`;
+                const sectionData = {
+                    id: sectionId,
+                    title: '새 섹션',
+                    content: '내용을 입력해주세요.',
+                    image: null
                 };
-                reader.readAsDataURL(file);
-            }
-        }
+                
+                this.extraSections[charType].push(sectionData);
+                this.updateExtraSections(charType);
+                this.updateExtraSectionForm(charType);
+            },
 
-        function updateColors() {
-            const color = document.getElementById('input-pair-color').value;
-            
-            const hexToRgb = (hex) => {
-                const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-                return result ? {
-                    r: parseInt(result[1], 16),
-                    g: parseInt(result[2], 16),
-                    b: parseInt(result[3], 16)
-                } : null;
-            };
-            
-            const rgb = hexToRgb(color);
-            const lightColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.1)`;
-            const speechColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.2)`;
-            const borderColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5)`;
-            
-            const dots = document.querySelectorAll('.timeline-dot');
-            const dates = document.querySelectorAll('.timeline-date');
-            const line = document.querySelector('.timeline-line');
-            
-            dots.forEach(dot => {
-                dot.style.backgroundColor = color;
-                // 바깥 테두리도 함께 변경
-                const outerBorder = dot.querySelector('div');
-                if (outerBorder) {
-                    outerBorder.style.borderColor = color;
+            removeExtraSection(charType, sectionId) {
+                this.extraSections[charType] = this.extraSections[charType].filter(s => s.id !== sectionId);
+                this.updateExtraSections(charType);
+                this.updateExtraSectionForm(charType);
+            },
+
+            updateExtraSection(charType, sectionId, field, value) {
+                const section = this.extraSections[charType].find(s => s.id === sectionId);
+                if (section) {
+                    section[field] = value;
+                    this.updateExtraSections(charType);
                 }
-            });
-            
-            dates.forEach(date => {
-                date.style.backgroundColor = color;
-            });
-            
-            if (line) {
-                line.style.backgroundColor = color;
-            }
+            },
 
-            const keywords = document.querySelectorAll('.keyword-tag');
-            keywords.forEach(keyword => {
-                keyword.style.backgroundColor = lightColor;
-            });
-
-            const speeches = document.querySelectorAll('.character-speech');
-            speeches.forEach(speech => {
-                speech.style.backgroundColor = speechColor;
-                
-                const oldStyleId = speech.getAttribute('data-style-index');
-                if (oldStyleId) {
-                    const oldStyle = document.getElementById(`speech-style-${oldStyleId}`);
-                    if (oldStyle) oldStyle.remove();
+            updateExtraSectionImage(charType, sectionId, input) {
+                const file = input.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        this.updateExtraSection(charType, sectionId, 'image', e.target.result);
+                    };
+                    reader.readAsDataURL(file);
                 }
-                
-                const newIndex = Date.now() + Math.random();
-                speech.setAttribute('data-style-index', newIndex);
-                
-                const afterStyle = document.createElement('style');
-                afterStyle.id = `speech-style-${newIndex}`;
-                
-                if (speech.classList.contains('left')) {
-                    afterStyle.textContent = `
-                        .character-speech[data-style-index="${newIndex}"]::after {
-                            border-right-color: ${speechColor} !important;
-                        }
-                    `;
-                } else {
-                    afterStyle.textContent = `
-                        .character-speech[data-style-index="${newIndex}"]::after {
-                            border-left-color: ${speechColor} !important;
-                        }
-                    `;
-                }
-                document.head.appendChild(afterStyle);
-            });
+            },
 
-            const detailTitles = document.querySelectorAll('.detail-title');
-            detailTitles.forEach(title => {
-                title.style.backgroundColor = lightColor;
-            });
-
-            // 이모지 동그라미 테두리 색상 변경
-            const avatars = document.querySelectorAll('.character-avatar');
-            avatars.forEach(avatar => {
-                // 더 정확한 선택자로 이모지 동그라미 찾기
-                const emojiCircles = avatar.querySelectorAll('div[style*="border-radius: 50%"][style*="border:"]');
-                emojiCircles.forEach(circle => {
-                    let style = circle.getAttribute('style');
-                    // 다양한 border 패턴에 대응
-                    style = style.replace(/border:\s*2px\s+solid\s+[^;]+;?/g, `border: 2px solid ${color};`);
-                    style = style.replace(/border-color:\s*[^;]+;?/g, `border-color: ${color};`);
-                    circle.setAttribute('style', style);
+            updateExtraSections(charType) {
+                const container = document.getElementById(`${charType}-extra-sections`);
+                container.innerHTML = '';
+                
+                this.extraSections[charType].forEach(section => {
+                    const sectionEl = document.createElement('div');
+                    sectionEl.className = 'detail-section';
+                    sectionEl.style.marginTop = '15px';
+                    
+                    // 글이 있는지 확인 (빈 문자열이나 기본 텍스트가 아닌 경우)
+                    const hasContent = section.content && 
+                        section.content.trim() !== '' && 
+                        section.content !== '내용을 입력해주세요.';
+                    
+                    let innerHTML = `<div class="detail-title">${section.title}</div>`;
+                    
+                    if (hasContent) {
+                        innerHTML += `<div class="detail-content">${section.content}</div>`;
+                    }
+                    
+                    if (section.image) {
+                        const imageStyle = hasContent ? 
+                            "width: 100%; height: auto; border-radius: 5px; margin-top: 8px; border: 1px solid #ddd;" :
+                            "width: 100%; height: auto; border-radius: 5px; border: 1px solid #ddd;";
+                        innerHTML += `<img src="${section.image}" style="${imageStyle}" alt="섹션 이미지">`;
+                    }
+                    
+                    sectionEl.innerHTML = innerHTML;
+                    container.appendChild(sectionEl);
                 });
+            },
+
+            updateExtraSectionForm(charType) {
+                const formContainer = document.getElementById(`${charType}-extra-form`);
+                if (!formContainer) return;
                 
-                // 혹시 놓친 경우를 위해 더 넓은 범위로 찾기
-                const allDivs = avatar.querySelectorAll('div');
-                allDivs.forEach(div => {
-                    const style = div.getAttribute('style') || '';
-                    if (style.includes('border-radius: 50%') && style.includes('border:')) {
-                        let newStyle = style.replace(/border:\s*2px\s+solid\s+[^;]+;?/g, `border: 2px solid ${color};`);
-                        div.setAttribute('style', newStyle);
+                formContainer.innerHTML = '';
+                
+                this.extraSections[charType].forEach((section, index) => {
+                    const formEl = document.createElement('div');
+                    formEl.className = 'form-group';
+                    formEl.style.cssText = 'border: 1px solid #eee; padding: 15px; margin-bottom: 15px; background: #fafafa;';
+                    formEl.innerHTML = `
+                        <input type="text" class="form-input" placeholder="섹션 제목" value="${section.title}" 
+                            onchange="app.updateExtraSection('${charType}', '${section.id}', 'title', this.value)" style="margin-bottom: 10px;">
+                        <textarea class="form-input form-textarea" placeholder="내용" 
+                            onchange="app.updateExtraSection('${charType}', '${section.id}', 'content', this.value)">${section.content}</textarea>
+                        <input type="file" class="form-input" accept="image/*" 
+                            onchange="app.updateExtraSectionImage('${charType}', '${section.id}', this)" style="margin-top: 10px;">
+                        <button type="button" class="btn-delete" onclick="app.removeExtraSection('${charType}', '${section.id}')">삭제</button>
+                    `;
+                    formContainer.appendChild(formEl);
+                });
+            },
+
+            startRotate(e, stickerId) {
+                e.stopPropagation();
+                e.preventDefault();
+                this.isRotating = true;
+                this.selectedSticker = stickerId;
+                this.selectSticker(stickerId);
+                
+                const stickerEl = document.getElementById(stickerId);
+                const rect = stickerEl.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                
+                // 현재 마우스 위치에서 스티커 중심까지의 각도 계산
+                const deltaX = e.clientX - centerX;
+                const deltaY = e.clientY - centerY;
+                const currentAngle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
+                
+                const sticker = this.placedStickers.find(s => s.id === stickerId);
+                this.rotateStartAngle = currentAngle - (sticker ? sticker.rotation : 0);
+            },
+
+            rotateSticker(e) {
+                if (!this.isRotating || !this.selectedSticker) return;
+                
+                const stickerEl = document.getElementById(this.selectedSticker);
+                const rect = stickerEl.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                
+                // 현재 마우스 위치에서 각도 계산
+                const deltaX = e.clientX - centerX;
+                const deltaY = e.clientY - centerY;
+                const currentAngle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
+                
+                // 새로운 회전 각도 계산
+                const newRotation = currentAngle - this.rotateStartAngle;
+                
+                // 스티커 회전 적용
+                stickerEl.style.transform = `rotate(${newRotation}deg)`;
+                
+                // 데이터 업데이트
+                const sticker = this.placedStickers.find(s => s.id === this.selectedSticker);
+                if (sticker) {
+                    sticker.rotation = newRotation;
+                }
+            },
+
+            // 이미지 다운로드
+            downloadImage() {
+                const selectedElements = document.querySelectorAll('.fairtle-sticker.selected');
+                const controlElements = document.querySelectorAll('.sticker-controls, .resize-handle');
+                
+                selectedElements.forEach(el => el.classList.remove('selected'));
+                controlElements.forEach(el => el.style.display = 'none');
+                
+                const element = document.querySelector('.fairtle-card');
+                
+                html2canvas(element, {
+                    scale: 2,
+                    backgroundColor: '#ffffff',
+                    useCORS: true,
+                    allowTaint: true,
+                    width: element.offsetWidth,
+                    height: element.offsetHeight,
+                    scrollX: 0,
+                    scrollY: 0
+                }).then(canvas => {
+                    const link = document.createElement('a');
+                    const pairTitle = document.getElementById('pair-title').textContent || 'fairtle';
+                    link.download = `${pairTitle}_페어틀.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                    
+                    controlElements.forEach(el => el.style.display = '');
+                    if (this.selectedSticker) {
+                        const stickerEl = document.getElementById(this.selectedSticker);
+                        if (stickerEl) stickerEl.classList.add('selected');
+                    }
+                }).catch(error => {
+                    console.error('저장 실패:', error);
+                    alert('이미지 저장에 실패했습니다. 다시 시도해주세요.');
+                    
+                    controlElements.forEach(el => el.style.display = '');
+                    if (this.selectedSticker) {
+                        const stickerEl = document.getElementById(this.selectedSticker);
+                        if (stickerEl) stickerEl.classList.add('selected');
                     }
                 });
-            });
-
-            // 페어 헤더 구분선 색상 변경
-            const pairHeader = document.querySelector('.pair-header');
-            if (pairHeader) {
-                pairHeader.style.borderBottomColor = color;
             }
-            avatars.forEach(avatar => {
-                const emojiCircles = avatar.querySelectorAll('div[style*="border-radius: 50%"]');
-                emojiCircles.forEach(circle => {
-                    let style = circle.getAttribute('style');
-                    style = style.replace(/border: 2px solid [^;]+;/, `border: 2px solid ${borderColor};`);
-                    style = style.replace(/background: [^;]+;/, `background: white;`);
-                    circle.setAttribute('style', style);
-                });
-            });
-        }
+        };
 
-        function updateTimelineItem(index, field, value) {
-            timelineData[index][field] = value;
-            updateTimelineDisplay();
-        }
-
-        function updateTimelineImage(index, input) {
-            const file = input.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    timelineData[index].image = e.target.result;
-                    updateTimelineDisplay();
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function updateTimelineDisplay() {
-            const container = document.getElementById('timeline-container');
-            const timeline = container.querySelector('.timeline-line');
-            
-            const items = container.querySelectorAll('.timeline-item');
-            items.forEach(item => item.remove());
-            
-            timelineData.forEach((item, index) => {
-                const position = timelineData.length === 1 ? 50 : (index / (timelineData.length - 1)) * 100;
-                
-                const itemEl = document.createElement('div');
-                itemEl.className = 'timeline-item';
-                itemEl.style.top = `${position}%`;
-                
-                const color = document.getElementById('input-pair-color').value;
-                
-                itemEl.innerHTML = `
-                    <div class="timeline-dot" style="background-color: ${color};">
-                        <div style="position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px; border-radius: 50%; border: 2px solid ${color}; pointer-events: none;"></div>
-                    </div>
-                    <div class="timeline-date" style="background-color: ${color};">${item.date}</div>
-                    <div class="timeline-title-text">${item.title}</div>
-                    <div class="timeline-desc">${item.desc}</div>
-                    ${item.image ? `<img src="${item.image}" class="timeline-image" alt="타임라인 이미지">` : ''}
-                `;
-                
-                container.appendChild(itemEl);
-            });
-            
-            // 타임라인 라인 길이를 마지막 아이템에 맞춰 조정
-            if (timelineData.length > 0) {
-                const lastPosition = timelineData.length === 1 ? 50 : 100;
-                timeline.style.height = `${lastPosition}%`;
-            }
-        }
-
-        function addTimelineItem() {
-            timelineData.push({
-                date: '2024-01',
-                title: '새 이벤트',
-                desc: '새로운 타임라인 이벤트 설명을 입력해주세요.',
-                image: null
-            });
-            updateTimelineDisplay();
-            updateTimelineForm();
-        }
-
-        function removeTimelineItem(index) {
-            timelineData.splice(index, 1);
-            updateTimelineDisplay();
-            updateTimelineForm();
-        }
-
-        function updateTimelineForm() {
-            const container = document.getElementById('timeline-form-container');
-            container.innerHTML = '';
-            
-            timelineData.forEach((item, index) => {
-                const formEl = document.createElement('div');
-                formEl.className = 'timeline-form-item';
-                formEl.style.cssText = 'border: 1px solid #eee; padding: 15px; margin-bottom: 15px; background: #fafafa;';
-                formEl.innerHTML = `
-                    <div style="display: grid; grid-template-columns: 120px 1fr; gap: 10px; margin-bottom: 10px;">
-                        <input type="text" class="form-input" placeholder="YYYY-MM" value="${item.date}" onchange="updateTimelineItem(${index}, 'date', this.value)">
-                        <input type="text" class="form-input" placeholder="제목" value="${item.title}" onchange="updateTimelineItem(${index}, 'title', this.value)">
-                    </div>
-                    <textarea class="form-input form-textarea" placeholder="설명" onchange="updateTimelineItem(${index}, 'desc', this.value)">${item.desc}</textarea>
-                    <input type="file" class="form-input" accept="image/*" onchange="updateTimelineImage(${index}, this)" style="margin-top: 10px;">
-                    <button type="button" onclick="removeTimelineItem(${index})" style="background: #ff4444; color: white; border: none; padding: 5px 10px; font-size: 12px; margin-top: 10px;">삭제</button>
-                `;
-                container.appendChild(formEl);
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('input-pair-title').addEventListener('input', updatePreview);
-            document.getElementById('input-pair-subtitle').addEventListener('input', updatePreview);
-            document.getElementById('input-char1-name').addEventListener('input', updatePreview);
-            document.getElementById('input-char2-name').addEventListener('input', updatePreview);
-            document.getElementById('input-char1-speech').addEventListener('input', updatePreview);
-            document.getElementById('input-char2-speech').addEventListener('input', updatePreview);
-            
-            // 기본정보 이벤트 리스너 추가
-            document.getElementById('input-char1-gender').addEventListener('input', updatePreview);
-            document.getElementById('input-char1-age').addEventListener('input', updatePreview);
-            document.getElementById('input-char1-height').addEventListener('input', updatePreview);
-            document.getElementById('input-char1-job').addEventListener('input', updatePreview);
-            document.getElementById('input-char2-gender').addEventListener('input', updatePreview);
-            document.getElementById('input-char2-age').addEventListener('input', updatePreview);
-            document.getElementById('input-char2-height').addEventListener('input', updatePreview);
-            document.getElementById('input-char2-job').addEventListener('input', updatePreview);
-            
-            // 키워드, 과거, 특징 이벤트 리스너 추가
-            document.getElementById('input-char1-keywords').addEventListener('input', updatePreview);
-            document.getElementById('input-char2-keywords').addEventListener('input', updatePreview);
-            document.getElementById('input-char1-past').addEventListener('input', updatePreview);
-            document.getElementById('input-char2-past').addEventListener('input', updatePreview);
-            document.getElementById('input-char1-features').addEventListener('input', updatePreview);
-            document.getElementById('input-char2-features').addEventListener('input', updatePreview);
+        // 페이지 로드 시 앱 초기화
+        document.addEventListener('DOMContentLoaded', () => {
+            app.init();
         });
-
-        function updateCharacterColors() {
-            const char1Hair = document.getElementById('input-char1-hair').value;
-            const char1Eyes = document.getElementById('input-char1-eyes').value;
-            const char1Skin = document.getElementById('input-char1-skin').value;
-            const char2Hair = document.getElementById('input-char2-hair').value;
-            const char2Eyes = document.getElementById('input-char2-eyes').value;
-            const char2Skin = document.getElementById('input-char2-skin').value;
-            
-            // 모든 character-avatar 찾기
-            const avatars = document.querySelectorAll('.character-avatar');
-            
-            if (avatars.length >= 2) {
-                // 첫 번째 캐릭터 (왼쪽)
-                const char1Avatar = avatars[0];
-                // 20px 크기의 div들을 찾기 (컬러차트)
-                const char1AllDivs = char1Avatar.querySelectorAll('div');
-                const char1ColorDivs = Array.from(char1AllDivs).filter(div => {
-                    const style = div.getAttribute('style') || '';
-                    return style.includes('width: 20px') && style.includes('height: 20px');
-                });
-                
-                if (char1ColorDivs.length >= 3) {
-                    // 순서대로 머리, 눈, 피부
-                    const hair1 = char1ColorDivs[0];
-                    const eyes1 = char1ColorDivs[1];
-                    const skin1 = char1ColorDivs[2];
-                    
-                    // 기존 스타일 유지하면서 배경색만 변경
-                    let hairStyle = hair1.getAttribute('style');
-                    hairStyle = hairStyle.replace(/background:\s*[^;]+/g, `background: ${char1Hair}`);
-                    hair1.setAttribute('style', hairStyle);
-                    
-                    let eyesStyle = eyes1.getAttribute('style');
-                    eyesStyle = eyesStyle.replace(/background:\s*[^;]+/g, `background: ${char1Eyes}`);
-                    eyes1.setAttribute('style', eyesStyle);
-                    
-                    let skinStyle = skin1.getAttribute('style');
-                    skinStyle = skinStyle.replace(/background:\s*[^;]+/g, `background: ${char1Skin}`);
-                    skin1.setAttribute('style', skinStyle);
-                }
-                
-                // 두 번째 캐릭터 (오른쪽)
-                const char2Avatar = avatars[1];
-                const char2AllDivs = char2Avatar.querySelectorAll('div');
-                const char2ColorDivs = Array.from(char2AllDivs).filter(div => {
-                    const style = div.getAttribute('style') || '';
-                    return style.includes('width: 20px') && style.includes('height: 20px');
-                });
-                
-                if (char2ColorDivs.length >= 3) {
-                    // 순서대로 머리, 눈, 피부
-                    const hair2 = char2ColorDivs[0];
-                    const eyes2 = char2ColorDivs[1];
-                    const skin2 = char2ColorDivs[2];
-                    
-                    let hairStyle = hair2.getAttribute('style');
-                    hairStyle = hairStyle.replace(/background:\s*[^;]+/g, `background: ${char2Hair}`);
-                    hair2.setAttribute('style', hairStyle);
-                    
-                    let eyesStyle = eyes2.getAttribute('style');
-                    eyesStyle = eyesStyle.replace(/background:\s*[^;]+/g, `background: ${char2Eyes}`);
-                    eyes2.setAttribute('style', eyesStyle);
-                    
-                    let skinStyle = skin2.getAttribute('style');
-                    skinStyle = skinStyle.replace(/background:\s*[^;]+/g, `background: ${char2Skin}`);
-                    skin2.setAttribute('style', skinStyle);
-                }
-            }
-        }
-
-        function updateEmojis() {
-            const char1Emoji = document.getElementById('input-char1-emoji').value;
-            const char2Emoji = document.getElementById('input-char2-emoji').value;
-            
-            const avatars = document.querySelectorAll('.character-avatar');
-            if (avatars.length >= 2) {
-                const char1EmojiCircle = avatars[0].querySelector('div[style*="border-radius: 50%"]');
-                const char2EmojiCircle = avatars[1].querySelector('div[style*="border-radius: 50%"]');
-                
-                if (char1EmojiCircle) char1EmojiCircle.textContent = char1Emoji;
-                if (char2EmojiCircle) char2EmojiCircle.textContent = char2Emoji;
-            }
-        }
-
-        function downloadImage() {
-            // 스티커 선택 상태와 컨트롤 요소들 임시 숨김
-            const selectedElements = document.querySelectorAll('.fairtle-sticker.selected');
-            const controlElements = document.querySelectorAll('.sticker-controls, .resize-handle');
-            
-            selectedElements.forEach(el => el.classList.remove('selected'));
-            controlElements.forEach(el => el.style.display = 'none');
-            
-            const element = document.querySelector('.fairtle-card');
-            
-            html2canvas(element, {
-                scale: 2,
-                backgroundColor: '#ffffff',
-                useCORS: true,
-                allowTaint: true,
-                width: element.offsetWidth,
-                height: element.offsetHeight,
-                scrollX: 0,
-                scrollY: 0
-            }).then(canvas => {
-                const link = document.createElement('a');
-                const pairTitle = document.getElementById('pair-title').textContent || 'fairtle';
-                link.download = `${pairTitle}_페어틀.png`;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-                
-                // 선택 상태와 컨트롤 요소들 복원
-                controlElements.forEach(el => el.style.display = '');
-                if (selectedSticker) {
-                    const stickerEl = document.getElementById(selectedSticker);
-                    if (stickerEl) stickerEl.classList.add('selected');
-                }
-            }).catch(error => {
-                console.error('저장 실패:', error);
-                alert('이미지 저장에 실패했습니다. 다시 시도해주세요.');
-                
-                // 에러시에도 컨트롤 요소들 복원
-                controlElements.forEach(el => el.style.display = '');
-                if (selectedSticker) {
-                    const stickerEl = document.getElementById(selectedSticker);
-                    if (stickerEl) stickerEl.classList.add('selected');
-                }
-            });
-        }
     </script>
 </body>
 </html>
