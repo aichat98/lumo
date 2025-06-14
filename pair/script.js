@@ -191,13 +191,17 @@ if (pairHeader) {
 
         // 페어 헤더 이미지 업로드
         const pairHeader = document.querySelector('.pair-header');
-        if (pairHeader) {
-            pairHeader.addEventListener('click', (e) => {
-                if (!this.isEditMode) return;
-                e.stopPropagation();
-                this.openImagePicker('header');
-            });
+if (pairHeader) {
+    pairHeader.addEventListener('click', (e) => {
+        if (!this.isEditMode) return;
+        // 텍스트 영역 클릭 시에는 이미지 업로드 안 함
+        if (e.target.closest('.pair-title') || e.target.closest('.pair-subtitle')) {
+            return;
         }
+        e.stopPropagation();
+        this.openImagePicker('header');
+    });
+}
 
         document.addEventListener('click', (e) => {
             if (!this.isEditMode) return;
@@ -573,6 +577,11 @@ if (pairHeader) {
         `;
 
         container.appendChild(sectionEl);
+        // 대표컬러 적용
+const currentColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
+if (currentColor && currentColor !== '#333') {
+    this.forceApplyColors(currentColor);
+}
 
         // 다크모드 체크 및 적용
         if (document.body.classList.contains('dark-mode')) {
