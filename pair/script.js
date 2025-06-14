@@ -964,36 +964,30 @@ downloadImage() {
     
     const element = document.querySelector('.fairtle-card');
     
-    // 잠깐 margin 제거
-    const originalMargin = element.style.margin;
-    element.style.margin = '0';
-    
     html2canvas(element, {
         scale: 2,
         backgroundColor: null,
         useCORS: true,
         allowTaint: true
-}).then(canvas => {
-    // 캔버스 아래쪽 잘라내기
-    const croppedCanvas = document.createElement('canvas');
-    const ctx = croppedCanvas.getContext('2d');
-    const cropHeight = 4; // 아래 4px 제거
-    
-    croppedCanvas.width = canvas.width;
-    croppedCanvas.height = canvas.height - cropHeight;
-    
-    ctx.drawImage(canvas, 0, 0, canvas.width, canvas.height - cropHeight, 
-                           0, 0, canvas.width, canvas.height - cropHeight);
-    
-    const link = document.createElement('a');
-    const pairTitle = document.getElementById('pair-title').textContent || 'fairtle';
-    const cleanTitle = pairTitle.trim().replace(/\s+/g, '_');
-    link.download = `${cleanTitle}_페어틀.png`;
-    link.href = croppedCanvas.toDataURL('image/png');
-    link.click();
+    }).then(canvas => {
+        // 캔버스 아래쪽 잘라내기
+        const croppedCanvas = document.createElement('canvas');
+        const ctx = croppedCanvas.getContext('2d');
+        const cropHeight = 4; // 아래 4px 제거
+        
+        croppedCanvas.width = canvas.width;
+        croppedCanvas.height = canvas.height - cropHeight;
+        
+        ctx.drawImage(canvas, 0, 0, canvas.width, canvas.height - cropHeight, 
+                               0, 0, canvas.width, canvas.height - cropHeight);
+        
+        const link = document.createElement('a');
+        const pairTitle = document.getElementById('pair-title').textContent || 'fairtle';
+        const cleanTitle = pairTitle.trim().replace(/\s+/g, '_');
+        link.download = `${cleanTitle}_페어틀.png`;
+        link.href = croppedCanvas.toDataURL('image/png');
+        link.click();
     }).catch(error => {
-        // margin 복원
-        element.style.margin = originalMargin;
         console.error('저장 실패:', error);
         alert('이미지 저장에 실패했습니다.');
     });
