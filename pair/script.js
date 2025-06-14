@@ -189,13 +189,14 @@ if (pairHeader) {
             });
         });
 
-        // 페어 헤더 이미지 업로드
-        const pairHeader = document.querySelector('.pair-header');
+// 페어 헤더 이미지 업로드
+const pairHeader = document.querySelector('.pair-header');
 if (pairHeader) {
     pairHeader.addEventListener('click', (e) => {
         if (!this.isEditMode) return;
-        // 텍스트 영역 클릭 시에는 이미지 업로드 안 함
-        if (e.target.closest('.pair-title') || e.target.closest('.pair-subtitle')) {
+        // 텍스트 영역 클릭시에는 이미지 업로드 안 함
+        if (e.target.id === 'pair-title' || e.target.id === 'pair-subtitle' || 
+            e.target.closest('#pair-title') || e.target.closest('#pair-subtitle')) {
             return;
         }
         e.stopPropagation();
