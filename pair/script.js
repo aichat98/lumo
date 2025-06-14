@@ -966,11 +966,14 @@ if (currentColor && currentColor !== '#333') {
         const element = document.querySelector('.fairtle-card');
         
         html2canvas(element, {
-            scale: 2,
-            backgroundColor: '#ffffff',
-            useCORS: true,
-            allowTaint: true
-        }).then(canvas => {
+    scale: 2,
+    backgroundColor: null,
+    useCORS: true,
+    allowTaint: true,
+    y: 0,
+    height: element.scrollHeight,
+    width: element.scrollWidth
+}).then(canvas => {
             const link = document.createElement('a');
             const pairTitle = document.getElementById('pair-title').textContent || 'fairtle';
             // 앞뒤 공백 제거 후 가운데 공백만 언더바로 변경
