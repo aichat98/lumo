@@ -970,11 +970,12 @@ html2canvas(element, {
     backgroundColor: null,
     useCORS: true,
     allowTaint: true,
-    logging: false,
-    removeContainer: true,
-    imageTimeout: 0,
-    height: element.offsetHeight,
-    width: element.offsetWidth
+    x: 0,
+    y: 0,
+    scrollX: 0,
+    scrollY: 0,
+    width: 1200,
+    height: element.scrollHeight
 }).then(canvas => {
             const link = document.createElement('a');
             const pairTitle = document.getElementById('pair-title').textContent || 'fairtle';
