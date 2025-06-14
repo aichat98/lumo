@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>페어틀 제작기</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="fairtle-card" id="fairtle-card">
+        <div class="source-credit" id="source-credit" contenteditable="false" placeholder="출처나 작가명을 입력하세요...">일러스트 by 작가명</div>
+        
+        <div class="pair-header">
+            <div class="header-controls">
+                <span class="pair-color-tab" id="pair-color-tab"></span>
+                <button class="header-control-btn" onclick="app.openImagePicker('header')">🖼️</button>
+                <button class="header-control-btn" onclick="app.removeHeaderImage()">🗑️</button>
+            </div>
+            <div class="pair-title" id="pair-title">
+                <span>SAMPLE PAIR</span>
+            </div>
+            <div class="pair-subtitle" id="pair-subtitle">캐릭터 A × 캐릭터 B</div>
+        </div>
+        
+        <!-- 캐릭터 A -->
+        <div class="character-section">
+            <div class="character-profile">
+                <div class="character-avatar" id="char1-avatar">
+                    <div class="avatar-bg"></div>
+                    <div class="color-chart">
+                        <div class="color-square" style="background: #8B4513;" data-char="char1" data-type="hair"></div>
+                        <div class="color-square" style="background: #4169E1;" data-char="char1" data-type="eyes"></div>
+                        <div class="color-square" style="background: #FDBCB4;" data-char="char1" data-type="skin"></div>
+                    </div>
+                    <div class="emoji-circle" id="char1-emoji">🐱</div>
+                    프로필 이미지
+                </div>
+                <div class="profile-content">
+                    <div class="profile-info">
+                        <div class="character-name" id="char1-name">캐릭터 A</div>
+                        <div class="character-basic" id="char1-basic">
+                            <div>남성 | 20세 | 175cm</div>
+                            <div>학생</div>
+                        </div>
+                    </div>
+                    <div class="character-keywords" id="char1-keywords">
+                        <span class="keyword-tag">성격1</span>
+                        <span class="keyword-tag">성격2</span>
+                        <span class="keyword-tag">성격3</span>
+                        <button class="add-keyword-btn">+ 키워드 추가</button>
+                    </div>
+                    <div class="character-speech left" id="char1-speech">캐릭터 A가 캐릭터 B에게 하는 말</div>
+                </div>
+            </div>
+            
+            <div class="character-details">
+                <div class="detail-section">
+                    <div class="detail-title">
+                        Backstory
+                        <div class="section-controls">
+                            <button class="section-btn" onclick="app.addImageToSection(this)">🖼️</button>
+                            <button class="section-btn" onclick="app.deleteSection(this)">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="detail-content" id="char1-past">캐릭터의 과거 이야기가 들어갑니다.</div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-title">
+                        Etc.
+                        <div class="section-controls">
+                            <button class="section-btn" onclick="app.addImageToSection(this)">🖼️</button>
+                            <button class="section-btn" onclick="app.deleteSection(this)">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="detail-content" id="char1-features">캐릭터의 독특한 특징이나 습관, 버릇을 설명해주세요.</div>
+                </div>
+                
+                <div class="character-extra-sections" id="char1-extra-sections"></div>
+                <button class="add-section-btn" onclick="app.addNewSection('char1')">+ 새 섹션 추가</button>
+            </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="timeline-section">
+            <div class="timeline-title">Timeline</div>
+            <div class="timeline-container" id="timeline-container">
+                <div class="timeline-line"></div>
+                <button class="add-timeline-btn" onclick="app.addTimelineItem()">+ 타임라인 추가</button>
+            </div>
+        </div>
+
+        <!-- 캐릭터 B -->
+        <div class="character-section">
+            <div class="character-profile">
+                <div class="character-avatar" id="char2-avatar">
+                    <div class="avatar-bg"></div>
+                    <div class="emoji-circle" id="char2-emoji">🐰</div>
+                    <div class="color-chart">
+                        <div class="color-square" style="background: #8B4513;" data-char="char2" data-type="hair"></div>
+                        <div class="color-square" style="background: #4169E1;" data-char="char2" data-type="eyes"></div>
+                        <div class="color-square" style="background: #FDBCB4;" data-char="char2" data-type="skin"></div>
+                    </div>
+                    프로필 이미지
+                </div>
+                <div class="profile-content">
+                    <div class="profile-info">
+                        <div class="character-name" id="char2-name">캐릭터 B</div>
+                        <div class="character-basic" id="char2-basic">
+                            <div>여성 | 22세 | 180cm</div>
+                            <div>직장인</div>
+                        </div>
+                    </div>
+                    <div class="character-keywords" id="char2-keywords">
+                        <span class="keyword-tag">성격1</span>
+                        <span class="keyword-tag">성격2</span>
+                        <span class="keyword-tag">성격3</span>
+                        <button class="add-keyword-btn">+ 키워드 추가</button>
+                    </div>
+                    <div class="character-speech right" id="char2-speech">캐릭터 B가 캐릭터 A에게 하는 말</div>
+                </div>
+            </div>
+            
+            <div class="character-details">
+                <div class="detail-section">
+                    <div class="detail-title">
+                        Backstory
+                        <div class="section-controls">
+                            <button class="section-btn" onclick="app.addImageToSection(this)">📷</button>
+                            <button class="section-btn" onclick="app.deleteSection(this)">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="detail-content" id="char2-past">캐릭터 B의 과거 이야기가 들어갑니다.</div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-title">
+                        Etc.
+                        <div class="section-controls">
+                            <button class="section-btn" onclick="app.addImageToSection(this)">📷</button>
+                            <button class="section-btn" onclick="app.deleteSection(this)">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="detail-content" id="char2-features">캐릭터 B의 독특한 특징이나 습관, 버릇을 설명해주세요.</div>
+                </div>
+                
+                <div class="character-extra-sections" id="char2-extra-sections"></div>
+                <button class="add-section-btn" onclick="app.addNewSection('char2')">+ 새 섹션 추가</button>
+            </div>
+        </div>
+    </div>
+
+    <button class="edit-button" onclick="app.toggleEditMode()">✏️</button>
+    <button class="sticker-button" onclick="app.toggleStickerPanel()">🏷️</button>
+    <button class="download-button" onclick="app.downloadImage()">📥 저장</button>
+    <div class="darkmode-toggle" onclick="app.toggleDarkMode()">
+        <div class="toggle-circle"></div>
+    </div>
+
+    <div class="sticker-panel" id="sticker-panel">
+        <div class="sticker-panel-header">
+            <div class="sticker-panel-title">스티커</div>
+            <button class="close-button" onclick="app.closeStickerPanel()">×</button>
+        </div>
+        <div class="sticker-panel-content">
+            <div class="form-group">
+                <label class="form-label">스티커 추가</label>
+                <input type="file" class="form-input" id="input-sticker-upload" accept="image/*" multiple>
+                <div id="sticker-preview-container" class="sticker-preview-container">
+                    <div style="width: 100%; text-align: center; color: #999; font-size: 12px;">스티커를 업로드하면 여기에 표시되고, 클릭해서 페어틀에 추가할 수 있습니다</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
