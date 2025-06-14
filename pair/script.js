@@ -192,16 +192,19 @@ if (pairHeader) {
 // 페어 헤더 이미지 업로드
 const pairHeader = document.querySelector('.pair-header');
 if (pairHeader) {
-    pairHeader.addEventListener('click', (e) => {
-        if (!this.isEditMode) return;
-        // 텍스트 영역 클릭시에는 이미지 업로드 안 함
-        if (e.target.id === 'pair-title' || e.target.id === 'pair-subtitle' || 
-            e.target.closest('#pair-title') || e.target.closest('#pair-subtitle')) {
-            return;
-        }
-        e.stopPropagation();
-        this.openImagePicker('header');
-    });
+pairHeader.addEventListener('click', (e) => {
+    if (!this.isEditMode) return;
+    
+    // 텍스트 편집 영역 클릭시에는 이미지 업로드 안 함
+    if (e.target.contentEditable === 'true' || 
+        e.target.classList.contains('editable-text') ||
+        e.target.closest('[contenteditable="true"]')) {
+        return;
+    }
+    
+    e.stopPropagation();
+    this.openImagePicker('header');
+});
 }
 
         document.addEventListener('click', (e) => {
