@@ -401,6 +401,9 @@ body {
     border-radius: 5px;
     display: block;
 }
+.dark-mode .section-image {
+    border-color: #555 !important;
+}
 
 /* 이미지만 있을 때 여백 제거 */
 .detail-content.image-only {
