@@ -959,36 +959,37 @@ if (currentColor && currentColor !== '#333') {
         }
     },
 
-    downloadImage() {
-        // 스티커 모두 비활성화 후 다운로드
-        this.deactivateAllStickers();
+downloadImage() {
+    this.deactivateAllStickers();
+    
+    const element = document.querySelector('.fairtle-card');
+    
+    // 잠깐 margin 제거
+    const originalMargin = element.style.margin;
+    element.style.margin = '0';
+    
+    html2canvas(element, {
+        scale: 2,
+        backgroundColor: null,
+        useCORS: true,
+        allowTaint: true
+    }).then(canvas => {
+        // margin 복원
+        element.style.margin = originalMargin;
         
-        const element = document.querySelector('.fairtle-card');
-        
-html2canvas(element, {
-    scale: 2,
-    backgroundColor: null,
-    useCORS: true,
-    allowTaint: true,
-    x: 0,
-    y: 0,
-    scrollX: 0,
-    scrollY: 0,
-    width: 1200,
-    height: element.scrollHeight
-}).then(canvas => {
-            const link = document.createElement('a');
-            const pairTitle = document.getElementById('pair-title').textContent || 'fairtle';
-            // 앞뒤 공백 제거 후 가운데 공백만 언더바로 변경
-            const cleanTitle = pairTitle.trim().replace(/\s+/g, '_');
-            link.download = `${cleanTitle}_페어틀.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-        }).catch(error => {
-            console.error('저장 실패:', error);
-            alert('이미지 저장에 실패했습니다.');
-        });
-    }
+        const link = document.createElement('a');
+        const pairTitle = document.getElementById('pair-title').textContent || 'fairtle';
+        const cleanTitle = pairTitle.trim().replace(/\s+/g, '_');
+        link.download = `${cleanTitle}_페어틀.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    }).catch(error => {
+        // margin 복원
+        element.style.margin = originalMargin;
+        console.error('저장 실패:', error);
+        alert('이미지 저장에 실패했습니다.');
+    });
+}
 };
 
 // DOM 로드 완료 후 앱 초기화
