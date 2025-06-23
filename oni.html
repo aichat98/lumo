@@ -58,9 +58,10 @@
             color: #999999;
         }
         .translate-btn {
-            position: fixed;
-            top: 10px;
-            right: 10px;
+            position: relative;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
             background-color: #ff6b6b;
             color: white;
             border: none;
@@ -68,7 +69,8 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 12px;
-            z-index: 1000;
+            margin-bottom: 20px;
+            display: block;
         }
         .translate-btn:hover {
             background-color: #ff5252;
@@ -76,7 +78,7 @@
     </style>
 </head>
 <body>
-    <button class="translate-btn" onclick="translateToKorean()">한글로 번역</button>
+    <button class="translate-btn" id="translateBtn">한글로 번역</button>
 
     <div class="header">
         <div class="thread-title">【怖い話】赤山村の100年祭の真相がヤバすぎる件</div>
@@ -561,46 +563,9 @@
     </div>
 
     <script>
-        // 현재 날짜를 2ch 형식으로 표시
-        function updateDates() {
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            
-            const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
-            const weekday = weekdays[now.getDay()];
-            
-            const dateString = `${year}/${month}/${day}(${weekday})`;
-            
-            // 모든 날짜 요소 업데이트
-            const dateElements = document.querySelectorAll('.current-date');
-            const timeOffsets = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95];
-            
-            dateElements.forEach((element, index) => {
-                const hours = 14 + Math.floor(timeOffsets[index] / 60);
-                const minutes = (32 + timeOffsets[index]) % 60;
-                const seconds = 15 + (timeOffsets[index] * 7) % 60;
-                const ms = 78 + (index * 23) % 100;
-                
-                const timeString = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(ms).padStart(2, '0')}`;
-                
-                const ids = ['abc123de', 'def456gh', 'ghi789jk', 'jkl012mn', 'mno345pq', 'pqr678st', 'stu901vw', 'vwx234yz', 'yza567bc', 'bcd890ef', 'efg123hi', 'hij456kl', 'klm789no', 'nop012qr', 'qrs345tu', 'tuv678wx', 'wxy901za', 'zab234cd', 'cde567ef', 'efg890hi'];
-                const postId = ids[index % ids.length];
-                
-                element.textContent = `${dateString} ${timeString} ID:${postId}`;
-            });
-            
-            // 헤더 날짜
-            const headerDate = document.getElementById('current-date');
-            if (headerDate) {
-                headerDate.textContent = `${dateString} 14:32:15.78 `;
-            }
-        }
-        
-        // 번역 기능
         let isTranslated = false;
         
+        // 번역 매핑
         const translations = {
             '【怖い話】赤山村の100年祭の真相がヤバすぎる件': '【무서운 이야기】아카야마 마을 100년제의 진상이 너무 위험한 건',
             '以下、名無しにかわりましてVIPがお送りします': '이하, 익명을 대신하여 VIP가 전송합니다',
@@ -698,7 +663,6 @@
             'つまり、捧げられた公主たちは': '즉, 바쳐진 공주들은',
             '鬼と一緒に生活してるってことじゃないか？': '오니와 함께 생활하고 있다는 뜻 아닐까?',
             '殺されてるんじゃなくて、共に暮らしてる...': '죽은 게 아니라, 함께 살고 있는...',
-            'うわあああああああ': '우와아아아아아아',
             'これもう完全にロマンスじゃん': '이거 완전히 로맨스잖아',
             '美女と野獣的な...？': '미녀와 야수 같은...?',
             '待て、その簪まだ持ってるのか？': '잠깐, 그 비녀 아직 가지고 있어?',
@@ -715,7 +679,6 @@
             '完全にプレゼント用じゃん': '완전히 선물용이잖아',
             '鬼が女性のために一生懸命作ったんだな...': '오니가 여성을 위해 열심히 만든 거구나...',
             'なんか泣けてきた': '왠지 눈물이 나와',
-            'でも確実に言えるのは': '하지만 확실한 건',
             '赤山の鬼は、公主を大切にしてるってこと': '아카야마의 오니는 공주를 소중히 여기고 있다는 것',
             '村人が思ってるような恐ろしい化け物じゃない': '마을 사람들이 생각하는 것 같은 무서운 괴물이 아니야',
             'むしろ...優しい存在なのかもしれない': '오히려... 상냥한 존재일지도 몰라',
@@ -733,24 +696,93 @@
             'sage': 'sage'
         };
         
-        function translateToKorean() {
+        // 현재 날짜를 2ch 형식으로 표시
+        function updateDates() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            
+            const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+            const weekday = weekdays[now.getDay()];
+            
+            const dateString = `${year}/${month}/${day}(${weekday})`;
+            
+            // 모든 날짜 요소 업데이트
+            const dateElements = document.querySelectorAll('.current-date');
+            const timeOffsets = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95];
+            
+            dateElements.forEach((element, index) => {
+                const hours = 14 + Math.floor(timeOffsets[index] / 60);
+                const minutes = (32 + timeOffsets[index]) % 60;
+                const seconds = 15 + (timeOffsets[index] * 7) % 60;
+                const ms = 78 + (index * 23) % 100;
+                
+                const timeString = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(ms).padStart(2, '0')}`;
+                
+                const ids = ['abc123de', 'def456gh', 'ghi789jk', 'jkl012mn', 'mno345pq', 'pqr678st', 'stu901vw', 'vwx234yz', 'yza567bc', 'bcd890ef', 'efg123hi', 'hij456kl', 'klm789no', 'nop012qr', 'qrs345tu', 'tuv678wx', 'wxy901za', 'zab234cd', 'cde567ef', 'efg890hi'];
+                const postId = ids[index % ids.length];
+                
+                element.textContent = `${dateString} ${timeString} ID:${postId}`;
+            });
+            
+            // 헤더 날짜
+            const headerDate = document.getElementById('current-date');
+            if (headerDate) {
+                headerDate.textContent = `${dateString} 14:32:15.78 `;
+            }
+        }
+        
+        // 번역 함수
+        function translatePage() {
             if (!isTranslated) {
-                // 일본어를 한국어로 번역
-                Object.keys(translations).forEach(japanese => {
-                    const korean = translations[japanese];
-                    const regex = new RegExp(japanese.replace(/[.*+?^${}()|[\]\\]/g, '\\            '子供の頃に一度だけ見たことがあるって言'), 'g');
-                    document.body.innerHTML = document.body.innerHTML.replace(regex, korean);
+                // 모든 텍스트 노드를 찾아서 번역
+                const walker = document.createTreeWalker(
+                    document.body,
+                    NodeFilter.SHOW_TEXT,
+                    null,
+                    false
+                );
+                
+                const textNodes = [];
+                let node;
+                while (node = walker.nextNode()) {
+                    if (node.nodeValue.trim()) {
+                        textNodes.push(node);
+                    }
+                }
+                
+                // 각 텍스트 노드를 번역
+                textNodes.forEach(textNode => {
+                    let text = textNode.nodeValue;
+                    let originalText = text;
+                    
+                    // 번역 적용
+                    Object.keys(translations).forEach(japanese => {
+                        const korean = translations[japanese];
+                        text = text.replace(new RegExp(japanese.replace(/[.*+?^${}()|[\]\\]/g, '\\            '待て待て': '잠깐 잠깐'), 'g'), korean);
+                    });
+                    
+                    if (text !== originalText) {
+                        textNode.nodeValue = text;
+                    }
                 });
-                document.querySelector('.translate-btn').textContent = '일본어로 되돌리기';
+                
+                document.getElementById('translateBtn').textContent = '일본어로 되돌리기';
                 isTranslated = true;
             } else {
-                // 페이지 새로고침으로 일본어로 되돌리기
+                // 페이지 새로고침으로 되돌리기
                 location.reload();
             }
         }
         
         // 페이지 로드 시 실행
-        window.addEventListener('load', updateDates);
+        window.addEventListener('load', function() {
+            updateDates();
+            
+            // 번역 버튼 이벤트 리스너 추가
+            document.getElementById('translateBtn').addEventListener('click', translatePage);
+        });
     </script>
 
 </body>
