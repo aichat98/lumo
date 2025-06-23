@@ -59,9 +59,10 @@
             color: #999999;
         }
 .translate-btn {
-    position: absolute;
+    position: fixed;
     top: 20px;
-    right: 20px;
+    left: 50%;
+    margin-left: 300px;
     background-color: #ff6b6b;
     color: white;
     border: none;
@@ -70,6 +71,14 @@
     cursor: pointer;
     font-size: 12px;
     z-index: 1000;
+}
+
+@media (max-width: 850px) {
+    .translate-btn {
+        right: 20px;
+        left: auto;
+        margin-left: 0;
+    }
 }
         .translate-btn:hover {
             background-color: #ff5252;
