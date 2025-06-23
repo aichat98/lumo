@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>【怖い話】赤山村の100年祭の真相がヤバすぎる件</title>
+    <style>
+        body {
+            font-family: 'MS Gothic', monospace;
+            background-color: #ffffee;
+            margin: 0;
+            padding: 20px;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        .header {
+            background-color: #cccccc;
+            padding: 5px;
+            border: 1px solid #999;
+            margin-bottom: 10px;
+        }
+        .thread-title {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        .post {
+            margin-bottom: 8px;
+            padding: 3px;
+            border-bottom: 1px solid #ddd;
+        }
+        .post-header {
+            color: #008800;
+            font-size: 11px;
+            margin-bottom: 2px;
+        }
+        .post-number {
+            color: #0000ff;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        .post-content {
+            margin-left: 15px;
+        }
+        .green-text {
+            color: #789922;
+        }
+        .red-text {
+            color: #ff0000;
+            font-weight: bold;
+        }
+        .quote {
+            color: #0000ff;
+        }
+        .sage {
+            color: #999999;
+        }
+    </style>
+    <script>
+        // 현재 날짜를 2ch 형식으로 표시 (년/월/일만)
+        function updateDates() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            
+            const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+            const weekday = weekdays[now.getDay()];
+            
+            const dateString = `${year}/${month}/${day}(${weekday})`;
+            
+            // 모든 날짜 요소 업데이트 (각각 다른 시간으로)
+            const dateElements = document.querySelectorAll('.current-date');
+            const timeOffsets = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95];
+            
+            dateElements.forEach((element, index) => {
+                const hours = 14 + Math.floor(timeOffsets[index] / 60);
+                const minutes = (32 + timeOffsets[index]) % 60;
+                const seconds = 15 + (timeOffsets[index] * 7) % 60;
+                const ms = 78 + (index * 23) % 100;
+                
+                const timeString = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(ms).padStart(2, '0')}`;
+                
+                // ID도 다양하게
+                const ids = ['abc123de', 'def456gh', 'ghi789jk', 'jkl012mn', 'mno345pq', 'pqr678st', 'stu901vw', 'vwx234yz', 'yza567bc', 'bcd890ef', 'efg123hi', 'hij456kl', 'klm789no', 'nop012qr', 'qrs345tu', 'tuv678wx', 'wxy901za', 'zab234cd', 'cde567ef', 'efg890hi'];
+                const postId = ids[index % ids.length];
+                
+                element.textContent = `${dateString} ${timeString} ID:${postId}`;
+            });
+            
+            // 헤더 날짜
+            const headerDate = document.getElementById('current-date');
+            if (headerDate) {
+                headerDate.textContent = `${dateString} 14:32:15.78 `;
+            }
+        }
+        
+        // 페이지 로드 시 한 번만 실행
+        window.addEventListener('load', updateDates);
+    </script>
+</head>
+<body>
+    <div class="header">
+        <div class="thread-title">【怖い話】赤山村の100年祭の真相がヤバすぎる件</div>
+        <div>1 :以下、名無しにかわりましてVIPがお送りします:<span id="current-date"></span> ID:abc123de</div>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <span class="post-number">1</span>
+            <span>名無しさん@お腹いっぱい。</span>
+            <span><span class="current-date"></span></span>
+        </div>
+        <div class="post-content">
+            平安時代から続くって言われてる赤山村の100年祭について調べてたんだが<br>
+            これマジでヤバすぎるだろ...<br><br>
+            
+            ・100年ごとに若い「公主」を「山神様」に捧げる<br>
+            ・捧げられた公主は二度と村に戻ってこない<br>
+            ・村人は全員「天に召された」と信じてる<br>
+            ・でも実際は...<br><br>
+            
+            詳細は後で書くけど、これガチで現代まで続いてるらしい<br>
+            誰か詳しい奴いる？
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <span class="post-number">2</span>
+            <span>名無しさん@お腹いっぱい。</span>
+            <span class="current-date"></span>
+        </div>
+        <div class="post-content">
+            <span class="green-text">>1</span><br>
+            草<br>
+            また都市伝説かよwwwww
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <span class="post-number">3</span>
+            <span>名無しさん@お腹いっぱい。</span>
+            <span class="current-date"></span>
+        </div>
+        <div class="post-content">
+            <span class="red-text">これはアカン</span><br>
+            人身御供系は洒落にならん
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <span class="post-number">4</span>
+            <span>名無しさん@お腹いっぱい。</span>
+            <span>2025/06/23(月) 14:35:28.94 ID:jkl012mn</span>
+        </div>
+        <div class="post-content">
+            ソースは？<br>
+            文献とかあるの？
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <span class="post-number">5</span>
+            <span>名無しさん@お腹いっぱい。</span>
+            <span>2025/06/23(月) 14:36:45.23 ID:abc123de</span>
+        </div>
+        <div class="post-content">
+            <span class="quote">>>4</span><br>
+            県立図書館の郷土史料にちょろっと載ってた<br>
+            あと地元の古老の証言も<br><br>
+            
+            <!-- 여기에 문서 사진 넣으세요! -->
+            <div style="margin: 10px 0; text-align: center; border: 1px solid #999; padding: 10px; background-color: #f0f0f0;">
+                [이 부분에 고문서/향토자료 사진을 넣어주세요]<br>
+                <small>※ &lt;img src="이미지URL" style="max-width: 400px; height: auto;"&gt; 형태로 추가</small>
+            </div>
+            
+            実は俺の爺さんが近くの村出身でな<br>
+            子供の頃に一度だけ見たことがあるって言ってた<br>
+            「真っ白な着物着た綺麗な人が山に向かって歩いてった」って<br><br>
+            
+            で、その後その人は二度と見なかったらしい
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <span class="post-number">6</span>
+            <span>名無しさん@お腹いっぱい。</span>
+            <span>2025/06/23(月) 14:37:12.89 ID:mno345pq</span>
+        </div>
+        <div class="post-content">
+            うわあああああああ<br>
+            これ系は本当に怖い<br>
+            現代でもやってるってマジ？
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <span class="post-number">7</span>
+            <span>名無しさん@お腹いっぱい。</span>
+            <span>2025/06/23(月) 14:38:33.45 ID:pqr678st</span>
+        </div>
+        <div class="post-content">
+            <span class="green-text">>1</span><br>
+            山に住んでる「何か」がいるってこと？<br>
+            鬼とか妖怪とか？
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <span class="post-number">8</span>
+            <span>名無しさん@お腹いっぱい。</span>
+            <span>2025/06/23(月) 14:39:15.67 ID:abc123de</span>
+        </div>
+        <div class="post-content">
+            <span class="quote">>>7</span><br>
+            それが一番ヤバい部分なんだよ<br><br>
+            
+            村の言い伝えでは「赤い鬼が住んでる」って話<br>
+            でも実際に捧げられた公主たちがどうなったかは謎<br><br>
+            
+            <span class="red-text">ただし、最近になって衝撃的な事実が判明した</span><br><br>
+            
+            実は捧げられた公主の一部は...<br>
+            <span class="red-text">生きて他の土地で目撃されてるらしい</span>
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <span class="post-number">9</span>
+            <span>名無しさん@お腹いっぱい。</span>
+            <span>2025/06/23(月) 14:40:01.23 ID:stu901vw</span>
+        </div>
+        <div class="post-content">
+            <span class="red-text">！！！！！！</span><br>
+            マジかよ<br>
+            それつまり...
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <span class="post-number">10</span>
+            <span>名無しさん@お腹いっぱい。</span>
+            <span>2025/06/23(月) 14:40:47.89 ID:vwx234yz</span>
+        </div>
+        <div class="post-content">
+            待て待て<br>
+            つまり山の鬼は公主を殺してない？<br>
+            何のために連れて行くんだ？<br><br>
+            
+            というかなんで「公主」なんだ？<br>
+            普通女性とか言うよね？
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <span class="post-number">11</span>
+            <span>名無しさん@お腹いっぱい。</span>
+            <span>2025/06/23(月) 14:41:33.45 ID:abc123de</span>
+        </div>
+        <div class="post-content">
+            <span class="quote">>>10</span><br>
+            それが分からないんだよ<br>
+            でも確実に言えるのは<br><br>
+            
+            <span class="green-text">・村人は公主が死んだと思い込んでる</span><br>
+            <span class="green-text">・実際は生きてる（少なくとも一部は）</span><br>
+            <span class="green-text">・鬼は公主を殺さない理由がある</span><br><br>
+            
+            あと「公主」って呼び方について<br>
+            村の古い記録を見ると、男女関係なく<br>
+            <span class="red-text">捧げ物として選ばれた人を指す言葉として使ってるらしい</span><br><br>
+            
+            実際、過去には男性も捧げられてる記録がある<br>
+            身分も容姿もバラバラ<br>
+            <span class="red-text">要するに「山神様への供物」って意味での「贡主」</span><br>
+            読み方は普通の公主と同じだけど漢字が違う<br>
+            <span class="red-text">「公物儀式の主人公」って意味らしい</span>
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <span class="post-number">12</span>
+            <span>名無しさん@お腹いっぱい。</span>
+            <span>2025/06/23(月) 14:42:15.67 ID:yza567bc</span>
+        </div>
+        <div class="post-content">
+            これもう単純なホラーじゃなくて<br>
+            なんかめちゃくちゃ深い話になってきたな<br><br>
+            
+            鬼が実は良い奴説？？？<br>
+            しかも公主って男女どっちでもありなのか<br>
+            ますます謎だわ
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <span class="post-number">13</span>
+            <span>sage</span>
+            <span>2025/06/23(月) 14:43:01.89 ID:bcd890ef</span>
+        </div>
+        <div class="post-content">
+            <span class="sage">この話、前にも似たようなのをどこかで見た気がする</span><br>
+            <span class="sage">山の主が人間を殺さずに匿ってるパターン</span><br>
+            <span class="sage">まあ真偽のほどは分からんが...</span>
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <span class="post-number">14</span>
+            <span>名無しさん@お腹いっぱい。</span>
+            <span>2025/06/23(月) 14:43:47.23 ID:efg123hi</span>
+        </div>
+        <div class="post-content">
+            <span class="quote">>>1</span><br>
+            続きはよ<br>
+            気になって仕事が手につかんwww
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <span class="post-number">15</span>
+            <span>名無しさん@お腹いっぱい。</span>
+            <span>2025/06/23(月) 14:44:33.56 ID:abc123de</span>
+        </div>
+        <div class="post-content">
+            <span class="quote">>>14</span><br>
+            おk、もうちょっと詳しく調べてから書く<br><br>
+            
+            実は今度その村の近くまで行く予定があるんだ<br>
+            もし可能なら現地調査もしてみようと思ってる<br><br>
+            
+            <span class="red-text">ただし、マジでヤバそうだから一人では行かない</span><br>
+            万が一のことがあったら洒落にならん
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <span class="post-number">16</span>
+            <span>名無しさん@お腹いっぱい。</span>
+            <span>2025/06/23(月) 14:45:12.34 ID:hij456kl</span>
+        </div>
+        <div class="post-content">
+            気をつけろよ<br>
+            変なもの持ち帰ってくるなよwww
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <span class="post-number">17</span>
+            <span>名無しさん@お腹いっぱい。</span>
+            <span>2025/06/23(月) 14:46:01.78 ID:klm789no</span>
+        </div>
+        <div class="post-content">
+            現地レポ期待してる<br>
+            写真とかあったら神
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <span class="post-number">18</span>
+            <span>名無しさん@お腹いっぱい。</span>
+            <span>2025/06/23(月) 19:47:23.89 ID:abc123de</span>
+        </div>
+        <div class="post-content">
+            帰ってきた<br>
+            友達と二人で山まで行ってきたんだが...<br><br>
+            
+            <span class="red-text">マジでヤバいもの見つけた</span>
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <span class="post-number">19</span>
+            <span>名無しさん@お腹いっぱい。</span>
+            <span>2025/06/23(月) 19:47:45.67 ID:nop012qr</span>
+        </div>
+        <div class="post-content">
+            おかえり<br>
+            詳細はよ！！！
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <span class="post-number">20</span>
+            <span>名無しさん@お腹いっぱい。</span>
+            <span>2025/06/23(月) 19:48:33.12 ID:abc123de</span>
+        </div>
+        <div class="post-content">
+            まず村には近づけなかった<br>
+            地元の人に止められた<br>
+            「今日は山神様の機嫌が悪い」とかなんとか<br><br>
+            
+            でも山の中腹まではなんとか登れた<br>
+            そこで見つけたのが...<br><br>
+            
+            <span class="red-text">動物の骨で作られた簪（かんざし）</span><br><br>
+            
+            めちゃくちゃ精巧に作られてて、明らかに人間の手によるもの<br>
+            しかも新しい。最近作られたっぽい
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <span class="post-number">21</span>
+            <span>名無しさん@お腹いっぱい。</span>
+            <span>2025/06/23(月) 19:49:15.45 ID:qrs345tu</span>
+        </div>
+        <div class="post-content">
+            簪？？？<br>
+            女性用の髪飾りじゃん<br>
+            なんで山にそんなものが...
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <span class="post-number">22</span>
+            <span>名無しさん@お腹いっぱい。</span>
+            <span>2025/06/23(月) 19:50:01.89 ID:abc123de</span>
+        </div>
+        <div class="post-content">
+            <span class="quote">>>21</span><br>
+            それがポイントなんだよ<br><br>
+            
+            多分これ、山にいる「赤い鬼」が作ったものだと思う<br>
+            そして...<span class="red-text">誰かにプレゼントするために</span><br><br>
+            
+            つまり、捧げられた公主たちは<br>
+            <span class="red-text">鬼と一緒に生活してるってことじゃないか？</span><br><br>
+            
+            殺されてるんじゃなくて、共に暮らしてる...
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <span class="post-number">23</span>
+            <span>名無しさん@お腹いっぱい。</span>
+            <span>2025/06/23(月) 19:50:47.23 ID:tuv678wx</span>
+        </div>
+        <div class="post-content">
+            うわあああああああ<br>
+            これもう完全にロマンスじゃん<br>
+            美女と野獣的な...？
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <span class="post-number">24</span>
+            <span>名無しさん@お腹いっぱい。</span>
+            <span>2025/06/23(月) 19:51:33.67 ID:wxy901za</span>
+        </div>
+        <div class="post-content">
+            待て、その簪まだ持ってるのか？<br>
+            写真うp！
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <span class="post-number">25</span>
+            <span>名無しさん@お腹いっぱい。</span>
+            <span>2025/06/23(月) 19:52:15.89 ID:abc123de</span>
+        </div>
+        <div class="post-content">
+            <span class="quote">>>24</span><br>
+            持って帰るのは躊躇したけど<br>
+            写真だけは撮ってきた<br><br>
+            
+            <!-- 여기에 사진 넣으세요! -->
+            <div style="margin: 10px 0; text-align: center; border: 1px solid #999; padding: 10px; background-color: #f0f0f0;">
+                [이 부분에 비녀 사진을 넣어주세요]<br>
+                <small>※ &lt;img src="이미지URL" style="max-width: 300px; height: auto;"&gt; 형태로 추가</small>
+            </div>
+            
+            見ての通り、めちゃくちゃ精巧<br>
+            これを作るのにどれだけ時間かけたんだろう...<br><br>
+            
+            しかも置かれてた場所が洞窟の入り口近く<br>
+            まるで誰かを待ってるみたいだった
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <span class="post-number">26</span>
+            <span>名無しさん@お腹いっぱい。</span>
+            <span>2025/06/23(月) 19:53:01.78 ID:hij234kl</span>
+        </div>
+        <div class="post-content">
+            うわああああ<br>
+            これガチで芸術品レベルじゃん<br>
+            鬼の手作りとか信じられん
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <span class="post-number">27</span>
+            <span>名無しさん@お腹いっぱい。</span>
+            <span>2025/06/23(月) 19:53:47.89 ID:klm567no</span>
+        </div>
+        <div class="post-content">
+            完全にプレゼント用じゃん<br>
+            鬼が女性のために一生懸命作ったんだな...<br>
+            なんか泣けてきた
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <span class="post-number">28</span>
+            <span>名無しさん@お腹いっぱい。</span>
+            <span>2025/06/23(月) 19:54:33.45 ID:abc123de</span>
+        </div>
+        <div class="post-content">
+            でも確実に言えるのは<br>
+            <span class="red-text">赤山の鬼は、公主を大切にしてるってこと</span><br><br>
+            
+            村人が思ってるような恐ろしい化け物じゃない<br>
+            むしろ...優しい存在なのかもしれない<br><br>
+            
+            <span class="green-text">この話、ここで終わりにする</span><br>
+            <span class="green-text">これ以上深入りするのは危険だと判断した</span>
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <span class="post-number">26</span>
+            <span>名無しさん@お腹いっぱい。</span>
+            <span>2025/06/23(月) 19:53:01.45 ID:zab234cd</span>
+        </div>
+        <div class="post-content">
+            えええええ<br>
+            もっと詳しく調べてよ！！！<br>
+            気になるじゃん
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <span class="post-number">27</span>
+            <span>名無しさん@お腹いっぱい。</span>
+            <span>2025/06/23(月) 19:53:47.78 ID:cde567ef</span>
+        </div>
+        <div class="post-content">
+            乙でした<br>
+            なんか心温まる話になったな<br>
+            最初はホラーかと思ったのに
+        </div>
+    </div>
+
+    <div class="post">
+        <div class="post-header">
+            <span class="post-number">28</span>
+            <span>sage</span>
+            <span>2025/06/23(月) 19:54:33.12 ID:efg890hi</span>
+        </div>
+        <div class="post-content">
+            <span class="sage">良いスレだった</span><br>
+            <span class="sage">真偽のほどは分からんが、ロマンがあるな</span><br>
+            <span class="sage">もし本当なら、その鬼と公主たちが幸せに暮らしてることを祈る</span>
+        </div>
+    </div>
+
+</body>
+</html>
