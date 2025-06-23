@@ -54,6 +54,9 @@
         .quote {
             color: #0000ff;
         }
+        .sage {
+            color: #999999;
+        }
         .translate-btn {
             position: fixed;
             top: 10px;
@@ -71,50 +74,10 @@
             background-color: #ff5252;
         }
     </style>
-    <script>
-        // 현재 날짜를 2ch 형식으로 표시 (년/월/일만)
-        function updateDates() {
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            
-            const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
-            const weekday = weekdays[now.getDay()];
-            
-            const dateString = `${year}/${month}/${day}(${weekday})`;
-            
-            // 모든 날짜 요소 업데이트 (각각 다른 시간으로)
-            const dateElements = document.querySelectorAll('.current-date');
-            const timeOffsets = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95];
-            
-            dateElements.forEach((element, index) => {
-                const hours = 14 + Math.floor(timeOffsets[index] / 60);
-                const minutes = (32 + timeOffsets[index]) % 60;
-                const seconds = 15 + (timeOffsets[index] * 7) % 60;
-                const ms = 78 + (index * 23) % 100;
-                
-                const timeString = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(ms).padStart(2, '0')}`;
-                
-                // ID도 다양하게
-                const ids = ['abc123de', 'def456gh', 'ghi789jk', 'jkl012mn', 'mno345pq', 'pqr678st', 'stu901vw', 'vwx234yz', 'yza567bc', 'bcd890ef', 'efg123hi', 'hij456kl', 'klm789no', 'nop012qr', 'qrs345tu', 'tuv678wx', 'wxy901za', 'zab234cd', 'cde567ef', 'efg890hi'];
-                const postId = ids[index % ids.length];
-                
-                element.textContent = `${dateString} ${timeString} ID:${postId}`;
-            });
-            
-            // 헤더 날짜
-            const headerDate = document.getElementById('current-date');
-            if (headerDate) {
-                headerDate.textContent = `${dateString} 14:32:15.78 `;
-            }
-        }
-        
-        // 페이지 로드 시 한 번만 실행
-        window.addEventListener('load', updateDates);
-    </script>
 </head>
 <body>
+    <button class="translate-btn" onclick="translateToKorean()">한글로 번역</button>
+
     <div class="header">
         <div class="thread-title">【怖い話】赤山村の100年祭の真相がヤバすぎる件</div>
         <div>1 :以下、名無しにかわりましてVIPがお送りします:<span id="current-date"></span> ID:abc123de</div>
@@ -124,7 +87,7 @@
         <div class="post-header">
             <span class="post-number">1</span>
             <span>名無しさん@お腹いっぱい。</span>
-            <span><span class="current-date"></span></span>
+            <span class="current-date"></span>
         </div>
         <div class="post-content">
             平安時代から続くって言われてる赤山村の100年祭について調べてたんだが<br>
@@ -169,7 +132,7 @@
         <div class="post-header">
             <span class="post-number">4</span>
             <span>名無しさん@お腹いっぱい。</span>
-            <span>2025/06/23(月) 14:35:28.94 ID:jkl012mn</span>
+            <span class="current-date"></span>
         </div>
         <div class="post-content">
             ソースは？<br>
@@ -181,7 +144,7 @@
         <div class="post-header">
             <span class="post-number">5</span>
             <span>名無しさん@お腹いっぱい。</span>
-            <span>2025/06/23(月) 14:36:45.23 ID:abc123de</span>
+            <span class="current-date"></span>
         </div>
         <div class="post-content">
             <span class="quote">>>4</span><br>
@@ -204,7 +167,7 @@
         <div class="post-header">
             <span class="post-number">6</span>
             <span>名無しさん@お腹いっぱい。</span>
-            <span>2025/06/23(月) 14:37:12.89 ID:mno345pq</span>
+            <span class="current-date"></span>
         </div>
         <div class="post-content">
             うわあああああああ<br>
@@ -217,7 +180,7 @@
         <div class="post-header">
             <span class="post-number">7</span>
             <span>名無しさん@お腹いっぱい。</span>
-            <span>2025/06/23(月) 14:38:33.45 ID:pqr678st</span>
+            <span class="current-date"></span>
         </div>
         <div class="post-content">
             <span class="green-text">>1</span><br>
@@ -230,7 +193,7 @@
         <div class="post-header">
             <span class="post-number">8</span>
             <span>名無しさん@お腹いっぱい。</span>
-            <span>2025/06/23(月) 14:39:15.67 ID:abc123de</span>
+            <span class="current-date"></span>
         </div>
         <div class="post-content">
             <span class="quote">>>7</span><br>
@@ -250,7 +213,7 @@
         <div class="post-header">
             <span class="post-number">9</span>
             <span>名無しさん@お腹いっぱい。</span>
-            <span>2025/06/23(月) 14:40:01.23 ID:stu901vw</span>
+            <span class="current-date"></span>
         </div>
         <div class="post-content">
             <span class="red-text">！！！！！！</span><br>
@@ -263,7 +226,7 @@
         <div class="post-header">
             <span class="post-number">10</span>
             <span>名無しさん@お腹いっぱい。</span>
-            <span>2025/06/23(月) 14:40:47.89 ID:vwx234yz</span>
+            <span class="current-date"></span>
         </div>
         <div class="post-content">
             待て待て<br>
@@ -279,7 +242,7 @@
         <div class="post-header">
             <span class="post-number">11</span>
             <span>名無しさん@お腹いっぱい。</span>
-            <span>2025/06/23(月) 14:41:33.45 ID:abc123de</span>
+            <span class="current-date"></span>
         </div>
         <div class="post-content">
             <span class="quote">>>10</span><br>
@@ -306,7 +269,7 @@
         <div class="post-header">
             <span class="post-number">12</span>
             <span>名無しさん@お腹いっぱい。</span>
-            <span>2025/06/23(月) 14:42:15.67 ID:yza567bc</span>
+            <span class="current-date"></span>
         </div>
         <div class="post-content">
             これもう単純なホラーじゃなくて<br>
@@ -322,7 +285,7 @@
         <div class="post-header">
             <span class="post-number">13</span>
             <span>sage</span>
-            <span>2025/06/23(月) 14:43:01.89 ID:bcd890ef</span>
+            <span class="current-date"></span>
         </div>
         <div class="post-content">
             <span class="sage">この話、前にも似たようなのをどこかで見た気がする</span><br>
@@ -335,7 +298,7 @@
         <div class="post-header">
             <span class="post-number">14</span>
             <span>名無しさん@お腹いっぱい。</span>
-            <span>2025/06/23(月) 14:43:47.23 ID:efg123hi</span>
+            <span class="current-date"></span>
         </div>
         <div class="post-content">
             <span class="quote">>>1</span><br>
@@ -348,7 +311,7 @@
         <div class="post-header">
             <span class="post-number">15</span>
             <span>名無しさん@お腹いっぱい。</span>
-            <span>2025/06/23(月) 14:44:33.56 ID:abc123de</span>
+            <span class="current-date"></span>
         </div>
         <div class="post-content">
             <span class="quote">>>14</span><br>
@@ -366,7 +329,7 @@
         <div class="post-header">
             <span class="post-number">16</span>
             <span>名無しさん@お腹いっぱい。</span>
-            <span>2025/06/23(月) 14:45:12.34 ID:hij456kl</span>
+            <span class="current-date"></span>
         </div>
         <div class="post-content">
             気をつけろよ<br>
@@ -378,7 +341,7 @@
         <div class="post-header">
             <span class="post-number">17</span>
             <span>名無しさん@お腹いっぱい。</span>
-            <span>2025/06/23(月) 14:46:01.78 ID:klm789no</span>
+            <span class="current-date"></span>
         </div>
         <div class="post-content">
             現地レポ期待してる<br>
@@ -390,7 +353,7 @@
         <div class="post-header">
             <span class="post-number">18</span>
             <span>名無しさん@お腹いっぱい。</span>
-            <span>2025/06/23(月) 19:47:23.89 ID:abc123de</span>
+            <span class="current-date"></span>
         </div>
         <div class="post-content">
             帰ってきた<br>
@@ -404,7 +367,7 @@
         <div class="post-header">
             <span class="post-number">19</span>
             <span>名無しさん@お腹いっぱい。</span>
-            <span>2025/06/23(月) 19:47:45.67 ID:nop012qr</span>
+            <span class="current-date"></span>
         </div>
         <div class="post-content">
             おかえり<br>
@@ -416,7 +379,7 @@
         <div class="post-header">
             <span class="post-number">20</span>
             <span>名無しさん@お腹いっぱい。</span>
-            <span>2025/06/23(月) 19:48:33.12 ID:abc123de</span>
+            <span class="current-date"></span>
         </div>
         <div class="post-content">
             まず村には近づけなかった<br>
@@ -437,7 +400,7 @@
         <div class="post-header">
             <span class="post-number">21</span>
             <span>名無しさん@お腹いっぱい。</span>
-            <span>2025/06/23(月) 19:49:15.45 ID:qrs345tu</span>
+            <span class="current-date"></span>
         </div>
         <div class="post-content">
             簪？？？<br>
@@ -450,7 +413,7 @@
         <div class="post-header">
             <span class="post-number">22</span>
             <span>名無しさん@お腹いっぱい。</span>
-            <span>2025/06/23(月) 19:50:01.89 ID:abc123de</span>
+            <span class="current-date"></span>
         </div>
         <div class="post-content">
             <span class="quote">>>21</span><br>
@@ -470,7 +433,7 @@
         <div class="post-header">
             <span class="post-number">23</span>
             <span>名無しさん@お腹いっぱい。</span>
-            <span>2025/06/23(月) 19:50:47.23 ID:tuv678wx</span>
+            <span class="current-date"></span>
         </div>
         <div class="post-content">
             うわあああああああ<br>
@@ -483,7 +446,7 @@
         <div class="post-header">
             <span class="post-number">24</span>
             <span>名無しさん@お腹いっぱい。</span>
-            <span>2025/06/23(月) 19:51:33.67 ID:wxy901za</span>
+            <span class="current-date"></span>
         </div>
         <div class="post-content">
             待て、その簪まだ持ってるのか？<br>
@@ -494,8 +457,8 @@
     <div class="post">
         <div class="post-header">
             <span class="post-number">25</span>
-            <span>名無しさん@お腹いっぱい。</span>
-            <span>2025/06/23(月) 19:52:15.89 ID:abc123de</span>
+            <span>名無しさん@お腹이っぱい。</span>
+            <span class="current-date"></span>
         </div>
         <div class="post-content">
             <span class="quote">>>24</span><br>
@@ -518,7 +481,7 @@
         <div class="post-header">
             <span class="post-number">26</span>
             <span>名無しさん@お腹いっぱい。</span>
-            <span>2025/06/23(月) 19:53:01.78 ID:hij234kl</span>
+            <span class="current-date"></span>
         </div>
         <div class="post-content">
             うわああああ<br>
@@ -531,7 +494,7 @@
         <div class="post-header">
             <span class="post-number">27</span>
             <span>名無しさん@お腹いっぱい。</span>
-            <span>2025/06/23(月) 19:53:47.89 ID:klm567no</span>
+            <span class="current-date"></span>
         </div>
         <div class="post-content">
             完全にプレゼント用じゃん<br>
@@ -544,7 +507,7 @@
         <div class="post-header">
             <span class="post-number">28</span>
             <span>名無しさん@お腹いっぱい。</span>
-            <span>2025/06/23(月) 19:54:33.45 ID:abc123de</span>
+            <span class="current-date"></span>
         </div>
         <div class="post-content">
             でも確実に言えるのは<br>
@@ -560,9 +523,9 @@
 
     <div class="post">
         <div class="post-header">
-            <span class="post-number">26</span>
+            <span class="post-number">29</span>
             <span>名無しさん@お腹いっぱい。</span>
-            <span>2025/06/23(月) 19:53:01.45 ID:zab234cd</span>
+            <span class="current-date"></span>
         </div>
         <div class="post-content">
             えええええ<br>
@@ -573,9 +536,9 @@
 
     <div class="post">
         <div class="post-header">
-            <span class="post-number">27</span>
+            <span class="post-number">30</span>
             <span>名無しさん@お腹いっぱい。</span>
-            <span>2025/06/23(月) 19:53:47.78 ID:cde567ef</span>
+            <span class="current-date"></span>
         </div>
         <div class="post-content">
             乙でした<br>
@@ -586,9 +549,9 @@
 
     <div class="post">
         <div class="post-header">
-            <span class="post-number">28</span>
+            <span class="post-number">31</span>
             <span>sage</span>
-            <span>2025/06/23(月) 19:54:33.12 ID:efg890hi</span>
+            <span class="current-date"></span>
         </div>
         <div class="post-content">
             <span class="sage">良いスレだった</span><br>
@@ -596,6 +559,199 @@
             <span class="sage">もし本当なら、その鬼と公主たちが幸せに暮らしてることを祈る</span>
         </div>
     </div>
+
+    <script>
+        // 현재 날짜를 2ch 형식으로 표시
+        function updateDates() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            
+            const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+            const weekday = weekdays[now.getDay()];
+            
+            const dateString = `${year}/${month}/${day}(${weekday})`;
+            
+            // 모든 날짜 요소 업데이트
+            const dateElements = document.querySelectorAll('.current-date');
+            const timeOffsets = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95];
+            
+            dateElements.forEach((element, index) => {
+                const hours = 14 + Math.floor(timeOffsets[index] / 60);
+                const minutes = (32 + timeOffsets[index]) % 60;
+                const seconds = 15 + (timeOffsets[index] * 7) % 60;
+                const ms = 78 + (index * 23) % 100;
+                
+                const timeString = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(ms).padStart(2, '0')}`;
+                
+                const ids = ['abc123de', 'def456gh', 'ghi789jk', 'jkl012mn', 'mno345pq', 'pqr678st', 'stu901vw', 'vwx234yz', 'yza567bc', 'bcd890ef', 'efg123hi', 'hij456kl', 'klm789no', 'nop012qr', 'qrs345tu', 'tuv678wx', 'wxy901za', 'zab234cd', 'cde567ef', 'efg890hi'];
+                const postId = ids[index % ids.length];
+                
+                element.textContent = `${dateString} ${timeString} ID:${postId}`;
+            });
+            
+            // 헤더 날짜
+            const headerDate = document.getElementById('current-date');
+            if (headerDate) {
+                headerDate.textContent = `${dateString} 14:32:15.78 `;
+            }
+        }
+        
+        // 번역 기능
+        let isTranslated = false;
+        
+        const translations = {
+            '【怖い話】赤山村の100年祭の真相がヤバすぎる件': '【무서운 이야기】아카야마 마을 100년제의 진상이 너무 위험한 건',
+            '以下、名無しにかわりましてVIPがお送りします': '이하, 익명을 대신하여 VIP가 전송합니다',
+            '名無しさん@お腹いっぱい。': '익명씨@배부름.',
+            '平安時代から続くって言われてる赤山村の100年祭について調べてたんだが': '헤이안 시대부터 이어진다고 전해지는 아카야마 마을의 100년제에 대해 조사하고 있었는데',
+            'これマジでヤバすぎるだろ...': '이거 진짜 너무 위험하다...',
+            '・100年ごとに若い「公主」を「山神様」に捧げる': '・100년마다 젊은 「공주」를 「산신님」에게 바친다',
+            '・捧げられた公主は二度と村に戻ってこない': '・바쳐진 공주는 다시는 마을로 돌아오지 않는다',
+            '・村人は全員「天に召された」と信じてる': '・마을 사람들은 모두 「하늘로 소환되었다」고 믿고 있다',
+            '・でも実際は...': '・하지만 실제로는...',
+            '詳細は後で書くけど、これガチで現代まで続いてるらしい': '자세한 내용은 나중에 쓸 예정이지만, 이게 진짜로 현대까지 이어지고 있다고 한다',
+            '誰か詳しい奴いる？': '자세히 아는 사람 있어?',
+            '草': '웃기네',
+            'また都市伝説かよwwwww': '또 도시전설이냐wwwww',
+            'これはアカン': '이건 안 된다',
+            '人身御供系は洒落にならん': '인신공양계는 농담이 아니야',
+            'ソースは？': '출처는?',
+            '文献とかあるの？': '문헌 같은 거 있어?',
+            '県立図書館の郷土史料にちょろっと載ってた': '현립도서관의 향토사료에 살짝 나와있었어',
+            'あと地元の古老の証言も': '그리고 지역 원로들의 증언도',
+            '実は俺の爺さんが近くの村出身でな': '사실 우리 할아버지가 근처 마을 출신이거든',
+            '子供の頃に一度だけ見たことがあるって言ってた': '어린 시절에 한 번만 본 적이 있다고 하셨어',
+            '「真っ白な着物着た綺麗な人が山に向かって歩いてった」って': '「새하얀 기모노를 입은 아름다운 사람이 산을 향해 걸어갔다」고',
+            'で、その後その人は二度と見なかったらしい': '그 후 그 사람은 다시는 보지 못했다고 해',
+            'うわあああああああ': '으아아아아아아',
+            'これ系は本当に怖い': '이런 계열은 정말 무서워',
+            '現代でもやってるってマジ？': '현대에도 하고 있다는 게 진짜?',
+            '山に住んでる「何か」がいるってこと？': '산에 살고 있는 「뭔가」가 있다는 뜻?',
+            '鬼とか妖怪とか？': '오니나 요괴 같은?',
+            'それが一番ヤバい部分なんだよ': '그게 가장 위험한 부분이야',
+            '村の言い伝えでは「赤い鬼が住んでる」って話': '마을 전설에서는 「빨간 오니가 살고 있다」는 이야기',
+            'でも実際に捧げられた公主たちがどうなったかは謎': '하지만 실제로 바쳐진 공주들이 어떻게 되었는지는 미스터리',
+            'ただし、最近になって衝撃的な事実が判明した': '그런데 최근에 충격적인 사실이 판명되었다',
+            '実は捧げられた公主の一部は...': '사실 바쳐진 공주의 일부는...',
+            '生きて他の土地で目撃されてるらしい': '살아서 다른 지역에서 목격되고 있다고 해',
+            '！！！！！！': '！！！！！！',
+            'マジかよ': '진짜야',
+            'それつまり...': '그럼 그 의미는...',
+            '待て待て': '잠깐 잠깐',
+            'つまり山の鬼は公主を殺してない？': '그럼 산의 오니는 공주를 죽이지 않는다는 거야?',
+            '何のために連れて行くんだ？': '뭘 위해서 데려가는 거지?',
+            'というかなんで「公主」なんだ？': '그리고 왜 「공주」라고 하는 거야?',
+            '普通女性とか言うよね？': '보통 여성이라고 하잖아?',
+            'それが分からないんだよ': '그걸 모르겠어',
+            'でも確実に言えるのは': '하지만 확실한 건',
+            '・村人は公主が死んだと思い込んでる': '・마을 사람들은 공주가 죽었다고 생각하고 있다',
+            '・実際は生きてる（少なくとも一部は）': '・실제로는 살아있다 (적어도 일부는)',
+            '・鬼は公主を殺さない理由がある': '・오니는 공주를 죽이지 않을 이유가 있다',
+            'あと「公主」って呼び方について': '그리고 「공주」라는 호칭에 대해',
+            '村の古い記録を見ると、男女関係なく': '마을의 오래된 기록을 보면, 남녀 관계없이',
+            '捧げ物として選ばれた人を指す言葉として使ってるらしい': '제물로 선택된 사람을 가리키는 말로 사용하고 있다고 해',
+            '実際、過去には男性も捧げられてる記録がある': '실제로 과거에는 남성도 바쳐진 기록이 있어',
+            '身分も容姿もバラバラ': '신분도 외모도 제각각',
+            '要するに「山神様への供物」って意味での「贡主」': '요컨대 「산신님에게 바치는 공물」이라는 의미의 「贡主」',
+            '読み方は普通の公主と同じだけど漢字が違う': '읽는 법은 일반 공주와 같지만 한자가 달라',
+            '「公物儀式の主人公」って意味らしい': '「공물 의식의 주인공」이라는 뜻이라고 해',
+            'これもう単純なホラーじゃなくて': '이제 단순한 호러가 아니라',
+            'なんかめちゃくちゃ深い話になってきたな': '뭔가 엄청 깊은 이야기가 되어가고 있네',
+            '鬼が実は良い奴説？？？': '오니가 사실 좋은 놈설???',
+            'しかも公主って男女どっちでもありなのか': '게다가 공주는 남녀 어느 쪽이든 상관없는 건가',
+            'ますます謎だわ': '점점 더 미스터리야',
+            'この話、前にも似たようなのをどこかで見た気がする': '이 이야기, 전에도 비슷한 걸 어디선가 본 것 같아',
+            '山の主が人間を殺さずに匿ってるパターン': '산의 주인이 인간을 죽이지 않고 숨겨주는 패턴',
+            'まあ真偽のほどは分からんが...': '뭐 진위는 모르겠지만...',
+            '続きはよ': '계속 빨리',
+            '気になって仕事が手につかんwww': '궁금해서 일이 손에 안 잡혀www',
+            'おk、もうちょっと詳しく調べてから書く': '오케이, 좀 더 자세히 조사하고 나서 쓸게',
+            '実は今度その村の近くまで行く予定があるんだ': '사실 이번에 그 마을 근처까지 갈 예정이 있어',
+            'もし可能なら現地調査もしてみようと思ってる': '가능하다면 현지조사도 해보려고 생각 중이야',
+            'ただし、マジでヤバそうだから一人では行かない': '단, 진짜 위험할 것 같아서 혼자서는 안 가',
+            '万が一のことがあったら洒落にならん': '만에 하나 일이 생기면 농담이 아니거든',
+            '気をつけろよ': '조심해',
+            '変なもの持ち帰ってくるなよwww': '이상한 거 가져오지 마www',
+            '現地レポ期待してる': '현지 리포트 기대하고 있어',
+            '写真とかあったら神': '사진 같은 거 있으면 신이야',
+            '帰ってきた': '돌아왔어',
+            '友達と二人で山まで行ってきたんだが...': '친구와 둘이서 산까지 다녀왔는데...',
+            'マジでヤバいもの見つけた': '진짜 위험한 걸 발견했어',
+            'おかえり': '돌아왔구나',
+            '詳細はよ！！！': '자세한 내용 빨리!!!',
+            'まず村には近づけなかった': '우선 마을에는 접근할 수 없었어',
+            '地元の人に止められた': '현지 사람에게 제지당했어',
+            '「今日は山神様の機嫌が悪い」とかなんとか': '「오늘은 산신님 기분이 나쁘다」는 식으로',
+            'でも山の中腹まではなんとか登れた': '하지만 산 중턱까지는 어떻게든 올라갈 수 있었어',
+            'そこで見つけたのが...': '거기서 발견한 게...',
+            '動物の骨で作られた簪（かんざし）': '동물 뼈로 만들어진 비녀(간자시)',
+            'めちゃくちゃ精巧に作られてて、明らかに人間の手によるもの': '엄청 정교하게 만들어져 있고, 명백히 인간의 손으로 만든 것',
+            'しかも新しい。最近作られたっぽい': '게다가 새로워. 최근에 만들어진 것 같아',
+            '簪？？？': '비녀???',
+            '女性用の髪飾りじゃん': '여성용 머리 장식이잖아',
+            'なんで山にそんなものが...': '왜 산에 그런 게...',
+            'それがポイントなんだよ': '그게 포인트야',
+            '多分これ、山にいる「赤い鬼」が作ったものだと思う': '아마 이거, 산에 있는 「빨간 오니」가 만든 것 같아',
+            'そして...誰かにプレゼントするために': '그리고... 누군가에게 선물하기 위해서',
+            'つまり、捧げられた公主たちは': '즉, 바쳐진 공주들은',
+            '鬼と一緒に生活してるってことじゃないか？': '오니와 함께 생활하고 있다는 뜻 아닐까?',
+            '殺されてるんじゃなくて、共に暮らしてる...': '죽은 게 아니라, 함께 살고 있는...',
+            'うわあああああああ': '우와아아아아아아',
+            'これもう完全にロマンスじゃん': '이거 완전히 로맨스잖아',
+            '美女と野獣的な...？': '미녀와 야수 같은...?',
+            '待て、その簪まだ持ってるのか？': '잠깐, 그 비녀 아직 가지고 있어?',
+            '写真うp！': '사진 업로드!',
+            '持って帰るのは躊躇したけど': '가져오는 건 망설여졌지만',
+            '写真だけは撮ってきた': '사진만은 찍어왔어',
+            '見ての通り、めちゃくちゃ精巧': '보다시피, 엄청 정교해',
+            'これを作るのにどれだけ時間かけたんだろう...': '이걸 만드는 데 얼마나 시간이 걸렸을까...',
+            'しかも置かれてた場所が洞窟の入り口近く': '게다가 놓여있던 장소가 동굴 입구 근처',
+            'まるで誰かを待ってるみたいだった': '마치 누군가를 기다리는 것 같았어',
+            'うわああああ': '우와아아아아',
+            'これガチで芸術品レベルじゃん': '이거 진짜 예술품 레벨이잖아',
+            '鬼の手作りとか信じられん': '오니의 수제품이라니 믿을 수 없어',
+            '完全にプレゼント用じゃん': '완전히 선물용이잖아',
+            '鬼が女性のために一生懸命作ったんだな...': '오니가 여성을 위해 열심히 만든 거구나...',
+            'なんか泣けてきた': '왠지 눈물이 나와',
+            'でも確実に言えるのは': '하지만 확실한 건',
+            '赤山の鬼は、公主を大切にしてるってこと': '아카야마의 오니는 공주를 소중히 여기고 있다는 것',
+            '村人が思ってるような恐ろしい化け物じゃない': '마을 사람들이 생각하는 것 같은 무서운 괴물이 아니야',
+            'むしろ...優しい存在なのかもしれない': '오히려... 상냥한 존재일지도 몰라',
+            'この話、ここで終わりにする': '이 이야기, 여기서 끝내겠어',
+            'これ以上深入りするのは危険だと判断した': '이 이상 깊이 들어가는 건 위험하다고 판단했어',
+            'えええええ': '에에에에',
+            'もっと詳しく調べてよ！！！': '더 자세히 조사해봐!!!',
+            '気になるじゃん': '궁금하잖아',
+            '乙でした': '수고했어',
+            'なんか心温まる話になったな': '왠지 마음 따뜻해지는 이야기가 되었네',
+            '最初はホラーかと思ったのに': '처음에는 호러인 줄 알았는데',
+            '良いスレだった': '좋은 스레였어',
+            '真偽のほどは分からんが、ロマンがあるな': '진위는 모르겠지만, 로맨틱하네',
+            'もし本当なら、その鬼と公主たちが幸せに暮らしてることを祈る': '만약 진짜라면, 그 오니와 공주들이 행복하게 살고 있기를 기도해',
+            'sage': 'sage'
+        };
+        
+        function translateToKorean() {
+            if (!isTranslated) {
+                // 일본어를 한국어로 번역
+                Object.keys(translations).forEach(japanese => {
+                    const korean = translations[japanese];
+                    const regex = new RegExp(japanese.replace(/[.*+?^${}()|[\]\\]/g, '\\            '子供の頃に一度だけ見たことがあるって言'), 'g');
+                    document.body.innerHTML = document.body.innerHTML.replace(regex, korean);
+                });
+                document.querySelector('.translate-btn').textContent = '일본어로 되돌리기';
+                isTranslated = true;
+            } else {
+                // 페이지 새로고침으로 일본어로 되돌리기
+                location.reload();
+            }
+        }
+        
+        // 페이지 로드 시 실행
+        window.addEventListener('load', updateDates);
+    </script>
 
 </body>
 </html>
