@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>캐릭터 프로필</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        /* 상단 캐릭터 선택 버튼들 */
+        .character-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            padding: 20px 15px;
+            background: #ffffff;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .char-btn {
+            padding: 10px 16px;
+            background: #ffffff;
+            border: 1px solid #ddd;
+            color: #333;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            min-width: 60px;
+        }
+        
+        .char-btn:hover {
+            background: #f5f5f5;
+        }
+        
+        .char-btn.active {
+            background: #333;
+            color: white;
+            border-color: #333;
+        }
+        
+        /* 중앙 메인 영역 */
+        .main-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: #ffffff;
+            border-bottom: 1px solid #eee;
+            min-height: 400px;
+        }
+        
+        /* 캐릭터 이미지 */
+        .character-image {
+            width: 90vw;
+            height: 90vw;
+            max-width: 800px;
+            max-height: 800px;
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800"><rect width="800" height="800" fill="none" stroke="%23ddd" stroke-width="1"/><text x="400" y="400" text-anchor="middle" fill="%23999" font-size="24">캐릭터 이미지</text></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        
+        /* 하단 정보 영역 */
+        .info-section {
+            display: flex;
+            gap: 20px;
+            padding: 30px 20px;
+            background: #ffffff;
+            min-height: 40vh;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        /* 레이더 차트 영역 */
+        .radar-section {
+            flex: 0 0 300px;
+        }
+        
+        .radar-title {
+            font-size: 15px;
+            margin-bottom: 15px;
+            text-align: center;
+            color: #333;
+            font-weight: normal;
+        }
+        
+        .radar-chart {
+            width: 100%;
+            height: 300px;
+            background: #ffffff;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .radar-canvas {
+            width: 300px;
+            height: 300px;
+            max-width: 100%;
+            max-height: 100%;
+        }
+        
+        /* 캐릭터 정보 영역 */
+        .character-info {
+            flex: 0 0 300px;
+        }
+        
+        .info-title {
+            font-size: 15px;
+            margin-bottom: 15px;
+            color: #333;
+            font-weight: normal;
+        }
+        
+        .info-grid {
+            display: grid;
+            gap: 10px;
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .info-label {
+            color: #666;
+            font-size: 13px;
+        }
+        
+        .info-value {
+            color: #333;
+            font-size: 13px;
+            background: #f8f9fa;
+            padding: 4px 6px;
+            border: 1px solid #ddd;
+            border-radius: 2px;
+            min-width: 90px;
+            text-align: left;
+            line-height: 1.3;
+            word-wrap: break-word;
+            max-width: 250px;
+            height: auto;
+            white-space: normal;
+        }
+        
+        /* 모바일 최적화 */
+        @media (max-width: 768px) {
+            .character-buttons {
+                gap: 8px;
+                padding: 15px 10px;
+            }
+            
+            .char-btn {
+                padding: 8px 12px;
+                font-size: 12px;
+                min-width: 50px;
+            }
+            
+            .main-content {
+                padding: 20px 10px;
+                margin-bottom: 20px;
+                min-height: 300px;
+            }
+            
+            .character-image {
+                width: 90vw;
+                height: 90vw;
+                max-width: 400px;
+                max-height: 400px;
+            }
+            
+            .info-section {
+                flex-direction: column;
+                gap: 20px;
+                padding: 20px 15px;
+                min-height: auto;
+                margin-top: 20px;
+            }
+            
+            .radar-chart {
+                height: 250px;
+                max-width: 250px;
+                margin: 0 auto;
+            }
+            
+            .info-item {
+                justify-content: space-between;
+                align-items: center;
+                flex-direction: row;
+                gap: 10px;
+                padding: 8px 0;
+            }
+            
+            .info-value {
+                width: 60%;
+                min-width: auto;
+                font-size: 13px;
+                padding: 3px 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 상단 캐릭터 선택 버튼들 -->
+    <div class="character-buttons">
+        <button class="char-btn active" data-char="1">이만향</button>
+        <button class="char-btn" data-char="2">월아</button>
+        <button class="char-btn" data-char="3">소민</button>
+        <button class="char-btn" data-char="4">서란</button>
+        <button class="char-btn" data-char="5">아랑</button>
+        <button class="char-btn" data-char="6">낙영</button>
+    </div>
+    
+    <!-- 중앙 메인 영역 -->
+    <div class="main-content">
+        <!-- 캐릭터 전신 이미지 -->
+        <div class="character-image" id="characterImage"></div>
+    </div>
+    
+    <!-- 하단 정보 영역 -->
+    <div class="info-section">
+        <!-- 레이더 차트 -->
+        <div class="radar-section">
+            <div class="radar-chart">
+                <canvas class="radar-canvas" id="radarCanvas" width="300" height="300"></canvas>
+            </div>
+        </div>
+        
+        <!-- 캐릭터 정보 -->
+        <div class="character-info">
+            <div class="info-title">캐릭터 정보</div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-label">이름</span>
+                    <div class="info-value">이만향</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">칭호</span>
+                    <div class="info-value">삼공주, 요희</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">나이</span>
+                    <div class="info-value">35세</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">키</span>
+                    <div class="info-value">187cm</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">특기</span>
+                    <div class="info-value">심리조작, 정치술</div>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">배경</span>
+                    <div class="info-value">황실의 삼공주</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 캐릭터 데이터
+        const characterData = {
+            1: {
+                name: "이만향", title: "삼공주, 요희", age: "35세", height: "187cm", 
+                specialty: "심리조작, 정치술", background: "대하제국의 삼공주로 태어났으나 1황자와 2황자의 치열한 왕위계승 다툼 속에서 자신을 보호하기 위해 일부러 방탕하고 무능한 척 연기하며 낙화전에서 여인들과의 연회를 즐기는 것처럼 보이게 한다.",
+                image: "https://i.imgur.com/FDL1qom.jpeg",
+                stats: { 매력: 100, 지능: 100, 정치력: 100, 무력: 100, 체력: 100, 예술: 100 }
+            },
+            2: {
+                name: "월아", title: "낙화전의 최고참", age: "24세", height: "168cm", 
+                specialty: "조직관리, 예법", background: "10년 전 아버지가 반역죄로 몰려 가문이 몰락하면서 17세에 궁에 들어왔다. 가문의 명예를 되찾겠다는 일념으로 7년간 황녀를 모시며 낙화전의 모든 일을 완벽하게 관리하고 있다.",
+                image: "https://i.imgur.com/JIqG5Jl.jpeg",
+                stats: { 매력: 50, 지능: 90, 정치력: 85, 무력: 70, 체력: 80, 예술: 25 }
+            },
+            3: {
+                name: "소민", title: "총애받는 야심가", age: "21세", height: "156cm", 
+                specialty: "사교술, 계략", background: "지방 향리의 딸로 태어나 15세에 미모 선발에 뽑혀 궁에 들어왔다. 뛰어난 사교술과 계산적인 성격으로 빠르게 황녀의 총애를 받게 되었으며 언젠가 높은 지위에 오르겠다는 야심을 품고 있다.",
+                image: "https://i.imgur.com/LZZ5i66.jpeg",
+                stats: { 매력: 90, 지능: 75, 정치력: 95, 무력: 20, 체력: 60, 예술: 80 }
+            },
+            4: {
+                name: "서란", title: "내성적인 예술가", age: "20세", height: "169cm", 
+                specialty: "시화, 서예", background: "8세에 부모를 잃고 절에서 자라며 그림과 시를 통해 마음을 달래왔다. 18세에 그녀의 작품이 황녀의 눈에 띄어 낙화전에 초대받았으며 여전히 말보다는 붓으로 자신을 표현하는 것을 선호한다.",
+                image: "https://i.imgur.com/lKPsfoW.jpeg",
+                stats: { 매력: 40, 지능: 85, 정치력: 10, 무력: 5, 체력: 30, 예술: 100 }
+            },
+            5: {
+                name: "아랑", title: "밝은 정보통", age: "18세", height: "152cm", 
+                specialty: "정보수집, 처세술", background: "14세에 궁의 수라간에 들어와 4년간 일하며 궁중의 모든 소문과 정보에 밝아졌다. 밝고 활발한 성격으로 누구와도 쉽게 친해지는 능력 덕분에 황녀가 직접 낙화전으로 데려왔다.",
+                image: "https://i.imgur.com/8n49Nu2.jpeg",
+                stats: { 매력: 70, 지능: 65, 정치력: 75, 무력: 25, 체력: 90, 예술: 40 }
+            },
+            6: {
+                name: "낙영", title: "경험 많은 조언자", age: "26세", height: "173cm", 
+                specialty: "무용, 상담", background: "16세에 최고급 기방에서 기녀로 활동하며 많은 권력자들을 상대했다. 22세에 황녀의 총애를 받아 낙화전에 들어왔으나 지금은 과거의 아픔을 딛고 후배들을 돌보는 언니 역할을 하고 있다.",
+                image: "https://i.imgur.com/KFZXhjC.jpeg",
+                stats: { 매력: 95, 지능: 80, 정치력: 70, 무력: 30, 체력: 55, 예술: 90 }
+            }
+        };
+        
+        // 레이더 차트 그리기
+        function drawRadarChart(stats) {
+            const canvas = document.getElementById('radarCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // 캔버스 크기 고정
+            const width = 300;
+            const height = 300;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const radius = 120;
+            
+            // 배경 지우기
+            ctx.clearRect(0, 0, width, height);
+            
+            const statNames = Object.keys(stats);
+            const statValues = Object.values(stats);
+            const numStats = statNames.length;
+            
+            // 배경 동심원 그리기
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 1;
+            for (let i = 1; i <= 5; i++) {
+                ctx.beginPath();
+                const r = (radius * i) / 5;
+                for (let j = 0; j < numStats; j++) {
+                    const angle = (j * 2 * Math.PI) / numStats - Math.PI / 2;
+                    const x = centerX + Math.cos(angle) * r;
+                    const y = centerY + Math.sin(angle) * r;
+                    if (j === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.closePath();
+                ctx.stroke();
+            }
+            
+            // 축선 그리기
+            ctx.strokeStyle = '#d0d0d0';
+            for (let i = 0; i < numStats; i++) {
+                const angle = (i * 2 * Math.PI) / numStats - Math.PI / 2;
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.lineTo(
+                    centerX + Math.cos(angle) * radius,
+                    centerY + Math.sin(angle) * radius
+                );
+                ctx.stroke();
+            }
+            
+            // 라벨 그리기
+            ctx.fillStyle = '#333';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            for (let i = 0; i < numStats; i++) {
+                const angle = (i * 2 * Math.PI) / numStats - Math.PI / 2;
+                const labelRadius = radius + 20;
+                const x = centerX + Math.cos(angle) * labelRadius;
+                const y = centerY + Math.sin(angle) * labelRadius;
+                ctx.fillText(statNames[i], x, y);
+            }
+            
+            // 데이터 영역 그리기
+            ctx.strokeStyle = '#333';
+            ctx.fillStyle = 'rgba(51, 51, 51, 0.2)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            for (let i = 0; i < numStats; i++) {
+                const angle = (i * 2 * Math.PI) / numStats - Math.PI / 2;
+                const value = (statValues[i] / 100) * radius;
+                const x = centerX + Math.cos(angle) * value;
+                const y = centerY + Math.sin(angle) * value;
+                
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            
+            // 데이터 포인트 그리기
+            ctx.fillStyle = '#333';
+            for (let i = 0; i < numStats; i++) {
+                const angle = (i * 2 * Math.PI) / numStats - Math.PI / 2;
+                const value = (statValues[i] / 100) * radius;
+                const x = centerX + Math.cos(angle) * value;
+                const y = centerY + Math.sin(angle) * value;
+                
+                ctx.beginPath();
+                ctx.arc(x, y, 3, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+        }
+        
+        // 캐릭터 버튼 클릭 이벤트
+        document.querySelectorAll('.char-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.char-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                
+                const charNum = this.dataset.char;
+                const data = characterData[charNum];
+                
+                // 정보 업데이트
+                document.querySelector('.info-item:nth-child(1) .info-value').textContent = data.name;
+                document.querySelector('.info-item:nth-child(2) .info-value').textContent = data.title;
+                document.querySelector('.info-item:nth-child(3) .info-value').textContent = data.age;
+                document.querySelector('.info-item:nth-child(4) .info-value').textContent = data.height;
+                document.querySelector('.info-item:nth-child(5) .info-value').textContent = data.specialty;
+                document.querySelector('.info-item:nth-child(6) .info-value').textContent = data.background;
+                
+                // 이미지 업데이트 (간단한 방식으로 테스트)
+                const imageElement = document.getElementById('characterImage');
+                console.log('이미지 바꾸기 시도:', data.name, data.image);
+                imageElement.style.backgroundImage = `url("${data.image}")`;
+                
+                // 레이더 차트 업데이트
+                drawRadarChart(data.stats);
+            });
+        });
+        
+        // 페이지 로드 시 첫 번째 캐릭터 차트 그리기
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                // 첫 번째 캐릭터 이미지 설정
+                const imageElement = document.getElementById('characterImage');
+                console.log('첫 로드 이미지 설정:', characterData[1].image);
+                imageElement.style.backgroundImage = `url("${characterData[1].image}")`;
+                // 첫 번째 캐릭터 차트 그리기
+                drawRadarChart(characterData[1].stats);
+            }, 100);
+        });
+    </script>
+</body>
+</html>
