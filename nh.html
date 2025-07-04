@@ -67,7 +67,7 @@
             height: 90vw;
             max-width: 800px;
             max-height: 800px;
-            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="800" viewBox="0 0 800 800"><rect width="800" height="800" fill="none" stroke="%23ddd" stroke-width="1"/><text x="400" y="400" text-anchor="middle" fill="%23999" font-size="24">캐릭터 이미지</text></svg>');
+            background-image: url('https://i.imgur.com/FDL1qom.jpeg');
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
@@ -87,14 +87,6 @@
         /* 레이더 차트 영역 */
         .radar-section {
             flex: 0 0 300px;
-        }
-        
-        .radar-title {
-            font-size: 15px;
-            margin-bottom: 15px;
-            text-align: center;
-            color: #333;
-            font-weight: normal;
         }
         
         .radar-chart {
@@ -253,7 +245,7 @@
                 </div>
                 <div class="info-item">
                     <span class="info-label">칭호</span>
-                    <div class="info-value">삼공주, 요희</div>
+                    <div class="info-value">황제, 여제, 망나니 황제</div>
                 </div>
                 <div class="info-item">
                     <span class="info-label">나이</span>
@@ -265,11 +257,11 @@
                 </div>
                 <div class="info-item">
                     <span class="info-label">특기</span>
-                    <div class="info-value">심리조작, 정치술</div>
+                    <div class="info-value">향락, 쾌락주의</div>
                 </div>
                 <div class="info-item">
                     <span class="info-label">배경</span>
-                    <div class="info-value">황실의 삼공주</div>
+                    <div class="info-value">대하 제국의 절대 권력자</div>
                 </div>
             </div>
         </div>
@@ -279,38 +271,62 @@
         // 캐릭터 데이터
         const characterData = {
             1: {
-                name: "이만향", title: "삼공주, 요희", age: "35세", height: "193cm", 
-                specialty: "심리조작, 정치술", background: "대하제국의 삼공주로 태어났으나 1황자와 2황자의 치열한 왕위계승 다툼 속에서 자신을 보호하기 위해 일부러 방탕하고 무능한 척 연기하며 낙화전에서 여인들과의 연회를 즐기는 것처럼 보이게 한다.",
+                name: "이만향", 
+                title: "황제, 여제, 망나니 황제", 
+                age: "35세", 
+                height: "193cm", 
+                specialty: "향락, 쾌락주의", 
+                background: "피비린내 나는 권력 투쟁 끝에 늙은 황제와 무능한 오라비들을 모두 짓밟고 황좌를 차지한 대하 제국의 절대 권력자. 오직 여성만을 사랑하며 새롭고 짜릿한 자극을 끊임없이 갈망하는 순수한 쾌락주의자.",
                 image: "https://i.imgur.com/FDL1qom.jpeg",
                 stats: { 매력: 100, 지능: 100, 정치력: 100, 무력: 100, 체력: 100, 예술: 100 }
             },
             2: {
-                name: "월아", title: "낙화전의 최고참", age: "24세", height: "168cm", 
-                specialty: "조직관리, 예법", background: "10년 전 아버지가 반역죄로 몰려 가문이 몰락하면서 17세에 궁에 들어왔다. 가문의 명예를 되찾겠다는 일념으로 7년간 황녀를 모시며 낙화전의 모든 일을 완벽하게 관리하고 있다.",
+                name: "월아", 
+                title: "낙화전의 총관", 
+                age: "24세", 
+                height: "168cm", 
+                specialty: "조직관리, 예법", 
+                background: "황제가 공주였던 시절부터 7년이나 함께했으며, 몰락한 귀족 출신. 황제의 신뢰를 가장 깊이 받는 인물이며, 낙화전의 모든 살림과 궁녀들을 총괄하는 수장 궁녀.",
                 image: "https://i.imgur.com/JIqG5Jl.jpeg",
                 stats: { 매력: 50, 지능: 90, 정치력: 85, 무력: 70, 체력: 80, 예술: 25 }
             },
             3: {
-                name: "소민", title: "총애받는 야심가", age: "21세", height: "169cm", 
-                specialty: "사교술, 계략", background: "지방 향리의 딸로 태어나 15세에 미모 선발에 뽑혀 궁에 들어왔다. 뛰어난 사교술과 계산적인 성격으로 빠르게 황녀의 총애를 받게 되었으며 언젠가 높은 지위에 오르겠다는 야심을 품고 있다.",
+                name: "소민", 
+                title: "야심가 궁녀", 
+                age: "21세", 
+                height: "169cm", 
+                specialty: "사교술, 계략", 
+                background: "향리의 딸로 태어나 스스로의 재능과 외모를 무기로 낙화전에 들어왔다. 현재 황제의 총애를 가장 많이 받고 있는 외유내강형 야심가.",
                 image: "https://i.imgur.com/LZZ5i66.jpeg",
                 stats: { 매력: 90, 지능: 75, 정치력: 95, 무력: 20, 체력: 60, 예술: 80 }
             },
             4: {
-                name: "서란", title: "내성적인 예술가", age: "20세", height: "156cm", 
-                specialty: "시화, 서예", background: "8세에 부모를 잃고 절에서 자라며 그림과 시를 통해 마음을 달래왔다. 18세에 그녀의 작품이 황녀의 눈에 띄어 낙화전에 초대받았으며 여전히 말보다는 붓으로 자신을 표현하는 것을 선호한다.",
+                name: "서란", 
+                title: "예술가 궁녀", 
+                age: "20세", 
+                height: "156cm", 
+                specialty: "시화, 서예", 
+                background: "고아 출신으로, 말보다 그림과 시로 세상과 소통하는 예술가. 황제의 감성을 자극해 낙화전에 초대되었다.",
                 image: "https://i.imgur.com/lKPsfoW.jpeg",
                 stats: { 매력: 40, 지능: 85, 정치력: 10, 무력: 5, 체력: 30, 예술: 100 }
             },
             5: {
-                name: "아랑", title: "밝은 정보통", age: "18세", height: "152cm", 
-                specialty: "정보수집, 처세술", background: "14세에 궁의 수라간에 들어와 4년간 일하며 궁중의 모든 소문과 정보에 밝아졌다. 밝고 활발한 성격으로 누구와도 쉽게 친해지는 능력 덕분에 황녀가 직접 낙화전으로 데려왔다.",
+                name: "아랑", 
+                title: "정보통 궁녀", 
+                age: "18세", 
+                height: "152cm", 
+                specialty: "정보수집, 처세술", 
+                background: "원래는 수라간 궁녀였으나, 정보력과 활발한 성격 덕분에 황제의 눈에 들어 낙화전으로 오게 되었다.",
                 image: "https://i.imgur.com/8n49Nu2.jpeg",
                 stats: { 매력: 70, 지능: 65, 정치력: 75, 무력: 25, 체력: 90, 예술: 40 }
             },
             6: {
-                name: "낙영", title: "경험 많은 조언자", age: "26세", height: "173cm", 
-                specialty: "무용, 상담", background: "16세에 최고급 기방에서 기녀로 활동하며 많은 권력자들을 상대했다. 22세에 황녀의 총애를 받아 낙화전에 들어왔으나 지금은 과거의 아픔을 딛고 후배들을 돌보는 언니 역할을 하고 있다.",
+                name: "낙영", 
+                title: "조언자 궁녀", 
+                age: "26세", 
+                height: "173cm", 
+                specialty: "무용, 상담", 
+                background: "기녀 출신으로, 황제의 총애를 받았던 과거가 있다. 현재는 뒤로 물러나 다른 궁녀들을 지켜보는 조언자의 위치에 있다.",
                 image: "https://i.imgur.com/KFZXhjC.jpeg",
                 stats: { 매력: 95, 지능: 80, 정치력: 70, 무력: 30, 체력: 55, 예술: 90 }
             }
@@ -321,21 +337,19 @@
             const canvas = document.getElementById('radarCanvas');
             const ctx = canvas.getContext('2d');
             
-            // 캔버스 크기 고정
             const width = 300;
             const height = 300;
             const centerX = width / 2;
             const centerY = height / 2;
             const radius = 120;
             
-            // 배경 지우기
             ctx.clearRect(0, 0, width, height);
             
             const statNames = Object.keys(stats);
             const statValues = Object.values(stats);
             const numStats = statNames.length;
             
-            // 배경 동심원 그리기
+            // 배경 동심원
             ctx.strokeStyle = '#e0e0e0';
             ctx.lineWidth = 1;
             for (let i = 1; i <= 5; i++) {
@@ -352,33 +366,29 @@
                 ctx.stroke();
             }
             
-            // 축선 그리기
+            // 축선
             ctx.strokeStyle = '#d0d0d0';
             for (let i = 0; i < numStats; i++) {
                 const angle = (i * 2 * Math.PI) / numStats - Math.PI / 2;
                 ctx.beginPath();
                 ctx.moveTo(centerX, centerY);
-                ctx.lineTo(
-                    centerX + Math.cos(angle) * radius,
-                    centerY + Math.sin(angle) * radius
-                );
+                ctx.lineTo(centerX + Math.cos(angle) * radius, centerY + Math.sin(angle) * radius);
                 ctx.stroke();
             }
             
-            // 라벨 그리기
+            // 라벨
             ctx.fillStyle = '#333';
             ctx.font = '12px Arial';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             for (let i = 0; i < numStats; i++) {
                 const angle = (i * 2 * Math.PI) / numStats - Math.PI / 2;
-                const labelRadius = radius + 20;
-                const x = centerX + Math.cos(angle) * labelRadius;
-                const y = centerY + Math.sin(angle) * labelRadius;
+                const x = centerX + Math.cos(angle) * (radius + 20);
+                const y = centerY + Math.sin(angle) * (radius + 20);
                 ctx.fillText(statNames[i], x, y);
             }
             
-            // 데이터 영역 그리기
+            // 데이터 영역
             ctx.strokeStyle = '#333';
             ctx.fillStyle = 'rgba(51, 51, 51, 0.2)';
             ctx.lineWidth = 2;
@@ -398,7 +408,7 @@
             ctx.fill();
             ctx.stroke();
             
-            // 데이터 포인트 그리기
+            // 데이터 포인트
             ctx.fillStyle = '#333';
             for (let i = 0; i < numStats; i++) {
                 const angle = (i * 2 * Math.PI) / numStats - Math.PI / 2;
@@ -429,24 +439,17 @@
                 document.querySelector('.info-item:nth-child(5) .info-value').textContent = data.specialty;
                 document.querySelector('.info-item:nth-child(6) .info-value').textContent = data.background;
                 
-                // 이미지 업데이트 (간단한 방식으로 테스트)
-                const imageElement = document.getElementById('characterImage');
-                console.log('이미지 바꾸기 시도:', data.name, data.image);
-                imageElement.style.backgroundImage = `url("${data.image}")`;
+                // 이미지 업데이트
+                document.getElementById('characterImage').style.backgroundImage = `url("${data.image}")`;
                 
                 // 레이더 차트 업데이트
                 drawRadarChart(data.stats);
             });
         });
         
-        // 페이지 로드 시 첫 번째 캐릭터 차트 그리기
+        // 페이지 로드 시 첫 번째 캐릭터 설정
         window.addEventListener('load', function() {
             setTimeout(() => {
-                // 첫 번째 캐릭터 이미지 설정
-                const imageElement = document.getElementById('characterImage');
-                console.log('첫 로드 이미지 설정:', characterData[1].image);
-                imageElement.style.backgroundImage = `url("${characterData[1].image}")`;
-                // 첫 번째 캐릭터 차트 그리기
                 drawRadarChart(characterData[1].stats);
             }, 100);
         });
