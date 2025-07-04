@@ -399,12 +399,16 @@
                 <input type="text" id="userStatus" placeholder="예: 낙화전 궁녀, 기녀 출신 등">
             </div>
             <div class="form-group">
+                <label>낙화전 입궁 시기:</label>
+                <input type="text" id="userEntry" placeholder="예: 1일째, 2년째, 작년 가을 등">
+            </div>
+            <div class="form-group">
                 <label>헤어:</label>
                 <input type="text" id="userHair" placeholder="예: 긴 흑발, 땋은 머리 등">
             </div>
             <div class="form-group">
                 <label>의상:</label>
-                <input type="text" id="userClothing" placeholder="예: 검은 무수리 옷, 화려한 비단옷 등">
+                <input type="text" id="userClothing" placeholder="예: 검은 무수리 복, 화려한 비단옷 등">
             </div>
             <div class="form-group">
                 <label>가슴:</label>
@@ -661,6 +665,7 @@
             const name = document.getElementById('userName').value || '[이름]';
             const age = document.getElementById('userAge').value || '[나이]';
             const status = document.getElementById('userStatus').value || '[신분]';
+            const entry = document.getElementById('userEntry').value || '[입궁 시기]';
             const hair = document.getElementById('userHair').value || '[헤어]';
             const clothing = document.getElementById('userClothing').value || '[의상]';
             const bust = document.getElementById('userBust').value || '[가슴]';
@@ -672,6 +677,7 @@
 * 이름: ${name}
 * 나이: ${age}
 * 신분: ${status}
+* 낙화전 입궁 시기: ${entry}
 * 외관:
 - 헤어: ${hair}
 - 의상: ${clothing}
