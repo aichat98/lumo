@@ -11,6 +11,114 @@
             box-sizing: border-box;
         }
         
+        /* 떠다니는 버튼들 */
+        .floating-buttons {
+            position: fixed;
+            left: 20px;
+            bottom: 120px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .floating-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: #333;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .floating-btn:hover {
+            background: #555;
+            transform: scale(1.1);
+        }
+        
+        /* 모달 스타일 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #aaa;
+        }
+        
+        .close:hover {
+            color: #000;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .form-group textarea {
+            height: 80px;
+            resize: vertical;
+        }
+        
+        .copy-btn {
+            width: 100%;
+            padding: 12px;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .copy-btn:hover {
+            background: #555;
+        }
+        
         body {
             font-family: 'Arial', sans-serif;
             background: #ffffff;
@@ -220,6 +328,12 @@
         <button class="char-btn" data-char="6">낙영</button>
     </div>
     
+    <!-- 떠다니는 버튼들 -->
+    <div class="floating-buttons">
+        <button class="floating-btn" id="personaBtn" title="페르소나 생성">📝</button>
+        <button class="floating-btn" id="usernoteBtn" title="유저노트 복사">📋</button>
+    </div>
+    
     <!-- 중앙 메인 영역 -->
     <div class="main-content">
         <!-- 캐릭터 전신 이미지 -->
@@ -264,6 +378,47 @@
                     <div class="info-value">대하 제국의 절대 권력자</div>
                 </div>
             </div>
+        </div>
+    </div>
+    
+    <!-- 페르소나 생성 모달 -->
+    <div id="personaModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>페르소나 생성</h2>
+            <div class="form-group">
+                <label>이름:</label>
+                <input type="text" id="userName" placeholder="캐릭터 이름">
+            </div>
+            <div class="form-group">
+                <label>나이:</label>
+                <input type="text" id="userAge" placeholder="예: 20세">
+            </div>
+            <div class="form-group">
+                <label>신분:</label>
+                <input type="text" id="userStatus" placeholder="예: 낙화전 궁녀, 기녀 출신 등">
+            </div>
+            <div class="form-group">
+                <label>헤어:</label>
+                <input type="text" id="userHair" placeholder="예: 긴 흑발, 땋은 머리 등">
+            </div>
+            <div class="form-group">
+                <label>의상:</label>
+                <input type="text" id="userClothing" placeholder="예: 붉은 한복, 화려한 비단옷 등">
+            </div>
+            <div class="form-group">
+                <label>가슴:</label>
+                <input type="text" id="userBust" placeholder="예: C컵">
+            </div>
+            <div class="form-group">
+                <label>특기:</label>
+                <input type="text" id="userSkill" placeholder="예: 춤, 시, 악기 연주 등">
+            </div>
+            <div class="form-group">
+                <label>백스토리:</label>
+                <textarea id="userBackstory" placeholder="{{char}}가 무엇에 반해 낙화전에 데려왔는지, 그 전에는 무엇을 했는지 등을 적어주세요."></textarea>
+            </div>
+            <button id="copyPersonaBtn" class="copy-btn">복사하기</button>
         </div>
     </div>
     
@@ -452,6 +607,92 @@
             setTimeout(() => {
                 drawRadarChart(characterData[1].stats);
             }, 100);
+        });
+        
+        // 모달 관련 기능
+        const personaModal = document.getElementById('personaModal');
+        const personaBtn = document.getElementById('personaBtn');
+        const usernoteBtn = document.getElementById('usernoteBtn');
+        const closeBtn = document.querySelector('.close');
+        const copyPersonaBtn = document.getElementById('copyPersonaBtn');
+        
+        // 페르소나 버튼 클릭
+        personaBtn.addEventListener('click', function() {
+            personaModal.style.display = 'block';
+        });
+        
+        // 유저노트 버튼 클릭 (바로 복사)
+        usernoteBtn.addEventListener('click', function() {
+            const usernoteText = `# OOC: 출력 규칙
+- 모든 응답은 최소 800자 이상으로 출력한다.
+- 4문단으로 출력한다.
+- 고전 중화풍 무협 문체, 한자어 활용
+- {{char}}의 감정이나 상황을 표현할 때, 문학적이고 서정적인 표현을 지향한다.
+- {{user}}를 중심으로 상황을 진행시키며 {{char}}보다 엑스트라의 대사를 우선으로 출력한다.
+- {{user}}가 장소 혹은 물건을 탐색하면 묘사로 자세히 설명한다.`;
+            
+            navigator.clipboard.writeText(usernoteText).then(() => {
+                alert('유저노트가 복사되었습니다!');
+            }).catch(() => {
+                // 폴백: 텍스트영역 생성해서 복사
+                const textarea = document.createElement('textarea');
+                textarea.value = usernoteText;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('유저노트가 복사되었습니다!');
+            });
+        });
+        
+        // 모달 닫기
+        closeBtn.addEventListener('click', function() {
+            personaModal.style.display = 'none';
+        });
+        
+        window.addEventListener('click', function(event) {
+            if (event.target === personaModal) {
+                personaModal.style.display = 'none';
+            }
+        });
+        
+        // 페르소나 복사하기
+        copyPersonaBtn.addEventListener('click', function() {
+            const name = document.getElementById('userName').value || '[이름]';
+            const age = document.getElementById('userAge').value || '[나이]';
+            const status = document.getElementById('userStatus').value || '[신분]';
+            const hair = document.getElementById('userHair').value || '[헤어]';
+            const clothing = document.getElementById('userClothing').value || '[의상]';
+            const bust = document.getElementById('userBust').value || '[가슴]';
+            const skill = document.getElementById('userSkill').value || '[특기]';
+            const backstory = document.getElementById('userBackstory').value || '[백스토리]';
+            
+            const personaText = `#{{user}} 기본설정
+
+* 이름: ${name}
+* 나이: ${age}
+* 신분: ${status}
+* 외관:
+- 헤어: ${hair}
+- 의상: ${clothing}
+- 가슴: ${bust}
+* 특기: ${skill}
+* 백스토리: ${backstory}`;
+            
+            navigator.clipboard.writeText(personaText).then(() => {
+                alert('페르소나가 복사되었습니다!');
+                personaModal.style.display = 'none';
+            }).catch(() => {
+                // 폴백
+                const textarea = document.createElement('textarea');
+                textarea.value = personaText;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('페르소나가 복사되었습니다!');
+                personaModal.style.display = 'none';
+            });
         });
     </script>
 </body>
