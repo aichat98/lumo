@@ -366,11 +366,8 @@
 [{음악 제목}]
 [{음악 아티스트}]
 
-< > = 유저 메시지 (오른쪽)
-( ) = 캐릭터 메시지 (왼쪽)
-
-<{sns 유저 메시지}> <{오후/오전 시간}>
-({sns 캐릭터 메시지}) ({오후/오전 시간})</textarea><div class="popup-buttons"><button class="btn btn-secondary" onclick="closeCommandHelp()">닫기</button><button class="btn btn-primary" onclick="copyCommandTemplate()">복사</button></div></div></div>
+<{sns 캐릭터 메시지}> <{오후/오전 시간}>
+({sns 유저 메시지}) ({오후/오전 시간})</textarea><div class="popup-buttons"><button class="btn btn-secondary" onclick="closeCommandHelp()">닫기</button><button class="btn btn-primary" onclick="copyCommandTemplate()">복사</button></div></div></div>
     <!-- ====================================================== -->
     <!--  HTML 본문 내용 끝                                     -->
     <!-- ====================================================== -->
@@ -840,21 +837,18 @@
         function copyCommandTemplate() { 
             const template = `[OOC 모드 - 롤플레이 잠시 정지]
 
-        다음 양식으로만 답변:
-        [{색상코드}]
-        [{핸드폰 홈배경 어플 이모지들}][{어플 이름들}]
-        [{sns 유저 저장명}]
-        [{sns 캐릭터 저장명}]
-        [{캐릭터 이모지}]
-        [{카카오톡/아이메세지/라인}]
-        [{음악 제목}]
-        [{음악 아티스트}]
+다음 양식으로만 답변:
+[{색상코드}]
+[{핸드폰 홈배경 어플 이모지들}][{어플 이름들}]
+[{sns 유저 저장명}]
+[{sns 캐릭터 저장명}]
+[{캐릭터 이모지}]
+[{카카오톡/아이메세지/라인}]
+[{음악 제목}]
+[{음악 아티스트}]
 
-        < > = 유저 메시지 (오른쪽)
-        ( ) = 캐릭터 메시지 (왼쪽)
-
-        <{sns 유저 메시지}> <{오후/오전 시간}>
-        ({sns 캐릭터 메시지}) ({오후/오전 시간})`; 
+<{sns 캐릭터 메시지}> <{오후/오전 시간}>
+({sns 유저 메시지}) ({오후/오전 시간})`; 
             navigator.clipboard.writeText(template).then(() => { 
                 alert('명령어가 클립보드에 복사되었습니다!'); 
                 closeCommandHelp(); 
