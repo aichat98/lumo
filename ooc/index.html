@@ -3,16 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>가짜 채팅 만들기</title>
-    <!-- 외부 CDN 링크는 원본 그대로 유지합니다. -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Black+Han+Sans&display=swap" rel="stylesheet">
-
-    <!-- ====================================================== -->
-    <!--  CSS (styles.css) 내용 시작                            -->
-    <!-- ====================================================== -->
+    <title>폰 만들기</title>
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
         body { font-family: 'Noto Sans KR', sans-serif; background: #f0f0f0; min-height: 100vh; }
@@ -66,7 +57,37 @@
         .music-widget .music-controls i:hover { opacity: 0.7; }
 
         /* --- 1. 유리 카드 --- */
-        .skin-glass-card { padding: 12px; background-color: rgba(0, 0, 0, 0.15); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); display: flex; align-items: center; gap: 12px; }
+        .skin-glass-card { 
+            padding: 12px; 
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.25), 
+                rgba(255, 255, 255, 0.1)
+            );
+            border: 1px solid rgba(255, 255, 255, 0.3); 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            position: relative;
+        }
+
+        .skin-glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, 
+                rgba(255, 255, 255, 0.1) 0%, 
+                transparent 50%, 
+                rgba(255, 255, 255, 0.05) 100%
+            );
+            border-radius: inherit;
+            pointer-events: none;
+        }
         .skin-glass-card .album-art { width: 50px; height: 50px; flex-shrink: 0; border-radius: 8px; background-size: cover; }
         .skin-glass-card .info { flex-grow: 1; min-width: 0; }
         .skin-glass-card .title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -100,6 +121,67 @@
         .skin-lyrics .music-controls .play-btn { font-size: 30px; }
 
         /* --- 화면 공통 및 전환 스타일 --- */
+        /* --- [추가] 밝은/어두운 배경에 따른 텍스트 색상 관리 --- */
+        /* 기본 상태 (어두운 배경용) */
+        .lock-screen, .home-screen {
+            color: white; /* 기본 글자색 */
+            transition: color 0.3s ease;
+        }
+        .home-app-name {
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+        .home-dock .dock-app {
+            color: rgba(255, 255, 255, 0.8);
+            transition: color 0.3s ease;
+        }
+        /* 밝은 배경용 클래스 */
+        .theme-light-text.lock-screen,
+        .theme-light-text.home-screen {
+            color: #000 !important; /* 상태바 등 기본 글자색을 검은색으로 */
+        }
+        .theme-light-text .home-app-name {
+            color: #333;
+            text-shadow: none;
+        }
+        .theme-light-text .dock-app {
+            color: rgba(0, 0, 0, 0.8);
+        }
+
+        /* --- 테마 클래스 추가 --- */
+        .theme-light-text {
+            color: #000 !important;
+        }
+
+        .theme-light-text .status-bar,
+        .theme-light-text .lock-hour,
+        .theme-light-text .lock-date,
+        .theme-light-text .home-app-name {
+            color: #000 !important;
+            text-shadow: none !important;
+        }
+
+        .theme-light-text .dock-app {
+            color: rgba(0, 0, 0, 0.8) !important;
+        }
+
+        .theme-dark-text {
+            color: #fff !important;
+        }
+
+        .theme-dark-text .status-bar,
+        .theme-dark-text .lock-hour,
+        .theme-dark-text .lock-date,
+        .theme-dark-text .home-app-name {
+            color: #fff !important;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.7) !important;
+        }
+
+        .theme-dark-text .dock-app {
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+
         .lock-screen, .home-screen, .chat-screen { width: 100%; height: 100%; display: none; flex-direction: column; background-size: cover !important; background-position: center !important; }
         .lock-screen.active, .home-screen.active, .chat-screen.active { display: flex; }
         .lock-screen .status-bar { background: transparent !important; }
@@ -112,7 +194,7 @@
         .lock-phone, .lock-camera { width: 50px; height: 50px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; border: 1px solid rgba(255, 255, 255, 0.2); cursor: pointer; transition: all 0.2s; color: white; }
         .pair-name { position: absolute; top: 20px; right: 20px; z-index: 5; font-size: 14px; font-weight: 500; transition: color 0.3s ease; opacity: 0.5; }
         .home-screen .status-bar { background: transparent !important; }
-        .home-content { flex: 1; display: flex; flex-direction: column; padding: 20px; } .app-grid { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(6, 1fr); gap: 8px; padding: 10px 0; } .home-app { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; } .home-app-icon { width: 60px; height: 60px; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 40px; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); line-height: 1; text-align: center; transition: background-color 0.3s ease; } .home-app-name { font-size: 12px; font-weight: 500; text-align: center; transition: color 0.3s ease; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); } .home-dock { display: flex; justify-content: center; gap: 5px; padding: 15px 20px; background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(20px); border-radius: 25px; margin: 0 10px 10px 10px; border: 1px solid rgba(255, 255, 255, 0.3); } .dock-app { width: 56px; height: 56px; background: rgba(255, 255, 255, 0.3); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px; color: rgba(0, 0, 0, 0.8); cursor: pointer; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .home-content { flex: 1; display: flex; flex-direction: column; padding: 20px; } .app-grid { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(6, 1fr); gap: 8px; padding: 10px 0; } .home-app { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; } .home-app-icon { width: 60px; height: 60px; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 40px; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); line-height: 1; text-align: center; transition: background-color 0.3s ease; } .home-dock { display: flex; justify-content: center; gap: 5px; padding: 15px 20px; background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(20px); border-radius: 25px; margin: 0 10px 10px 10px; border: 1px solid rgba(255, 255, 255, 0.3); } .dock-app { width: 56px; height: 56px; background: rgba(255, 255, 255, 0.3); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); }
 
         /* --- [수정] 채팅 화면 레이아웃 재구성 --- */
         .chat-screen .status-bar, .chat-header, .chat-input-area { flex-shrink: 0; position: relative; z-index: 2; }
@@ -121,7 +203,7 @@
         .back-button { font-size: 22px; margin-right: 15px; cursor: pointer; font-weight: 400; } .profile-pic { width: 32px; height: 32px; border-radius: 50%; margin-right: 10px; background: #ddd; display: flex; align-items: center; justify-content: center; font-size: 18px; overflow: hidden; } .profile-pic img { width: 100%; height: 100%; object-fit: cover; } .chat-info { flex: 1; } .chat-name { font-size: 17px; font-weight: 600; } .menu-icon { font-size: 18px; cursor: pointer; }
         .message { display: flex; margin-bottom: 12px; align-items: flex-end; } .message.sent { justify-content: flex-end; } .message.received { justify-content: flex-start; } .message-bubble { max-width: 70%; padding: 8px 12px; font-size: 14px; line-height: 1.4; word-wrap: break-word; } .message.sent .message-bubble { border-radius: 18px 18px 4px 18px; } .message.received .message-bubble { border-radius: 18px 18px 18px 4px; } .message-time { font-size: 11px; color: #999; margin: 0 8px; }
         .chat-input-area { display: flex; align-items: center; gap: 6px; padding: 6px 10px 15px 10px; }
-        .chat-input-container { flex: 1; background: #f0f0f0; border-radius: 16px; height: 32px; display: flex; align-items: center; padding: 0 12px; } .chat-input { width: 100%; border: none; outline: none; background: transparent; font-size: 14px; color: #333; line-height: 1; font-family: inherit; transform: translateY(-4px); } .send-button { width: 24px; height: 24px; border-radius: 50%; border: none; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; }
+        .chat-input-container { flex: 1; background: #f0f0f0; border-radius: 16px; height: 32px; display: flex; align-items: center; padding: 0 12px; } .chat-input { width: 100%; border: none; outline: none; background: transparent; font-size: 14px; color: #333; line-height: 1; font-family: inherit; transform: translateY(-2px); } .send-button { width: 24px; height: 24px; border-radius: 50%; border: none; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; }
 
         /* --- 스킨별 스타일 (수정) --- */
         .kakao .chat-header, .kakao #chatScreen .status-bar, .kakao .chat-input-area { background-color: transparent; }
@@ -160,18 +242,15 @@
         h2 { margin-bottom: 15px; color: #333; font-size: 18px; } .popup-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); display: none; z-index: 1000; justify-content: center; align-items: center; } .popup { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; } .popup h3 { margin-bottom: 15px; color: #333; } .popup textarea { width: 100%; height: 300px; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-family: monospace; font-size: 12px; resize: vertical; } .popup-buttons { margin-top: 15px; text-align: right; } .popup-buttons button { margin-left: 10px; }
         .control-group.chat-only, .control-group.lock-only, .control-group.home-only { display: none; } .screen-chat .control-group.chat-only { display: block; } .screen-lock .control-group.lock-only { display: block; } .screen-home .control-group.home-only { display: block; }
     </style>
-    <!-- ====================================================== -->
-    <!--  CSS (styles.css) 내용 끝                              -->
-    <!-- ====================================================== -->
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Black+Han+Sans&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- ====================================================== -->
-    <!--  HTML 본문 내용 시작                                   -->
-    <!-- ====================================================== -->
     <div class="container">
         <div class="controls">
-            <h2>채팅 만들기</h2>
+            <h2>폰 만들기</h2>
             
             <div class="control-group">
                 <label>명령어 붙여넣기 <i class="fa-solid fa-pen-to-square" onclick="openCommandHelp()" style="cursor: pointer; font-size: 15px; margin-left: 5px;"></i></label>
@@ -185,7 +264,7 @@
                 <div class="screen-buttons">
                     <button class="screen-btn active" onclick="switchScreen('lock')">잠금화면</button>
                     <button class="screen-btn" onclick="switchScreen('home')">홈화면</button>
-                    <button class="screen-btn" onclick="switchScreen('chat')">카톡화면</button>
+                    <button class="screen-btn" onclick="switchScreen('chat')">톡화면</button>
                 </div>
             </div>
 
@@ -331,7 +410,7 @@
                     </div>
                     
                     <div class="screen-item home-screen" id="homeScreen" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
-                        <div class="status-bar" style="color: #000;">
+                        <div class="status-bar">
                             <div class="status-left" id="homeStatusTime">9:41</div>
                             <div class="status-right">
                                 <div class="signal-bars"><div class="signal-bar"></div><div class="signal-bar"></div><div class="signal-bar"></div><div class="signal-bar"></div></div>
@@ -368,20 +447,71 @@
 
 <{sns 캐릭터 메시지}> <{오후/오전 시간}>
 ({sns 유저 메시지}) ({오후/오전 시간})</textarea><div class="popup-buttons"><button class="btn btn-secondary" onclick="closeCommandHelp()">닫기</button><button class="btn btn-primary" onclick="copyCommandTemplate()">복사</button></div></div></div>
-    <!-- ====================================================== -->
-    <!--  HTML 본문 내용 끝                                     -->
-    <!-- ====================================================== -->
 
-    <!-- 외부 스크립트(html2canvas)는 원본 그대로 유지합니다. -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
-    <!-- ====================================================== -->
-    <!--  JAVASCRIPT (script.js) 내용 시작                      -->
-    <!-- ====================================================== -->
     <script>
         // --- 전역 변수 ---
         let currentSkin = 'kakao', currentScreen = 'lock', currentMusicSkin = 'glass-card', currentLockFont = 'default';
         let messages = [], currentAlbumArt = null, musicTitle = '밤양갱', musicArtist = '비비 (BIBI)';
+
+        // --- [추가] 이미지의 평균 밝기를 계산하는 함수 ---
+        function getImageBrightness(imageSrc) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.crossOrigin = 'Anonymous'; // CORS 문제 방지
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    const data = imageData.data;
+                    let colorSum = 0;
+                    // 성능을 위해 모든 픽셀이 아닌 일부만 샘플링
+                    for (let i = 0; i < data.length; i += 4 * 10) {
+                        const r = data[i];
+                        const g = data[i + 1];
+                        const b = data[i + 2];
+                        // 밝기 계산 (Luminance)
+                        const avg = Math.floor((r * 299 + g * 587 + b * 114) / 1000);
+                        colorSum += avg;
+                    }
+                    const brightness = Math.floor(colorSum / (data.length / 40));
+                    console.log('이미지 밝기 분석 결과:', brightness);
+                    resolve(brightness); // 0(어두움) ~ 255(밝음) 사이의 값 반환
+                };
+                img.onerror = reject;
+                img.src = imageSrc;
+            });
+        }
+
+        // --- [추가] 배경 밝기에 따라 화면 테마(글자색)를 업데이트하는 함수 ---
+        function updateScreenTheme(screenElement, brightness) {
+            console.log('updateScreenTheme 호출:', brightness > 128 ? '밝은 배경' : '어두운 배경');
+            // 밝기 임계값 (128을 기준으로 어둡고 밝음을 나눔)
+            if (brightness > 128) {
+                screenElement.classList.add('theme-light-text');
+                console.log('theme-light-text 클래스 추가됨');
+            } else {
+                screenElement.classList.remove('theme-light-text');
+                console.log('theme-light-text 클래스 제거됨');
+            }
+        }
+
+        // --- [추가] 배경색 코드로부터 밝기를 계산하는 헬퍼 함수 ---
+        function getBrightnessFromHex(hex) {
+            if (!hex || !hex.startsWith('#')) return 255; // 기본 밝음
+            try {
+                const r = parseInt(hex.slice(1, 3), 16);
+                const g = parseInt(hex.slice(3, 5), 16);
+                const b = parseInt(hex.slice(5, 7), 16);
+                return (r * 299 + g * 587 + b * 114) / 1000;
+            } catch(e) {
+                return 255;
+            }
+        }
 
         // --- [수정 1] 이미지 첨부시 삭제버튼 표시 함수 추가 ---
         function toggleDeleteButton(inputId) {
@@ -411,140 +541,8 @@
             ctx.fill(); 
             ctx.restore(); 
         }
-        async function saveScreenshot() { 
-            const phoneScreen = document.getElementById('screen'); 
-            const finalWidth = 550, finalHeight = 950; 
-            const phoneWidth = 350, phoneHeight = 750; 
-            const paddingX = (finalWidth - phoneWidth) / 2; 
-            const paddingY = (finalHeight - phoneHeight) / 2; 
-            const finalCanvas = await drawCanvasFromWrapper(finalWidth, finalHeight); 
-            const ctx = finalCanvas.getContext('2d'); 
-            drawPhoneBezel(ctx, paddingX, paddingY, phoneWidth, phoneHeight); 
-            const screenCanvas = await html2canvas(phoneScreen, { backgroundColor: null, scale: 2, useCORS: true, allowTaint: true }); 
-            ctx.drawImage(screenCanvas, paddingX + 8, paddingY + 8, phoneWidth - 16, phoneHeight - 16); 
-            drawPhoneNotch(ctx, paddingX, paddingY, phoneWidth, phoneHeight); 
-            
-            const pairNameEl = document.getElementById('pairName'); 
-            if (pairNameEl && pairNameEl.textContent) { 
-                // 배경색에 따른 페어명 색상 결정
-                const wrapper = document.getElementById('phoneWrapper');
-                const bgStyle = getComputedStyle(wrapper);
-                let pairNameColor = '#888888'; // 기본색
-                
-                if (bgStyle.backgroundImage !== 'none' && bgStyle.backgroundImage !== 'initial') {
-                    // 이미지 배경일 때는 흰색 + 그림자
-                    pairNameColor = '#FFFFFF';
-                    ctx.shadowColor = 'rgba(0,0,0,0.8)';
-                    ctx.shadowBlur = 4;
-                    ctx.shadowOffsetY = 2;
-                } else if (bgStyle.backgroundColor && bgStyle.backgroundColor !== 'rgba(0, 0, 0, 0)') {
-                    // 색상 배경일 때는 밝기 계산
-                    const rgb = bgStyle.backgroundColor.match(/\d+/g);
-                    if (rgb) {
-                        const brightness = (parseInt(rgb[0])*299 + parseInt(rgb[1])*587 + parseInt(rgb[2])*114) / 1000;
-                        if (brightness < 128) {
-                            pairNameColor = '#FFFFFF';
-                            ctx.shadowColor = 'rgba(0,0,0,0.8)';
-                            ctx.shadowBlur = 4;
-                            ctx.shadowOffsetY = 2;
-                        }
-                    }
-                }
-                
-                ctx.font = '500 14px -apple-system, sans-serif'; 
-                ctx.fillStyle = pairNameColor; 
-                ctx.globalAlpha = 0.5; // 50% 투명도
-                ctx.textAlign = 'right'; 
-                ctx.textBaseline = 'top'; 
-                ctx.fillText(pairNameEl.textContent, finalWidth - 20, 20); 
-                ctx.shadowColor = 'transparent';
-                ctx.globalAlpha = 1.0; // 투명도 복원
-            } 
-            
-            const link = document.createElement('a'); 
-            link.download = `screenshot_${Date.now()}.png`; 
-            link.href = finalCanvas.toDataURL('image/png'); 
-            link.click(); 
-        }
-        async function saveAllScreenshots() { 
-            const phoneScreen = document.getElementById('screen'); 
-            const phoneWidth = 350, phoneHeight = 750; 
-            const spacing = 40, margin = 50; 
-            const totalWidth = (phoneWidth * 3) + (spacing * 2) + (margin * 2); 
-            const totalHeight = phoneHeight + (margin * 2) + 40; 
-            const finalCanvas = await drawCanvasFromWrapper(totalWidth, totalHeight); 
-            const ctx = finalCanvas.getContext('2d'); 
-            
-            // 배경색에 따른 라벨 색상 결정
-            const wrapper = document.getElementById('phoneWrapper');
-            const bgStyle = getComputedStyle(wrapper);
-            let labelColor = '#333'; // 기본 어두운 색
-            
-            if (bgStyle.backgroundImage !== 'none' && bgStyle.backgroundImage !== 'initial') {
-                // 이미지 배경일 때는 흰색 + 그림자
-                labelColor = '#FFFFFF';
-                ctx.shadowColor = 'rgba(0,0,0,0.8)';
-                ctx.shadowBlur = 4;
-                ctx.shadowOffsetY = 2;
-            } else if (bgStyle.backgroundColor && bgStyle.backgroundColor !== 'rgba(0, 0, 0, 0)') {
-                // 색상 배경일 때는 밝기 계산
-                const rgb = bgStyle.backgroundColor.match(/\d+/g);
-                if (rgb) {
-                    const brightness = (parseInt(rgb[0])*299 + parseInt(rgb[1])*587 + parseInt(rgb[2])*114) / 1000;
-                    if (brightness < 128) {
-                        labelColor = '#FFFFFF';
-                        ctx.shadowColor = 'rgba(0,0,0,0.8)';
-                        ctx.shadowBlur = 4;
-                        ctx.shadowOffsetY = 2;
-                    }
-                }
-            }
-            
-            const screensToCapture = [ 
-                { name: 'lock', label: '잠금화면' }, 
-                { name: 'home', label: '홈화면' }, 
-                { name: 'chat', label: '카톡화면' }
-            ]; 
-            const originalScreen = currentScreen; 
-            
-            for (let i = 0; i < screensToCapture.length; i++) { 
-                const screenInfo = screensToCapture[i]; 
-                switchScreen(screenInfo.name); 
-                await new Promise(r => setTimeout(r, 100)); 
-                const phoneX = margin + (phoneWidth + spacing) * i; 
-                const phoneY = margin; 
-                drawPhoneBezel(ctx, phoneX, phoneY, phoneWidth, phoneHeight); 
-                const screenCanvas = await html2canvas(phoneScreen, { backgroundColor: null, scale: 2, useCORS: true, allowTaint: true }); 
-                ctx.drawImage(screenCanvas, phoneX + 8, phoneY + 8, phoneWidth - 16, phoneHeight - 16); 
-                drawPhoneNotch(ctx, phoneX, phoneY, phoneWidth, phoneHeight); 
-                
-                ctx.fillStyle = labelColor; 
-                ctx.font = '16px -apple-system, sans-serif'; 
-                ctx.textAlign = 'center'; 
-                ctx.textBaseline = 'bottom'; 
-                ctx.fillText(screenInfo.label, phoneX + phoneWidth / 2, phoneY + phoneHeight + 30); 
-            } 
-            
-            const pairNameEl = document.getElementById('pairName'); 
-            if (pairNameEl && pairNameEl.textContent) { 
-                ctx.fillStyle = labelColor;
-                ctx.globalAlpha = 0.5; // 50% 투명도
-                ctx.font = '500 14px -apple-system, sans-serif'; 
-                ctx.textAlign = 'right'; 
-                ctx.textBaseline = 'top'; 
-                ctx.fillText(pairNameEl.textContent, totalWidth - 20, 20); 
-                ctx.globalAlpha = 1.0; // 투명도 복원
-            } 
-            
-            // 그림자 초기화
-            ctx.shadowColor = 'transparent';
-            
-            const link = document.createElement('a'); 
-            link.download = `all_screens_${Date.now()}.png`; 
-            link.href = finalCanvas.toDataURL('image/png'); 
-            link.click(); 
-            switchScreen(originalScreen); 
-        }
+        async function saveScreenshot() { const phoneScreen = document.getElementById('screen'); const finalWidth = 550, finalHeight = 950; const phoneWidth = 350, phoneHeight = 750; const paddingX = (finalWidth - phoneWidth) / 2; const paddingY = (finalHeight - phoneHeight) / 2; const finalCanvas = await drawCanvasFromWrapper(finalWidth, finalHeight); const ctx = finalCanvas.getContext('2d'); drawPhoneBezel(ctx, paddingX, paddingY, phoneWidth, phoneHeight); const screenCanvas = await html2canvas(phoneScreen, { backgroundColor: null, scale: 2, useCORS: true, allowTaint: true }); ctx.drawImage(screenCanvas, paddingX + 8, paddingY + 8, phoneWidth - 16, phoneHeight - 16); drawPhoneNotch(ctx, paddingX, paddingY, phoneWidth, phoneHeight); const pairNameEl = document.getElementById('pairName'); if (pairNameEl && pairNameEl.textContent) { const wrapper = document.getElementById('phoneWrapper'); const bgStyle = getComputedStyle(wrapper); let pairNameColor = '#888888'; if (bgStyle.backgroundImage !== 'none' && bgStyle.backgroundImage !== 'initial') { pairNameColor = '#FFFFFF'; ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 4; ctx.shadowOffsetY = 2; } else if (bgStyle.backgroundColor && bgStyle.backgroundColor !== 'rgba(0, 0, 0, 0)') { const rgb = bgStyle.backgroundColor.match(/\d+/g); if (rgb) { const brightness = (parseInt(rgb[0])*299 + parseInt(rgb[1])*587 + parseInt(rgb[2])*114) / 1000; if (brightness < 128) { pairNameColor = '#FFFFFF'; ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 4; ctx.shadowOffsetY = 2; } } } ctx.font = '500 14px -apple-system, sans-serif'; ctx.fillStyle = pairNameColor; ctx.globalAlpha = 0.5; ctx.textAlign = 'right'; ctx.textBaseline = 'top'; ctx.fillText(pairNameEl.textContent, finalWidth - 20, 20); ctx.shadowColor = 'transparent'; ctx.globalAlpha = 1.0; } const link = document.createElement('a'); link.download = `screenshot_${Date.now()}.png`; link.href = finalCanvas.toDataURL('image/png'); link.click(); }
+        async function saveAllScreenshots() { const phoneScreen = document.getElementById('screen'); const phoneWidth = 350, phoneHeight = 750; const spacing = 40, margin = 50; const totalWidth = (phoneWidth * 3) + (spacing * 2) + (margin * 2); const totalHeight = phoneHeight + (margin * 2) + 40; const finalCanvas = await drawCanvasFromWrapper(totalWidth, totalHeight); const ctx = finalCanvas.getContext('2d'); const wrapper = document.getElementById('phoneWrapper'); const bgStyle = getComputedStyle(wrapper); let labelColor = '#333'; if (bgStyle.backgroundImage !== 'none' && bgStyle.backgroundImage !== 'initial') { labelColor = '#FFFFFF'; ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 4; ctx.shadowOffsetY = 2; } else if (bgStyle.backgroundColor && bgStyle.backgroundColor !== 'rgba(0, 0, 0, 0)') { const rgb = bgStyle.backgroundColor.match(/\d+/g); if (rgb) { const brightness = (parseInt(rgb[0])*299 + parseInt(rgb[1])*587 + parseInt(rgb[2])*114) / 1000; if (brightness < 128) { labelColor = '#FFFFFF'; ctx.shadowColor = 'rgba(0,0,0,0.8)'; ctx.shadowBlur = 4; ctx.shadowOffsetY = 2; } } } const screensToCapture = [ { name: 'lock', label: '잠금화면' }, { name: 'home', label: '홈화면' }, { name: 'chat', label: '톡화면' }]; const originalScreen = currentScreen; for (let i = 0; i < screensToCapture.length; i++) { const screenInfo = screensToCapture[i]; switchScreen(screenInfo.name); await new Promise(r => setTimeout(r, 100)); const phoneX = margin + (phoneWidth + spacing) * i; const phoneY = margin; drawPhoneBezel(ctx, phoneX, phoneY, phoneWidth, phoneHeight); const screenCanvas = await html2canvas(phoneScreen, { backgroundColor: null, scale: 2, useCORS: true, allowTaint: true }); ctx.drawImage(screenCanvas, phoneX + 8, phoneY + 8, phoneWidth - 16, phoneHeight - 16); drawPhoneNotch(ctx, phoneX, phoneY, phoneWidth, phoneHeight); ctx.fillStyle = labelColor; ctx.font = '16px -apple-system, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom'; ctx.fillText(screenInfo.label, phoneX + phoneWidth / 2, phoneY + phoneHeight + 30); } const pairNameEl = document.getElementById('pairName'); if (pairNameEl && pairNameEl.textContent) { ctx.fillStyle = labelColor; ctx.globalAlpha = 0.5; ctx.font = '500 14px -apple-system, sans-serif'; ctx.textAlign = 'right'; ctx.textBaseline = 'top'; ctx.fillText(pairNameEl.textContent, totalWidth - 20, 20); ctx.globalAlpha = 1.0; } ctx.shadowColor = 'transparent'; const link = document.createElement('a'); link.download = `all_screens_${Date.now()}.png`; link.href = finalCanvas.toDataURL('image/png'); link.click(); switchScreen(originalScreen); }
 
         // --- 핵심 기능 함수 ---
         function renderMusicWidget() { const container = document.getElementById('lockMusicWidget'); const artUrl = currentAlbumArt || 'https://i.imgur.com/R3pE3vj.png'; const lyrics = document.getElementById('lyricsInput').value || '달디달고 달디달고 달디단 밤양갱...'; let playerHTML = ''; switch (currentMusicSkin) { case 'glass-card': playerHTML = `<div class="music-widget skin-glass-card"><div class="album-art" style="background-image: url('${artUrl}')"></div><div class="info"><div class="title">${musicTitle}</div><div class="artist">${musicArtist}</div></div><div class="music-controls"><i class="fa-solid fa-play"></i><i class="fa-solid fa-forward-step"></i></div></div>`; break; case 'minimalist': playerHTML = `<div class="music-widget skin-minimalist"><div class="info"><div class="title">${musicTitle}</div><div class="artist">${musicArtist}</div></div><div class="progress-container"><div class="progress-bar"><div class="progress"></div></div><div class="time-stamps"><span>1:02</span><span>2:33</span></div></div><div class="music-controls"><i class="fa-solid fa-shuffle"></i><i class="fa-solid fa-backward-step"></i><i class="fa-solid fa-circle-play play-btn"></i><i class="fa-solid fa-forward-step"></i><i class="fa-solid fa-repeat"></i></div></div>`; break; case 'album-cover': playerHTML = `<div class="music-widget skin-album-cover" style="background-image: url('${artUrl}')"><div class="info"><div class="title">${musicTitle}</div><div class="artist">${musicArtist}</div></div><div class="music-controls"><i class="fa-solid fa-backward-step"></i><i class="fa-solid fa-pause"></i><i class="fa-solid fa-forward-step"></i></div></div>`; break; case 'lyrics': playerHTML = `<div class="music-widget skin-lyrics"><div class="album-art" style="background-image: url('${artUrl}')"></div><div class="info"><div class="title">${musicTitle}</div><div class="artist">${musicArtist}</div></div><div class="lyrics-text">${lyrics.replace(/\n/g, '<br>')}</div><div class="music-controls"><i class="fa-solid fa-backward-step"></i><i class="fa-solid fa-circle-pause play-btn"></i><i class="fa-solid fa-forward-step"></i></div></div>`; break; } container.innerHTML = playerHTML; }
@@ -591,6 +589,7 @@
                 
                 applyGlobalTheme(colorCode); 
                 setupHomeApps(command, colorCode); 
+                
                 musicTitle = matches[7].slice(1, -1); 
                 musicArtist = matches[8].slice(1, -1); 
                 renderMusicWidget(); 
@@ -674,20 +673,6 @@
             updatePairNameColor(); 
         }
 
-        // --- [수정 2] 카카오톡 테마에서 색상 적용 함수 수정 ---
-        function applyGlobalTheme(colorCode) { 
-            document.getElementById('phoneWrapper').style.background = colorCode; 
-            document.getElementById('lockScreen').style.background = colorCode; 
-            setHomeBackgroundFromUrl(null, colorCode); 
-            
-            // 카카오톡에서 테마 색상 적용
-            if (currentSkin === 'kakao') {
-                applyChatTheme(colorCode);
-            }
-            
-            updatePairNameColor(); 
-        }
-
         // --- [수정 2] 카카오톡에서만 테마 색상 적용 ---
         function applyChatTheme(colorCode) {
             if (!colorCode || currentSkin !== 'kakao') return; // 카카오톡에서만 적용
@@ -716,6 +701,20 @@
             } catch(e) {
                 console.log('테마 색상 적용 실패:', e);
             }
+        }
+
+        function applyGlobalTheme(colorCode) { 
+            document.getElementById('phoneWrapper').style.background = colorCode; 
+            
+            const lockScreen = document.getElementById('lockScreen');
+            lockScreen.style.background = colorCode;
+            // 잠금화면 테마 업데이트
+            const lockBrightness = getBrightnessFromHex(colorCode);
+            updateScreenTheme(lockScreen, lockBrightness);
+
+            setHomeBackgroundFromUrl(null, colorCode); 
+            if (currentSkin === 'kakao') { applyChatTheme(colorCode); }
+            updatePairNameColor(); 
         }
 
         function autoResize(textarea) { textarea.style.height = 'auto'; textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px'; }
@@ -837,18 +836,18 @@
         function copyCommandTemplate() { 
             const template = `[OOC 모드 - 롤플레이 잠시 정지]
 
-다음 양식으로만 답변:
-[{색상코드}]
-[{핸드폰 홈배경 어플 이모지들}][{어플 이름들}]
-[{sns 유저 저장명}]
-[{sns 캐릭터 저장명}]
-[{캐릭터 이모지}]
-[{카카오톡/아이메세지/라인}]
-[{음악 제목}]
-[{음악 아티스트}]
+        다음 양식으로만 답변:
+        [{색상코드}]
+        [{핸드폰 홈배경 어플 이모지들}][{어플 이름들}]
+        [{sns 유저 저장명}]
+        [{sns 캐릭터 저장명}]
+        [{캐릭터 이모지}]
+        [{카카오톡/아이메세지/라인}]
+        [{음악 제목}]
+        [{음악 아티스트}]
 
-<{sns 캐릭터 메시지}> <{오후/오전 시간}>
-({sns 유저 메시지}) ({오후/오전 시간})`; 
+        <{sns 캐릭터 메시지}> <{오후/오전 시간}>
+        ({sns 유저 메시지}) ({오후/오전 시간})`; 
             navigator.clipboard.writeText(template).then(() => { 
                 alert('명령어가 클립보드에 복사되었습니다!'); 
                 closeCommandHelp(); 
@@ -857,7 +856,16 @@
             }); 
         }
 
-        document.addEventListener('DOMContentLoaded', () => { switchScreen('lock'); renderMusicWidget(); updatePairNameColor(); document.getElementById('popupOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeCommandHelp(); }); autoResize(document.getElementById('commandInput')); });
+        document.addEventListener('DOMContentLoaded', () => { 
+            switchScreen('lock'); 
+            renderMusicWidget(); 
+            updatePairNameColor(); 
+            
+            document.getElementById('popupOverlay').addEventListener('click', e => { 
+                if (e.target === e.currentTarget) closeCommandHelp(); 
+            }); 
+            autoResize(document.getElementById('commandInput')); 
+        });
 
         function updatePairNameColor() { 
             const wrapper = document.getElementById('phoneWrapper'); 
@@ -901,28 +909,37 @@
             } 
         }
 
-        function updateLockBackground() { 
-            const imageFile = document.getElementById('lockImageInput').files[0]; 
-            if (imageFile) { 
-                const reader = new FileReader(); 
-                reader.onload = function(e) { 
-                    const lockScreen = document.getElementById('lockScreen');
-                    lockScreen.style.setProperty('background', `url('${e.target.result}') center/cover no-repeat`, 'important');
-                }; 
-                reader.readAsDataURL(imageFile); 
-            } 
+        // --- [수정] 새로운 이미지 밝기 분석 함수들 적용 ---
+        function updateLockBackground() {
+            const imageFile = document.getElementById('lockImageInput').files[0];
+            if (imageFile) {
+                const lockScreen = document.getElementById('lockScreen');
+                const imageUrl = URL.createObjectURL(imageFile); // 파일 객체로 URL 생성
+
+                lockScreen.style.setProperty('background', `url('${imageUrl}') center/cover no-repeat`, 'important');
+
+                // [핵심] 이미지 밝기 분석 후 테마 적용
+                getImageBrightness(imageUrl).then(brightness => {
+                    updateScreenTheme(lockScreen, brightness);
+                    console.log('잠금화면 이미지 밝기:', brightness);
+                }).catch(err => console.error("이미지 밝기 분석 실패:", err));
+            }
         }
 
-        function updateHomeBackground() { 
-            const imageFile = document.getElementById('homeImageInput').files[0]; 
-            if (imageFile) { 
-                const reader = new FileReader(); 
-                reader.onload = function(e) { 
-                    const homeScreen = document.getElementById('homeScreen');
-                    homeScreen.style.setProperty('background', `url('${e.target.result}') center/cover no-repeat`, 'important');
-                }; 
-                reader.readAsDataURL(imageFile); 
-            } 
+        function updateHomeBackground() {
+            const imageFile = document.getElementById('homeImageInput').files[0];
+            if (imageFile) {
+                const homeScreen = document.getElementById('homeScreen');
+                const imageUrl = URL.createObjectURL(imageFile);
+
+                homeScreen.style.setProperty('background', `url('${imageUrl}') center/cover no-repeat`, 'important');
+
+                // [핵심] 이미지 밝기 분석 후 테마 적용
+                getImageBrightness(imageUrl).then(brightness => {
+                    updateScreenTheme(homeScreen, brightness);
+                    console.log('홈화면 이미지 밝기:', brightness);
+                }).catch(err => console.error("이미지 밝기 분석 실패:", err));
+            }
         }
 
         function updateChatBackground() { 
@@ -971,42 +988,69 @@
         }
 
         function clearBackground() { document.getElementById('imageInput').value = ''; document.getElementById('phoneWrapper').style.background = ''; document.getElementById('phoneWrapper').classList.remove('has-image'); updatePairNameColor(); document.getElementById('imageInput').parentNode.querySelector('.delete-btn').classList.remove('show'); }
-        function clearLockBackground() { document.getElementById('lockImageInput').value = ''; document.getElementById('lockScreen').style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'; document.getElementById('lockImageInput').parentNode.querySelector('.delete-btn').classList.remove('show'); }
-        function clearHomeBackground() { document.getElementById('homeImageInput').value = ''; document.getElementById('homeScreen').style.background = 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)'; document.querySelector('#homeScreen .status-bar').style.color = '#000'; document.getElementById('homeImageInput').parentNode.querySelector('.delete-btn').classList.remove('show'); }
+
+        function clearLockBackground() { 
+            document.getElementById('lockImageInput').value = ''; 
+            document.getElementById('lockScreen').style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'; 
+            document.getElementById('lockScreen').classList.remove('theme-light-text'); 
+            document.getElementById('lockImageInput').parentNode.querySelector('.delete-btn').classList.remove('show'); 
+        }
+
+        function clearHomeBackground() { 
+            document.getElementById('homeImageInput').value = ''; 
+            document.getElementById('homeScreen').style.background = 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)'; 
+            document.getElementById('homeScreen').classList.remove('theme-light-text');
+            updateScreenTheme(document.getElementById('homeScreen'), 200); // 밝은 기본 배경에 맞게 글자색 설정
+            document.getElementById('homeImageInput').parentNode.querySelector('.delete-btn').classList.remove('show'); 
+        }
+
         function clearChatBackground() { document.getElementById('chatImageInput').value = ''; const chatScreen = document.getElementById('chatScreen'); chatScreen.style.background = ''; const chatStatusBar = document.querySelector('#chatScreen .status-bar'); const chatHeader = document.querySelector('#chatScreen .chat-header'); const chatInputArea = document.querySelector('#chatScreen .chat-input-area'); chatStatusBar.style.backgroundColor = '#b2c7da'; chatHeader.style.backgroundColor = '#b2c7da'; chatInputArea.style.backgroundColor = '#b2c7da'; document.getElementById('chatImageInput').parentNode.querySelector('.delete-btn').classList.remove('show'); }
         function clearProfileImage() { document.getElementById('profileImageInput').value = ''; document.getElementById('profilePic').textContent = '🐱'; document.getElementById('profileImageInput').parentNode.querySelector('.delete-btn').classList.remove('show'); }
         function clearAlbumArt() { document.getElementById('albumArtInput').value = ''; currentAlbumArt = null; renderMusicWidget(); document.getElementById('albumArtInput').parentNode.querySelector('.delete-btn').classList.remove('show'); }
 
-        function setHomeBackgroundFromUrl(url, color) { 
-            const homeScreen = document.getElementById('homeScreen'); 
-            if (url) { 
-                homeScreen.style.setProperty('background', `url('${url}') center/cover no-repeat`, 'important'); 
-            } else if (color) { 
-                homeScreen.style.background = color; 
-                try { 
-                    const rgb = color.match(/\d+/g); 
-                    if (rgb) { 
-                        const brightness = (parseInt(rgb[0])*299 + parseInt(rgb[1])*587 + parseInt(rgb[2])*114) / 1000; 
-                        document.querySelector('#homeScreen .status-bar').style.color = brightness > 128 ? '#000' : '#fff'; 
-                        // 하단 독 아이콘 색상도 변경
-                        const dockApps = document.querySelectorAll('.dock-app');
-                        const iconColor = brightness > 128 ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.8)';
-                        dockApps.forEach(app => app.style.color = iconColor);
-                    } 
-                } catch(e) { 
-                    document.querySelector('#homeScreen .status-bar').style.color = '#fff'; 
-                    const dockApps = document.querySelectorAll('.dock-app');
-                    dockApps.forEach(app => app.style.color = 'rgba(255, 255, 255, 0.8)');
-                } 
-            } 
+        function setHomeBackgroundFromUrl(url, color) {
+            const homeScreen = document.getElementById('homeScreen');
+            if (url) {
+                homeScreen.style.setProperty('background', `url('${url}') center/cover no-repeat`, 'important');
+                // 이미지 밝기 분석 후 테마 적용
+                getImageBrightness(url).then(brightness => {
+                    updateScreenTheme(homeScreen, brightness);
+                }).catch(err => console.error("이미지 밝기 분석 실패:", err));
+            } else if (color) {
+                homeScreen.style.background = color;
+                // 색상 밝기 계산 후 테마 적용
+                const brightness = getBrightnessFromHex(color);
+                updateScreenTheme(homeScreen, brightness);
+            }
         }
 
         function setHomePreset(imageUrl) { setHomeBackgroundFromUrl(imageUrl, null); const presetColorMap = { '0FBgjgT': '#333333', 'TPLl0Xq': '#cccccc', 'EGGtUkr': '#007AFF', 'isOfd1P': '#34C759', 'MUYgJz3': '#FF2D92', 'F4Hh6DF': '#FFD700', 'kwTQ8DJ': '#E5E5E7', 'jcctG4I': '#64D2FF', '4dWZg52': '#30D158', '3Pw8RBy': '#FF69B4' }; const key = imageUrl.split('/').pop().split('.')[0]; setupHomeApps(document.getElementById('commandInput').value, presetColorMap[key] || '#888888'); }
         function generatePalette(hex) { if (!hex || !hex.startsWith('#')) return Array(12).fill('rgba(128, 128, 128, 0.5)'); let r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16); if(isNaN(r)) return Array(12).fill('rgba(128, 128, 128, 0.5)'); const palette = []; for (let i = 0; i < 12; i++) { const factor = 0.5 + (Math.random() * 0.5); const alpha = 0.5 + (Math.random() * 0.3); palette.push(`rgba(${Math.min(255, r*factor)}, ${Math.min(255, g*factor)}, ${Math.min(255, b*factor)}, ${alpha})`); } return palette; }
-        function setupHomeApps(command, baseColor) { const appGrid = document.getElementById('appGrid'); appGrid.innerHTML = ''; const matches = command.match(/\[(.*?)\]/g); if (!matches || matches.length < 3) return; const homeApps = matches[1].slice(1, -1); const appNames = matches[2].slice(1, -1); const appEmojis = homeApps.split(' ').filter(e => e.trim()); const appNameList = appNames.split(' ').filter(n => n.trim()); const palette = generatePalette(baseColor || '#888888'); for (let i = 0; i < Math.min(appEmojis.length, appNameList.length); i++) { const appDiv = document.createElement('div'); appDiv.className = 'home-app'; const randomColor = palette[Math.floor(Math.random() * palette.length)]; appDiv.innerHTML = `<div class="home-app-icon" style="background-color: ${randomColor};">${appEmojis[i]}</div><div class="home-app-name">${appNameList[i]}</div>`; appGrid.appendChild(appDiv); } }
+
+        function setupHomeApps(command, baseColor) { 
+            const appGrid = document.getElementById('appGrid'); 
+            appGrid.innerHTML = ''; 
+            const matches = command.match(/\[(.*?)\]/g); 
+            if (!matches || matches.length < 3) return; 
+            
+            const homeApps = matches[1].slice(1, -1); 
+            const appNames = matches[2].slice(1, -1); 
+            const appEmojis = homeApps.split(' ').filter(e => e.trim()); 
+            const appNameList = appNames.split(' ').filter(n => n.trim()); 
+            const palette = generatePalette(baseColor || '#888888'); 
+            
+            for (let i = 0; i < Math.min(appEmojis.length, appNameList.length); i++) { 
+                const appDiv = document.createElement('div'); 
+                appDiv.className = 'home-app'; 
+                const randomColor = palette[Math.floor(Math.random() * palette.length)]; 
+                
+                // 단순하게 생성, 색상은 CSS 클래스로 관리
+                appDiv.innerHTML = `<div class="home-app-icon" style="background-color: ${randomColor};">${appEmojis[i]}</div><div class="home-app-name">${appNameList[i]}</div>`; 
+                appGrid.appendChild(appDiv); 
+            } 
+            
+            console.log('setupHomeApps 완료, 생성된 앱 개수:', appGrid.children.length);
+        }
     </script>
-    <!-- ====================================================== -->
-    <!--  JAVASCRIPT (script.js) 내용 끝                        -->
-    <!-- ====================================================== -->
 </body>
 </html>
