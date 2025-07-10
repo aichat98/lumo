@@ -172,7 +172,7 @@
         .lock-phone, .lock-camera { width: 50px; height: 50px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; border: 1px solid rgba(255, 255, 255, 0.2); cursor: pointer; transition: all 0.2s; color: white; }
         .pair-name { position: absolute; top: 20px; right: 20px; z-index: 5; font-size: 14px; font-weight: 500; transition: color 0.3s ease; opacity: 0.5; }
         .home-screen .status-bar { background: transparent !important; }
-        .home-content { flex: 1; display: flex; flex-direction: column; padding: 20px; } .app-grid { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(6, 1fr); gap: 8px; padding: 10px 0; } .home-app { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; } .home-app-icon { width: 60px; height: 60px; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 40px; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); line-height: 1; text-align: center; transition: background-color 0.3s ease; } .home-dock { display: flex; justify-content: center; gap: 5px; padding: 15px 20px; background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(20px); border-radius: 25px; margin: 0 10px 10px 10px; border: 1px solid rgba(255, 255, 255, 0.3); } .dock-app { width: 56px; height: 56px; background: rgba(255, 255, 255, 0.3); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .home-content { flex: 1; display: flex; flex-direction: column; padding: 20px; overflow: hidden; } .app-grid { flex: 1; display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(6, 1fr); gap: 8px; padding: 10px 0; min-height: 0; } .home-app { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; } .home-app-icon { width: 60px; height: 60px; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 40px; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); line-height: 1; text-align: center; transition: background-color 0.3s ease; } .home-app-name { font-size: 12px; font-weight: 500; text-align: center; transition: color 0.3s ease; max-height: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .home-dock { display: flex; justify-content: center; gap: 5px; padding: 15px 20px; background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(20px); border-radius: 25px; margin: 0 10px 10px 10px; border: 1px solid rgba(255, 255, 255, 0.3); flex-shrink: 0; } .dock-app { width: 56px; height: 56px; background: rgba(255, 255, 255, 0.3); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); }
 
         /* --- [수정] 채팅 화면 레이아웃 재구성 --- */
         .chat-screen .status-bar, .chat-header, .chat-input-area { flex-shrink: 0; position: relative; z-index: 2; }
@@ -814,18 +814,18 @@
         function copyCommandTemplate() { 
             const template = `[OOC 모드 - 롤플레이 잠시 정지]
 
-다음 양식으로만 답변:
-[{색상코드}]
-[{핸드폰 홈배경 어플 이모지들}][{어플 이름들}]
-[{sns 유저 저장명}]
-[{sns 캐릭터 저장명}]
-[{캐릭터 이모지}]
-[{카카오톡/아이메세지/라인}]
-[{음악 제목}]
-[{음악 아티스트}]
+        다음 양식으로만 답변:
+        [{색상코드}]
+        [{핸드폰 홈배경 어플 이모지들}][{어플 이름들}]
+        [{sns 유저 저장명}]
+        [{sns 캐릭터 저장명}]
+        [{캐릭터 이모지}]
+        [{카카오톡/아이메세지/라인}]
+        [{음악 제목}]
+        [{음악 아티스트}]
 
-<{sns 캐릭터 메시지}> <{오후/오전 시간}>
-({sns 유저 메시지}) ({오후/오전 시간})`; 
+        <{sns 캐릭터 메시지}> <{오후/오전 시간}>
+        ({sns 유저 메시지}) ({오후/오전 시간})`; 
             navigator.clipboard.writeText(template).then(() => { 
                 alert('명령어가 클립보드에 복사되었습니다!'); 
                 closeCommandHelp(); 
