@@ -348,7 +348,7 @@ async function takeScreenshot() {
     clone.style.position = 'absolute';
     clone.style.left = '-9999px';
     clone.style.top = '0px';
-    clone.style.width = '800px'; // 너비 고정
+    clone.style.width = '900px'; // 너비 고정
     clone.style.height = 'auto';
     document.body.appendChild(clone);
 
@@ -369,8 +369,8 @@ async function takeScreenshot() {
         const scale = 2;
         const cropTop = 5 * scale;
         const cropBottom = 5 * scale;
-        const cropLeft = 50 * scale; 
-        const cropRight = 50 * scale;
+        const cropLeft = 30 * scale; 
+        const cropRight = 30 * scale;
         // --- 수정 끝 ---
 
         const croppedWidth = canvas.width - cropLeft - cropRight;
