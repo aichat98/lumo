@@ -338,47 +338,72 @@ function parseAndRenderAll() {
         }
         
 async function takeScreenshot() {
-    window.scrollTo(0, 0); // 화면을 맨 위로 이동
+    window.scrollTo(0, 0);
     const originalElement = document.getElementById('resultWrapper');
 
-    // 1. 원본 요소를 그대로 복제합니다. (화면에는 보이지 않음)
+    // 1. 원본 요소를 그대로 복제하여 보이지 않는 곳에 준비합니다.
     const clone = originalElement.cloneNode(true);
-
-    // 복제본에 스타일을 적용해 캡처 준비
     clone.style.position = 'absolute';
-    clone.style.left = '-9999px'; // 화면 밖으로 완전히 밀어냄
+    clone.style.left = '-9999px';
     clone.style.top = '0px';
-    clone.style.width = originalElement.offsetWidth + 'px'; // 원본의 실제 너비를 그대로 사용
-    clone.style.height = 'auto'; // 높이는 내용에 맞게 자동 조절
-
+    clone.style.width = originalElement.offsetWidth + 'px';
+    clone.style.height = 'auto';
     document.body.appendChild(clone);
 
-    // 폰트와 이미지가 로드될 시간을 잠시 줍니다.
-    await new Promise(resolve => setTimeout(resolve, 300));
+    await new Promise(resolve => setTimeout(resolve, 300)); // 렌더링 시간 확보
 
     try {
-        // 2. 복제된 요소를 대상으로 html2canvas를 실행합니다.
-        // 이제 불필요한 width, height, crop 옵션이 모두 필요 없습니다.
+        // 2. 복제된 요소를 대상으로 고해상도(scale: 2) 캡처를 진행합니다.
         const canvas = await html2canvas(clone, {
-            scale: 2,       // 고해상도 캡처
+            scale: 2,
             useCORS: true,
             allowTaint: true,
-            // 복제본의 배경색을 사용하므로 투명해질 염려가 없음
             backgroundColor: window.getComputedStyle(clone).backgroundColor,
         });
 
-        // 3. 생성된 캔버스를 바로 다운로드합니다. (더 이상 자르지 않음!)
+        // --- 여기서부터 요청하신 잘라내기 로직이 시작됩니다 ---
+
+        // 3. 잘라낼 크기를 정의합니다. (scale: 2 이므로 2배를 곱해줍니다)
+        const scale = 2;
+        const cropTop = 5 * scale;
+        const cropBottom = 5 * scale;
+        const cropLeft = 100 * scale;
+        const cropRight = 100 * scale;
+
+        // 4. 잘라낸 후의 최종 이미지 크기를 계산합니다.
+        const croppedWidth = canvas.width - cropLeft - cropRight;
+        const croppedHeight = canvas.height - cropTop - cropBottom;
+
+        // 5. 잘라낸 이미지를 담을 새로운 캔버스를 만듭니다.
+        const croppedCanvas = document.createElement('canvas');
+        croppedCanvas.width = croppedWidth;
+        croppedCanvas.height = croppedHeight;
+        const ctx = croppedCanvas.getContext('2d');
+
+        // 6. 원본 캔버스에서 필요한 부분만 잘라내어 새 캔버스에 그립니다.
+        ctx.drawImage(
+            canvas,         // 원본 캔버스
+            cropLeft,       // 잘라내기 시작할 X 좌표
+            cropTop,        // 잘라내기 시작할 Y 좌표
+            croppedWidth,   // 잘라낼 영역의 너비
+            croppedHeight,  // 잘라낼 영역의 높이
+            0,              // 새 캔버스에 그리기 시작할 X 좌표
+            0,              // 새 캔버스에 그리기 시작할 Y 좌표
+            croppedWidth,   // 새 캔버스에 그릴 너비
+            croppedHeight   // 새 캔버스에 그릴 높이
+        );
+
+        // 7. 잘라낸 최종 이미지를 다운로드합니다.
         const link = document.createElement('a');
         link.download = '오늘의밥_' + new Date().toISOString().slice(0, 10) + '.png';
-        link.href = canvas.toDataURL('image/png');
+        link.href = croppedCanvas.toDataURL('image/png');
         link.click();
 
     } finally {
-        // 4. 작업이 끝나면 복제된 요소를 반드시 제거합니다.
+        // 8. 작업이 끝나면 복제된 요소를 반드시 제거합니다.
         document.body.removeChild(clone);
     }
 }
-
         function openCommandHelp() { document.getElementById('popupOverlay').style.display = 'flex'; }
         function closeCommandHelp() { document.getElementById('popupOverlay').style.display = 'none'; }
         function copyCommandTemplate() {
