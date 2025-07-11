@@ -342,15 +342,15 @@ async function takeScreenshot() {
     const originalElement = document.getElementById('resultWrapper');
 
 
-    const clone = originalElement.cloneNode(true);
-    clone.style.width = '1200px'; 
-    clone.style.height = 'auto';
-
-
     const paddedWrapper = document.createElement('div');
-    paddedWrapper.style.padding = '50px'; 
-    paddedWrapper.style.display = 'inline-block'; 
-    paddedWrapper.appendChild(clone); 
+    paddedWrapper.style.padding = '50px';
+    paddedWrapper.style.display = 'inline-block';
+
+    const clone = originalElement.cloneNode(true);
+    clone.style.width = '1200px'; // 기준 너비 고정
+    clone.style.height = 'auto';
+    paddedWrapper.appendChild(clone);
+
 
     const container = document.createElement('div');
     container.style.position = 'absolute';
