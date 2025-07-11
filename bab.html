@@ -339,73 +339,63 @@ function parseAndRenderAll() {
         
 async function takeScreenshot() {
     window.scrollTo(0, 0);
-    const element = document.getElementById('resultWrapper');
+    const resultWrapper = document.getElementById('resultWrapper');
+    const originalParent = resultWrapper.parentElement; // 원래 부모 요소를 기억합니다.
 
-    // 1. 기존 스타일들을 더 많이 저장합니다. (position, top, left 추가)
-    const originalStyle = {
-        position: element.style.position,
-        top: element.style.top,
-        left: element.style.left,
-        width: element.style.width,
-        height: element.style.height,
-        transform: element.style.transform
-    };
+    // 1. 화면 밖에 보이지 않는 임시 '무대'를 만듭니다.
+    const screenshotStage = document.createElement('div');
+    screenshotStage.style.position = 'absolute';
+    screenshotStage.style.left = '-9999px'; // 화면 밖으로 완전히 이동
+    screenshotStage.style.top = '-9999px';
+    screenshotStage.style.width = '1200px'; // 목표 캔버스 크기
+    screenshotStage.style.height = '800px';
+    screenshotStage.style.display = 'flex';
+    screenshotStage.style.justifyContent = 'center';
+    screenshotStage.style.alignItems = 'center';
+    screenshotStage.style.backgroundColor = resultWrapper.style.backgroundColor || '#f0f0f0';
+
+    document.body.appendChild(screenshotStage);
+
+    // 2. 캡처할 요소를 임시 무대로 옮깁니다.
+    screenshotStage.appendChild(resultWrapper);
     
-    // 2. 캡처를 위해 레이아웃에서 분리하고 화면 밖으로 잠시 보냅니다.
-    element.style.position = 'absolute';
-    element.style.top = '0';
-    element.style.left = '0'; // 화면 좌측 상단에 고정시켜 캡처 기준점을 명확히 함
-    element.style.width = '1200px';
-    element.style.height = '800px';
-    element.style.transform = 'scale(1)';
-
-    // 자식 요소들의 크기는 그대로 유지합니다.
-    const lunchTray = element.querySelector('.lunch-tray-area');
-    const reviewCard = element.querySelector('.review-card-area');
-    lunchTray.style.width = '600px';
-    lunchTray.style.height = '400px';
-    reviewCard.style.width = '550px';
-
+    // 렌더링을 위한 아주 짧은 지연
     await new Promise(resolve => setTimeout(resolve, 100));
 
-    const canvas = await html2canvas(element, {
-        allowTaint: true,
-        useCORS: true,
-        scale: 2,
-        backgroundColor: element.style.backgroundColor || '#f0f0f0', // 배경색을 동적으로 가져오도록 수정
-        width: 1200,
-        height: 800,
-        x: 0, // 캡처 시작 X좌표를 0으로 명시
-        y: 0  // 캡처 시작 Y좌표를 0으로 명시
-    });
+    try {
+        // 3. 임시 무대 전체를 캡처합니다.
+        const canvas = await html2canvas(screenshotStage, {
+            scale: 2, // 고해상도 캡처
+            useCORS: true,
+            allowTaint: true,
+        });
 
-    // 3. 캡처가 끝나면 원래 스타일로 완벽하게 복원합니다.
-    element.style.position = originalStyle.position;
-    element.style.top = originalStyle.top;
-    element.style.left = originalStyle.left;
-    element.style.width = originalStyle.width;
-    element.style.height = originalStyle.height;
-    element.style.transform = originalStyle.transform;
+        // 4. 이미지를 잘라내고 저장하는 로직 (이전과 동일)
+        const croppedCanvas = document.createElement('canvas');
+        const ctx = croppedCanvas.getContext('2d');
+        
+        const cropTop = 20;
+        const cropLeft = 200;
+        const cropWidth = canvas.width - (cropLeft * 2);
+        const cropHeight = canvas.height - (cropTop * 2);
 
-    // 자른 후 이미지를 생성하는 로직은 그대로 유지합니다.
-    const croppedCanvas = document.createElement('canvas');
-    const ctx = croppedCanvas.getContext('2d');
-    
-    // 자르기 로직은 그대로 두되, 이제 중앙 정렬이 맞을 것입니다.
-    const cropTop = 20;
-    const cropLeft = 200;
-    const cropWidth = canvas.width - (cropLeft * 2);
-    const cropHeight = canvas.height - (cropTop * 2);
+        croppedCanvas.width = cropWidth;
+        croppedCanvas.height = cropHeight;
 
-    croppedCanvas.width = cropWidth;
-    croppedCanvas.height = cropHeight;
+        ctx.drawImage(canvas, cropLeft, cropTop, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
 
-    ctx.drawImage(canvas, cropLeft, cropTop, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
+        const link = document.createElement('a');
+        link.download = '오늘의밥_' + new Date().toISOString().slice(0, 10) + '.png';
+        link.href = croppedCanvas.toDataURL();
+        link.click();
 
-    const link = document.createElement('a');
-    link.download = '오늘의밥_' + new Date().toISOString().slice(0, 10) + '.png';
-    link.href = croppedCanvas.toDataURL();
-    link.click();
+    } finally {
+        // 5. 작업이 끝나면 반드시 원래대로 되돌립니다.
+        // 캡처한 요소를 원래 부모에게 돌려줍니다.
+        originalParent.appendChild(resultWrapper);
+        // 임시 무대를 DOM에서 제거합니다.
+        document.body.removeChild(screenshotStage);
+    }
 }
 
         function openCommandHelp() { document.getElementById('popupOverlay').style.display = 'flex'; }
