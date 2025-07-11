@@ -338,63 +338,44 @@ function parseAndRenderAll() {
         }
         
 async function takeScreenshot() {
-    window.scrollTo(0, 0);
-    const resultWrapper = document.getElementById('resultWrapper');
-    const originalParent = resultWrapper.parentElement; // 원래 부모 요소를 기억합니다.
+    window.scrollTo(0, 0); // 화면을 맨 위로 이동
+    const originalElement = document.getElementById('resultWrapper');
 
-    // 1. 화면 밖에 보이지 않는 임시 '무대'를 만듭니다.
-    const screenshotStage = document.createElement('div');
-    screenshotStage.style.position = 'absolute';
-    screenshotStage.style.left = '-9999px'; // 화면 밖으로 완전히 이동
-    screenshotStage.style.top = '-9999px';
-    screenshotStage.style.width = '1200px'; // 목표 캔버스 크기
-    screenshotStage.style.height = '800px';
-    screenshotStage.style.display = 'flex';
-    screenshotStage.style.justifyContent = 'center';
-    screenshotStage.style.alignItems = 'center';
-    screenshotStage.style.backgroundColor = resultWrapper.style.backgroundColor || '#f0f0f0';
+    // 1. 원본 요소를 그대로 복제합니다. (화면에는 보이지 않음)
+    const clone = originalElement.cloneNode(true);
 
-    document.body.appendChild(screenshotStage);
+    // 복제본에 스타일을 적용해 캡처 준비
+    clone.style.position = 'absolute';
+    clone.style.left = '-9999px'; // 화면 밖으로 완전히 밀어냄
+    clone.style.top = '0px';
+    clone.style.width = originalElement.offsetWidth + 'px'; // 원본의 실제 너비를 그대로 사용
+    clone.style.height = 'auto'; // 높이는 내용에 맞게 자동 조절
 
-    // 2. 캡처할 요소를 임시 무대로 옮깁니다.
-    screenshotStage.appendChild(resultWrapper);
-    
-    // 렌더링을 위한 아주 짧은 지연
-    await new Promise(resolve => setTimeout(resolve, 100));
+    document.body.appendChild(clone);
+
+    // 폰트와 이미지가 로드될 시간을 잠시 줍니다.
+    await new Promise(resolve => setTimeout(resolve, 300));
 
     try {
-        // 3. 임시 무대 전체를 캡처합니다.
-        const canvas = await html2canvas(screenshotStage, {
-            scale: 2, // 고해상도 캡처
+        // 2. 복제된 요소를 대상으로 html2canvas를 실행합니다.
+        // 이제 불필요한 width, height, crop 옵션이 모두 필요 없습니다.
+        const canvas = await html2canvas(clone, {
+            scale: 2,       // 고해상도 캡처
             useCORS: true,
             allowTaint: true,
+            // 복제본의 배경색을 사용하므로 투명해질 염려가 없음
+            backgroundColor: window.getComputedStyle(clone).backgroundColor,
         });
 
-        // 4. 이미지를 잘라내고 저장하는 로직 (이전과 동일)
-        const croppedCanvas = document.createElement('canvas');
-        const ctx = croppedCanvas.getContext('2d');
-        
-        const cropTop = 20;
-        const cropLeft = 200;
-        const cropWidth = canvas.width - (cropLeft * 2);
-        const cropHeight = canvas.height - (cropTop * 2);
-
-        croppedCanvas.width = cropWidth;
-        croppedCanvas.height = cropHeight;
-
-        ctx.drawImage(canvas, cropLeft, cropTop, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
-
+        // 3. 생성된 캔버스를 바로 다운로드합니다. (더 이상 자르지 않음!)
         const link = document.createElement('a');
         link.download = '오늘의밥_' + new Date().toISOString().slice(0, 10) + '.png';
-        link.href = croppedCanvas.toDataURL();
+        link.href = canvas.toDataURL('image/png');
         link.click();
 
     } finally {
-        // 5. 작업이 끝나면 반드시 원래대로 되돌립니다.
-        // 캡처한 요소를 원래 부모에게 돌려줍니다.
-        originalParent.appendChild(resultWrapper);
-        // 임시 무대를 DOM에서 제거합니다.
-        document.body.removeChild(screenshotStage);
+        // 4. 작업이 끝나면 복제된 요소를 반드시 제거합니다.
+        document.body.removeChild(clone);
     }
 }
 
