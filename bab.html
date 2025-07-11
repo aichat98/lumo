@@ -158,6 +158,20 @@
         textarea.style.height = Math.max(200, textarea.scrollHeight) + 'px';
     }
     
+    function openCommandHelp() {
+        document.getElementById('popupOverlay').style.display = 'flex';
+    }
+    
+    function closeCommandHelp() {
+        document.getElementById('popupOverlay').style.display = 'none';
+    }
+    
+    function copyCommandTemplate() {
+        const template = document.querySelector('.popup textarea').value;
+        navigator.clipboard.writeText(template);
+        alert('명령어 템플릿이 복사되었습니다!');
+    }
+    
     function parseAndRenderAll() {
         const command = document.getElementById('commandInput').value;
         
@@ -328,78 +342,131 @@
         parseAndRenderAll();
     }
     
-    async function takeScreenshot() {
-    window.scrollTo(0, 0);
-    const originalElement = document.getElementById('resultWrapper');
-
-    // ★★★ 1. 캡처할 모든 것을 담을 '단 하나의 완벽한 상자'를 만듭니다. ★★★
-    const captureWrapper = document.createElement('div');
-    captureWrapper.style.position = 'absolute';
-    captureWrapper.style.left = '-9999px';
-    captureWrapper.style.top = '0px';
-    // 이 상자가 스스로 크기를 갖도록 inline-block으로 설정합니다.
-    captureWrapper.style.display = 'inline-block';
-
-    // 2. 이 상자에 배경색과 그림자가 들어갈 여백(padding)을 한번에 적용합니다.
-    captureWrapper.style.backgroundColor = window.getComputedStyle(originalElement).backgroundColor;
-    captureWrapper.style.padding = '50px'; // 그림자와 페어명이 들어갈 '안쪽 공간' 확보
-
-    // 3. 원본 요소를 복제해서 '완벽한 상자' 안에 넣습니다.
-    const clone = originalElement.cloneNode(true);
-    clone.style.width = '1200px';
-    clone.style.height = 'auto';
-    // 이제 clone에는 margin 같은 불필요한 스타일이 필요 없습니다.
-    captureWrapper.appendChild(clone);
-
-    document.body.appendChild(captureWrapper);
-
-    await new Promise(resolve => setTimeout(resolve, 300));
-
-    try {
-        // 4. 이제 '완벽한 상자(captureWrapper)' 전체를 대상으로 캡처합니다.
-        const canvas = await html2canvas(captureWrapper, {
-            scale: 2,
-            useCORS: true,
-            allowTaint: true,
-            // 상자 자체에 색이 있으므로 이 옵션은 더 이상 필요 없습니다.
-            backgroundColor: null,
-        });
-
-        // 5. 요청하셨던 잘라내기 값을 그대로 적용합니다.
-        const scale = 2;
-        const cropTop = 15 * scale;
-        const cropBottom = 5 * scale;
-        const cropLeft = 150 * scale;
-        const cropRight = 150 * scale;
-        
-        const croppedWidth = canvas.width - cropLeft - cropRight;
-        const croppedHeight = canvas.height - cropTop - cropBottom;
-
-        const croppedCanvas = document.createElement('canvas');
-        croppedCanvas.width = croppedWidth;
-        croppedCanvas.height = croppedHeight;
-        const ctx = croppedCanvas.getContext('2d');
-
-        ctx.drawImage(
-            canvas, cropLeft, cropTop, croppedWidth, croppedHeight,
-            0, 0, croppedWidth, croppedHeight
+    // 캔버스에 그림자 그리기 함수
+    function drawShadowOnCanvas(canvas, ctx, x, y, width, height, shadowColor, shadowBlur, shadowOffsetX, shadowOffsetY) {
+        const gradient = ctx.createRadialGradient(
+            x + width/2, y + height/2, 0,
+            x + width/2, y + height/2, Math.max(width, height)/2 + shadowBlur
         );
-
-        // 6. 최종 결과물을 다운로드합니다.
-        const link = document.createElement('a');
-        link.download = '오늘의밥_' + new Date().toISOString().slice(0, 10) + '.png';
-        link.href = croppedCanvas.toDataURL('image/png');
-        link.click();
-
-    } finally {
-        // 7. 작업이 끝나면 상자를 반드시 제거합니다.
-        document.body.removeChild(captureWrapper);
+        
+        gradient.addColorStop(0, shadowColor);
+        gradient.addColorStop(1, 'transparent');
+        
+        ctx.fillStyle = gradient;
+        ctx.fillRect(
+            x + shadowOffsetX - shadowBlur, 
+            y + shadowOffsetY - shadowBlur,
+            width + shadowBlur * 2,
+            height + shadowBlur * 2
+        );
     }
-}
-    // --- ★★★ 여기까지 입니다 ★★★ ---
+    
+    async function takeScreenshot() {
+        window.scrollTo(0, 0);
+        const originalElement = document.getElementById('resultWrapper');
+
+        // 캡처용 컨테이너 생성
+        const captureWrapper = document.createElement('div');
+        captureWrapper.style.position = 'absolute';
+        captureWrapper.style.left = '-9999px';
+        captureWrapper.style.top = '0px';
+        captureWrapper.style.display = 'inline-block';
+        captureWrapper.style.backgroundColor = window.getComputedStyle(originalElement).backgroundColor;
+        captureWrapper.style.padding = '50px';
+
+        // 원본 복제
+        const clone = originalElement.cloneNode(true);
+        clone.style.width = '1200px';
+        clone.style.height = 'auto';
+        captureWrapper.appendChild(clone);
+
+        document.body.appendChild(captureWrapper);
+
+        await new Promise(resolve => setTimeout(resolve, 300));
+
+        try {
+            // 먼저 기본 캔버스 생성
+            const canvas = await html2canvas(captureWrapper, {
+                scale: 2,
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: null,
+            });
+
+            // 새로운 캔버스에 그림자 추가
+            const finalCanvas = document.createElement('canvas');
+            finalCanvas.width = canvas.width;
+            finalCanvas.height = canvas.height;
+            const ctx = finalCanvas.getContext('2d');
+
+            // 원본 이미지 그리기
+            ctx.drawImage(canvas, 0, 0);
+
+            // 그림자 요소들 찾아서 그림자 그리기
+            const speechBubbles = clone.querySelectorAll('.speech-bubble');
+            const reviewCard = clone.querySelector('.review-card-area');
+
+            speechBubbles.forEach(bubble => {
+                const rect = bubble.getBoundingClientRect();
+                const wrapperRect = captureWrapper.getBoundingClientRect();
+                
+                const x = (rect.left - wrapperRect.left) * 2;
+                const y = (rect.top - wrapperRect.top) * 2;
+                const width = rect.width * 2;
+                const height = rect.height * 2;
+                
+                // 말풍선 그림자
+                drawShadowOnCanvas(ctx, x, y, width, height, 'rgba(0,0,0,0.1)', 8, 0, 2);
+            });
+
+            if (reviewCard) {
+                const rect = reviewCard.getBoundingClientRect();
+                const wrapperRect = captureWrapper.getBoundingClientRect();
+                
+                const x = (rect.left - wrapperRect.left) * 2;
+                const y = (rect.top - wrapperRect.top) * 2;
+                const width = rect.width * 2;
+                const height = rect.height * 2;
+                
+                // 리뷰 카드 그림자
+                drawShadowOnCanvas(ctx, x, y, width, height, 'rgba(0,0,0,0.12)', 30, 0, 8);
+            }
+
+            // 크롭 적용
+            const scale = 2;
+            const cropTop = 15 * scale;
+            const cropBottom = 5 * scale;
+            const cropLeft = 150 * scale;
+            const cropRight = 150 * scale;
+            
+            const croppedWidth = finalCanvas.width - cropLeft - cropRight;
+            const croppedHeight = finalCanvas.height - cropTop - cropBottom;
+
+            const croppedCanvas = document.createElement('canvas');
+            croppedCanvas.width = croppedWidth;
+            croppedCanvas.height = croppedHeight;
+            const croppedCtx = croppedCanvas.getContext('2d');
+
+            croppedCtx.drawImage(
+                finalCanvas, cropLeft, cropTop, croppedWidth, croppedHeight,
+                0, 0, croppedWidth, croppedHeight
+            );
+
+            // 다운로드
+            const link = document.createElement('a');
+            link.download = '오늘의밥_' + new Date().toISOString().slice(0, 10) + '.png';
+            link.href = croppedCanvas.toDataURL('image/png');
+            link.click();
+
+        } finally {
+            document.body.removeChild(captureWrapper);
+        }
+    }
 
     document.addEventListener('DOMContentLoaded', () => {
-         document.getElementById('popupOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeCommandHelp(); });
+        document.getElementById('popupOverlay').addEventListener('click', e => { 
+            if (e.target === e.currentTarget) closeCommandHelp(); 
+        });
         clearAll();
     });
 </script>
