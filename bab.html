@@ -8,16 +8,35 @@
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f0f0f0; min-height: 100vh; }
+        
         .container { display: flex; min-height: 100vh; }
-        .controls { background: white; padding: 25px; box-shadow: 2px 0 10px rgba(0,0,0,0.1); }
-        .result-wrapper { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 50px; position: relative; gap: 10px; }
+        
+        .controls { 
+            flex: 1;
+            background: white; 
+            padding: 25px; 
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .result-wrapper { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            padding: 50px; 
+            position: relative; 
+            gap: 10px; 
+        }
+        
         .pair-name { position: absolute; top: 20px; right: 120px; z-index: 5; font-size: 14px; font-weight: 500; opacity: 0.7; }
         .control-group { margin-bottom: 20px; }
         .control-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; font-size: 15px; }
-        textarea.input-field { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-height: 200px; resize: none; overflow: hidden; }
+        textarea.input-field { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; min-height: 200px; resize: vertical; overflow-y: auto; }
         .button-group { display: flex; justify-content: center; gap: 8px; margin-top: 20px; }
         .btn { padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; }
         .btn-primary { background: #007aff; color: white; } .btn-danger { background: #dc3545; color: white; }
+        
         .lunch-tray-area { position: relative; width: 600px; height: 400px; background: url('https://i.imgur.com/j1ePEU9.png') center/contain no-repeat; }
         .food-placeholder { position: absolute; display: flex; align-items: center; justify-content: center; font-size: 50px; }
         .speech-bubble { position: absolute; background: white; border: 2px solid #ddd; padding: 10px 14px; font-size: 12px; font-weight: 500; color: #333; box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 10; max-width: 240px; text-align: center; }
@@ -29,7 +48,8 @@
         #food-4 { top: 16%; left: 67%; width: 80px; height: 80px; }
         #food-5 { top: 40%; left: 25%; width: 150px; height: 150px; font-size: 108px; } 
         #food-6 { top: 40%; left: 56%; width: 150px; height: 150px; font-size: 108px; }
-        .review-card-area { width: 100%; max-width: 550px; background: #ffffff; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); overflow: hidden; position: relative; }
+        
+        .review-card-area { width: 550px; background: #ffffff; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); overflow: hidden; position: relative; }
         .info-header { background-color: #f1f3f5; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
         .info-header .date { font-size: 16px; font-weight: 600; color: #333; }
         .info-header .calories { font-size: 14px; font-weight: 500; color: #e54d42; background-color: #fef4f4; padding: 4px 10px; border-radius: 20px; }
@@ -46,21 +66,16 @@
         .meokjjang-stamp { position: absolute; top: 40%; right: 10px; transform: translateY(-50%) rotate(15deg) scale(0.8); width: 50px; height: 50px; opacity: 0; transition: all 0.3s ease; border: 2px solid #ff6b6b; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; color: #ff6b6b; background: white; z-index: 10; }
         .meokjjang-stamp::before { content: "먹짱"; }
         .meokjjang-stamp.show { opacity: 0.85; transform: translateY(-50%) rotate(-10deg) scale(1); }
+        
         .popup-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; z-index: 1000; justify-content: center; align-items: center; }
         .popup { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); max-width: 500px; width: 90%; }
         .popup h3 { margin-bottom: 15px; } .popup textarea { width: 100%; height: 250px; font-family: monospace; font-size: 12px; border: 1px solid #ddd; border-radius: 5px; padding: 10px; }
         .popup-buttons { margin-top: 15px; text-align: right; } .popup-buttons button { margin-left: 10px; }
         
-        /* 폰 최적화 - 모든 요소 크기/위치 고정, 가로 스크롤 처리 */
         @media (max-width: 768px) {
             .container { flex-direction: column; }
             .controls { padding: 15px; }
             .result-wrapper { padding: 20px; overflow-x: auto; }
-            /* 모든 요소 크기/위치/폰트 절대 변경 금지 */
-            /* .lunch-tray-area: 600x400 고정 */
-            /* .review-card-area: 550px 고정 */
-            /* .speech-bubble: 원본 크기/위치/폰트 고정 */
-            /* .pair-name: 원본 위치/폰트 고정 */
             textarea.input-field { min-height: 150px; }
         }
     </style>
@@ -128,17 +143,6 @@
 
 [{캐릭터 식전인사}] [{유저 식전인사}]
 [캐릭터 별점:{1-5}] [{후기}]
-[유저 별점:{1-5}] [{후기}]</textarea>뉴를 양식에 맞게 출력한다.
-
-[{캐릭터 헥스코드}][{유저 헥스코드}]
-[{페어명}]
-[{YYYY-MM-DD 요일}]
-[이모지: {과일}, {부요리}, {주요리}, {음료}, {주식}, {국물}]
-[메뉴명:{과일}, {부요리}, {주요리}, {음료}, {주식}, {국물}]
-[{칼로리}]
-
-[{캐릭터 식전인사}] [{유저 식전인사}]
-[캐릭터 별점:{1-5}] [{후기}]
 [유저 별점:{1-5}] [{후기}]</textarea>
             <div class="popup-buttons">
                 <button class="btn btn-danger" onclick="closeCommandHelp()">닫기</button>
@@ -157,13 +161,11 @@
         function parseAndRenderAll() {
             const command = document.getElementById('commandInput').value;
             
-            // 모든 [] 내용을 순서대로 추출
             const allBrackets = command.match(/\[([^\]]+)\]/g);
             if (!allBrackets) return;
             
-            const items = allBrackets.map(item => item.slice(1, -1)); // [] 제거
+            const items = allBrackets.map(item => item.slice(1, -1));
             
-            // 순서대로 할당
             const charColor = items[0] || '';
             const userColor = items[1] || '';
             const pairName = items[2] || '';
@@ -174,7 +176,6 @@
             const leftSpeech = items[7] || '잘먹겠습니다!';
             const rightSpeech = items[8] || '맛있겠다~';
             
-            // 별점/후기 찾기
             let charRating = 0;
             let charReview = '';
             let userRating = 0;
@@ -184,12 +185,10 @@
                 if (items[i].includes('별점:')) {
                     let rating = 0;
                     
-                    // 숫자 형태 (별점:5 또는 박봉팔 별점:5)
                     const numberMatch = items[i].match(/별점:\s*([1-5])/);
                     if (numberMatch) {
                         rating = parseInt(numberMatch[1]);
                     } 
-                    // 별 형태 (별점:★★★★☆ 또는 박봉팔 별점: ★★★★☆)
                     else {
                         const starMatch = items[i].match(/별점:\s*(★*☆*)/);
                         if (starMatch) {
@@ -211,7 +210,6 @@
                         break;
                     }
                 }
-                // 별점 없이 직접 별만 있는 경우 (★★★★☆)
                 else if (items[i].match(/^★*☆*$/)) {
                     const stars = items[i];
                     const fullStars = (stars.match(/★/g) || []).length;
@@ -230,12 +228,10 @@
                 }
             }
             
-            // 적용
-            // 배경: 첫번째 색상
-            if (charColor.includes('#')) {
+            // 배경색 적용
+            if (charColor && charColor.includes('#')) {
                 document.getElementById('resultWrapper').style.backgroundColor = charColor;
                 
-                // 페어명 색상 조정
                 const r = parseInt(charColor.slice(1, 3), 16);
                 const g = parseInt(charColor.slice(3, 5), 16);
                 const b = parseInt(charColor.slice(5, 7), 16);
@@ -243,10 +239,9 @@
                 document.getElementById('pairName').style.color = brightness > 128 ? '#333' : '#fff';
             }
             
-            // 페어명
             document.getElementById('pairName').textContent = pairName;
             
-            // 날짜
+            // 날짜 포맷
             let formattedDate = '----. --. --.';
             if (dateVal) {
                 const parts = dateVal.split(' ');
@@ -265,8 +260,8 @@
             document.getElementById('reviewDate').textContent = formattedDate;
             document.getElementById('reviewCalories').textContent = caloriesStr + ' Kcal';
             
-            // 이모지 (콤마든 공백이든 인식)
-            const emojis = emojiStr.split(/[\s,]+/).filter(e => e.trim());
+            // 이모지
+            const emojis = emojiStr.split(',').map(e => e.trim()).filter(e => e);
             for (let i = 1; i <= 6; i++) {
                 document.getElementById(`food-${i}`).textContent = emojis[i-1] || '';
             }
@@ -277,17 +272,7 @@
             
             if (menuStr) {
                 const categories = ['디저트', '부요리', '주요리', '음료', '주식', '국물'];
-                let menuItems = [];
-                
-                // {} 형태 또는 콤마 구분 형태 둘 다 지원
-                if (menuStr.includes('{')) {
-                    // {메뉴명} 형태
-                    menuItems = menuStr.match(/\{([^}]+)\}/g) || [];
-                    menuItems = menuItems.map(item => item.replace(/[{}]/g, ''));
-                } else {
-                    // 콤마 구분 형태 - 콤마로만 구분하고 공백은 보존
-                    menuItems = menuStr.split(',').map(item => item.trim()).filter(item => item);
-                }
+                const menuItems = menuStr.split(',').map(item => item.trim()).filter(item => item);
                 
                 categories.forEach((category, index) => {
                     if (menuItems[index]) {
@@ -306,15 +291,17 @@
                 });
             }
             
-            // 말풍선과 표: 두번째 색상 (더 밝게)
+            // 유저 색상 적용
             if (userColor && userColor.includes('#')) {
                 const r = parseInt(userColor.slice(1, 3), 16);
                 const g = parseInt(userColor.slice(3, 5), 16);
                 const b = parseInt(userColor.slice(5, 7), 16);
                 
-                // 말풍선은 흰색 유지
-                document.getElementById('leftSpeech').style.backgroundColor = 'white';
-                document.getElementById('rightSpeech').style.backgroundColor = 'white';
+                // 헤더 20%
+                const headerR = Math.round(241 * 0.8 + r * 0.2);
+                const headerG = Math.round(243 * 0.8 + g * 0.2);
+                const headerB = Math.round(245 * 0.8 + b * 0.2);
+                document.querySelector('.info-header').style.backgroundColor = `rgb(${headerR}, ${headerG}, ${headerB})`;
                 
                 // 그리드 15%
                 const gridR = Math.round(248 * 0.85 + r * 0.15);
@@ -323,12 +310,6 @@
                 document.querySelectorAll('.grid-item').forEach(item => {
                     item.style.backgroundColor = `rgb(${gridR}, ${gridG}, ${gridB})`;
                 });
-                
-                // 헤더 20%
-                const headerR = Math.round(241 * 0.8 + r * 0.2);
-                const headerG = Math.round(243 * 0.8 + g * 0.2);
-                const headerB = Math.round(245 * 0.8 + b * 0.2);
-                document.querySelector('.info-header').style.backgroundColor = `rgb(${headerR}, ${headerG}, ${headerB})`;
                 
                 // 후기 박스 5%
                 const reviewR = Math.round(248 * 0.95 + r * 0.05);
@@ -339,11 +320,9 @@
                 });
             }
             
-            // 말풍선 텍스트
             document.getElementById('leftSpeech').textContent = leftSpeech;
             document.getElementById('rightSpeech').textContent = rightSpeech;
             
-            // 별점
             function renderStars(elementId, rating) {
                 const starsEl = document.getElementById(elementId);
                 starsEl.innerHTML = '';
@@ -357,11 +336,9 @@
             renderStars('reviewStars', charRating);
             renderStars('reviewStars2', userRating);
             
-            // 후기
             document.getElementById('reviewText').textContent = charReview;
             document.getElementById('reviewText2').textContent = userReview;
             
-            // 먹짱 스탬프
             document.getElementById('meokjjangStamp1').classList.toggle('show', charRating === 5);
             document.getElementById('meokjjangStamp2').classList.toggle('show', userRating === 5);
         }
@@ -377,19 +354,16 @@
             
             const element = document.getElementById('resultWrapper');
             
-            // 스크린샷용 임시 스타일 적용
             const originalStyle = {
                 width: element.style.width,
                 height: element.style.height,
                 transform: element.style.transform
             };
             
-            // 강제로 고정 크기 적용 (데스크톱 기준)
             element.style.width = '1200px';
             element.style.height = '800px';
             element.style.transform = 'scale(1)';
             
-            // 급식판과 표도 강제로 원본 크기 적용
             const lunchTray = element.querySelector('.lunch-tray-area');
             const reviewCard = element.querySelector('.review-card-area');
             
@@ -416,7 +390,6 @@
                 height: 800
             });
             
-            // 원본 스타일 복원
             element.style.width = originalStyle.width;
             element.style.height = originalStyle.height;
             element.style.transform = originalStyle.transform;
@@ -424,7 +397,6 @@
             lunchTray.style.height = originalLunchStyle.height;
             reviewCard.style.width = originalReviewStyle.width;
             
-            // 여백 자르기
             const croppedCanvas = document.createElement('canvas');
             const ctx = croppedCanvas.getContext('2d');
             
