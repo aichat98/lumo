@@ -344,39 +344,35 @@ async function takeScreenshot() {
     // 1. 원본 요소를 복제합니다.
     const clone = originalElement.cloneNode(true);
 
-    // 2. 복제본을 화면 밖에 놓고, 스크린샷을 위한 스타일을 적용합니다.
+    // 2. 복제본을 화면 밖에 놓고, 스크린샷을 위한 너비를 '800px'로 고정합니다.
     clone.style.position = 'absolute';
     clone.style.left = '-9999px';
     clone.style.top = '0px';
-    
-    // --- ★★★ 여기가 가장 중요한 수정점! ★★★ ---
-    // 모니터 크기에 상관없이 항상 일정한 너비로 찍히도록 너비를 고정합니다.
-    clone.style.width = '800px'; 
-    // --- ★★★ 수정 끝 ★★★ ---
-
-    clone.style.height = 'auto'; // 높이는 내용에 따라 자동 조절
+    clone.style.width = '800px'; // 너비 고정
+    clone.style.height = 'auto';
     document.body.appendChild(clone);
 
     await new Promise(resolve => setTimeout(resolve, 300));
 
     try {
-        // 3. '800px'로 고정된 복제본을 대상으로 캡처를 진행합니다.
+        // 3. 고정된 너비의 복제본을 캡처합니다.
         const canvas = await html2canvas(clone, {
-            scale: 2, // 결과물 canvas.width는 1600px가 됩니다.
+            scale: 2,
             useCORS: true,
             allowTaint: true,
             backgroundColor: window.getComputedStyle(clone).backgroundColor,
         });
 
-        // 4. 잘라낼 크기를 정의합니다.
+        // --- ★★★ 여기를 수정했습니다 ★★★ ---
+        // 800px 너비에 맞게 잘라내는 값을 50px로 대폭 줄였습니다.
+        // 이렇게 하면 너무 많이 잘리지 않고 적당한 여백만 제거됩니다.
         const scale = 2;
         const cropTop = 5 * scale;
         const cropBottom = 5 * scale;
-        const cropLeft = 150 * scale; // 1600px 기준 300px을 잘라냅니다.
-        const cropRight = 150 * scale; // 1600px 기준 300px을 잘라냅니다.
-                                       // 최종 너비는 1600 - 300 - 300 = 1000px가 됩니다.
-        
-        // 5. 잘라내기 로직은 그대로 사용합니다.
+        const cropLeft = 50 * scale; 
+        const cropRight = 50 * scale;
+        // --- 수정 끝 ---
+
         const croppedWidth = canvas.width - cropLeft - cropRight;
         const croppedHeight = canvas.height - cropTop - cropBottom;
 
@@ -397,23 +393,15 @@ async function takeScreenshot() {
             croppedHeight
         );
 
-        // 6. 최종 결과물을 다운로드합니다.
         const link = document.createElement('a');
         link.download = '오늘의밥_' + new Date().toISOString().slice(0, 10) + '.png';
         link.href = croppedCanvas.toDataURL('image/png');
         link.click();
 
     } finally {
-        // 7. 작업이 끝나면 복제된 요소를 반드시 제거합니다.
         document.body.removeChild(clone);
     }
 }
-        function openCommandHelp() { document.getElementById('popupOverlay').style.display = 'flex'; }
-        function closeCommandHelp() { document.getElementById('popupOverlay').style.display = 'none'; }
-        function copyCommandTemplate() {
-            const template = document.querySelector('.popup textarea').value;
-            navigator.clipboard.writeText(template).then(() => alert('명령어가 클립보드에 복사되었습니다!'), () => alert('복사 실패'));
-        }
 
         document.addEventListener('DOMContentLoaded', () => {
              document.getElementById('popupOverlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeCommandHelp(); });
