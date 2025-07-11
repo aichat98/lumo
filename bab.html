@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>오늘의 급식 생성기</title>
+    <title>오늘의 밥 생성기</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -83,7 +83,7 @@
 <body>
     <div class="container">
         <div class="controls">
-            <h2>급식판 생성기</h2>
+            <h2>오늘의 밥 생성기</h2>
             <div class="control-group">
                 <label>명령어 붙여넣기 <i class="fa-solid fa-pen-to-square" onclick="openCommandHelp()" style="cursor: pointer;"></i></label>
                 <textarea class="input-field" id="commandInput" placeholder="이곳에 AI가 생성한 명령어를 붙여넣으면 모든 내용이 한 번에 적용됩니다." oninput="autoResize(this); parseAndRenderAll()"></textarea>
@@ -132,8 +132,8 @@
         <div class="popup">
             <h3>명령어 가이드</h3>
             <textarea readonly>[ooc모드 - 롤플 잠시 중지]
-캐릭터와 유저는 고등학생이며 오늘 먹은 학교급식 메뉴를 양식에 맞게 출력한다.
-
+캐릭터들 설정에 맞게 오늘 먹은 밥 메뉴를 양식에 맞게 출력한다.
+                
 [{캐릭터 헥스코드}][{유저 헥스코드}]
 [{페어명}]
 [{YYYY-MM-DD 요일}]
