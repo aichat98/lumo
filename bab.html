@@ -341,21 +341,35 @@ async function takeScreenshot() {
     window.scrollTo(0, 0);
     const originalElement = document.getElementById('resultWrapper');
 
-    // 1. 원본 요소를 복제합니다.
-    const clone = originalElement.cloneNode(true);
+    // 1. 눈에 보이지 않는 '투명한 컨테이너'를 만듭니다.
+    const screenshotContainer = document.createElement('div');
+    screenshotContainer.style.position = 'fixed'; // 화면에 고정
+    screenshotContainer.style.top = '0';
+    screenshotContainer.style.left = '0';
+    screenshotContainer.style.width = '100%';
+    screenshotContainer.style.height = '100%';
+    screenshotContainer.style.visibility = 'hidden'; // ★★★ 핵심: 투명하게 만듦 ★★★
+    screenshotContainer.style.zIndex = '-1'; // 다른 요소 뒤로 보냄
+    document.body.appendChild(screenshotContainer);
 
-    // 2. 복제본을 화면 밖에 놓고, 스크린샷을 위한 너비를 '800px'로 고정합니다.
-    clone.style.position = 'absolute';
-    clone.style.left = '-9999px';
-    clone.style.top = '0px';
-    clone.style.width = '900px'; // 너비 고정
+    // 2. 원본 요소를 복제하여 투명 컨테이너 안에 넣습니다.
+    const clone = originalElement.cloneNode(true);
+    clone.style.width = '1200px'; // 기준 너비는 넉넉하게 고정
     clone.style.height = 'auto';
-    document.body.appendChild(clone);
+    clone.style.display = 'flex'; // 내부 요소들이 중앙에 오도록
+    clone.style.justifyContent = 'center';
+    clone.style.alignItems = 'center';
+    // 내부의 원본 요소가 컨테이너를 꽉 채우도록 재조정
+    clone.firstElementChild.style.margin = 'auto';
+    clone.lastElementChild.style.margin = 'auto';
+    
+    screenshotContainer.appendChild(clone);
 
     await new Promise(resolve => setTimeout(resolve, 300));
 
     try {
-        // 3. 고정된 너비의 복제본을 캡처합니다.
+        // 3. 이제 'clone'을 대상으로 캡처합니다.
+        // 투명하더라도 레이아웃 상에 존재하므로 정확한 높이를 계산할 수 있습니다.
         const canvas = await html2canvas(clone, {
             scale: 2,
             useCORS: true,
@@ -363,16 +377,13 @@ async function takeScreenshot() {
             backgroundColor: window.getComputedStyle(clone).backgroundColor,
         });
 
-        // --- ★★★ 여기를 수정했습니다 ★★★ ---
-        // 800px 너비에 맞게 잘라내는 값을 50px로 대폭 줄였습니다.
-        // 이렇게 하면 너무 많이 잘리지 않고 적당한 여백만 제거됩니다.
+        // 4. 잘라내기 로직은 그대로 유지합니다.
         const scale = 2;
         const cropTop = 5 * scale;
         const cropBottom = 5 * scale;
-        const cropLeft = 30 * scale; 
-        const cropRight = 30 * scale;
-        // --- 수정 끝 ---
-
+        const cropLeft = 150 * scale;
+        const cropRight = 150 * scale;
+        
         const croppedWidth = canvas.width - cropLeft - cropRight;
         const croppedHeight = canvas.height - cropTop - cropBottom;
 
@@ -393,13 +404,15 @@ async function takeScreenshot() {
             croppedHeight
         );
 
+        // 5. 최종 결과물을 다운로드합니다.
         const link = document.createElement('a');
         link.download = '오늘의밥_' + new Date().toISOString().slice(0, 10) + '.png';
         link.href = croppedCanvas.toDataURL('image/png');
         link.click();
 
     } finally {
-        document.body.removeChild(clone);
+        // 6. 작업이 끝나면 투명 컨테이너를 반드시 제거합니다.
+        document.body.removeChild(screenshotContainer);
     }
 }
 
