@@ -198,7 +198,7 @@
                 stats:      (cleanData[4] || "0-0-0-0").split('-'),
                 runes:      (cleanData[5] || "8112-8143").split('-'),
                 subRunes:   (cleanData[6] || "8226-8210").split('-'),
-                spells:     (cleanData[7] || "SummonerFlash-SummonerHeal").split('-'),
+                spells:     (cleanData[7] || "Flash-Heal").split('-'),
                 skillBuild: (cleanData[8] || "Q-W-E").split('-'),
                 items:      (cleanData[9] || "1055-1056-1029-1036-1038-1052").split('-'),
                 background: cleanData[10] || "",
@@ -255,6 +255,17 @@
         }
 
         async function updateBuild(data) {
+            const spellNameMapper = {
+                'flash': 'SummonerFlash',
+                'heal': 'SummonerHeal',
+                'ignite': 'SummonerDot',
+                'teleport': 'SummonerTeleport',
+                'smite': 'SummonerSmite',
+                'exhaust': 'SummonerExhaust',
+                'ghost': 'SummonerHaste',
+                'barrier': 'SummonerBarrier',
+                'cleanse': 'SummonerBoost'
+            };
             if (!window.runeData) {
                 try {
                     const response = await fetch(`https://ddragon.leagueoflegends.com/cdn/${LATEST_LOL_VERSION}/data/ko_KR/runesReforged.json`);
@@ -277,8 +288,10 @@
             const subRuneStyle = findRuneById(data.subRunes[0]);
             if (mainRune) runeSpellGroup.innerHTML += `<img src="${RUNE_IMG_URL_BASE}${mainRune.icon}" class="rune" title="${mainRune.name}">`;
             if (subRuneStyle) runeSpellGroup.innerHTML += `<img src="${RUNE_IMG_URL_BASE}${subRuneStyle.icon}" class="sub-rune" title="${subRuneStyle.name}">`;
-            data.spells.forEach(spell => {
-                runeSpellGroup.innerHTML += `<img src="https://ddragon.leagueoflegends.com/cdn/${LATEST_LOL_VERSION}/img/spell/${spell}.png" class="spell" title="${spell}">`;
+            data.spells.forEach(spellName => {
+                const lowerCaseSpellName = spellName.trim().toLowerCase();
+                const spellId = spellNameMapper[lowerCaseSpellName] || spellName;
+                runeSpellGroup.innerHTML += `<img src="https://ddragon.leagueoflegends.com/cdn/${LATEST_LOL_VERSION}/img/spell/${spellId}.png" class="spell" title="${spellName}">`;
             });
             const skillSequence = document.getElementById('skillSequence');
             skillSequence.innerHTML = '';
@@ -329,14 +342,14 @@
         }
 
         function copyTemplate() {
-            const template = `[OOC 모드: 잠시 롤플레이를 정지. 캐릭터 설정에 맞게 아래 양식으로만 답변하고 이렇게 설정한 이유를 알려줘]
+            const template = `[OOC 모드: 잠시 롤플레이를 정지. 캐릭터 설정에 맞게 아래 양식으로만 답변해 줘.]
 
 [{소환사 닉네임}]
 [{Tier & LP}]
 [{주 챔피언 영문 ID}] [{Position}]
 [{KDA-분당CS-킬관여율(숫자만)-분당데미지}]
 [{핵심룬ID-하위룬ID}] [{보조룬 핵심ID-보조룬 하위ID}]
-[{스펠1 영문ID-스펠2 영문ID}]
+[{스펠1 이름(Flash, Heal 등)-스펠2 이름}]
 [{스킬 마스터 순서 (예: Q-E-W)}]
 [{아이템1ID-아이템2ID-아이템3ID-아이템4ID-아이템5ID-아이템6ID}]
 [{헥스코드}]`;
@@ -347,6 +360,7 @@
             });
         }
 
+        // 페이지가 처음 로드될 때 한 번 실행하여 빈 카드를 그림
         document.addEventListener('DOMContentLoaded', parseCommand);
     </script>
 </body>
