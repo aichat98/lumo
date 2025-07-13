@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LoL 프로필 카드 생성기</title>
+    <!-- 외부 폰트 및 아이콘 라이브러리 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- CSS 코드 통합 -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #1a1a1d;
+            color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            width: 100%;
+            max-width: 1200px;
+            height: 750px;
+            background-color: #2c2c34;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+        .controls {
+            width: 450px;
+            background-color: #25252a;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        .controls h1 { font-size: 24px; font-weight: 900; margin-bottom: 10px; color: #ffffff; }
+        .controls h1 i { color: #5383e8; margin-right: 10px; }
+        .controls .description { font-size: 14px; color: #a0a0b0; line-height: 1.6; margin-bottom: 30px; }
+        .control-group label { display: block; font-size: 12px; font-weight: 700; color: #c0c0d0; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .controls textarea { 
+            width: 100%; 
+            padding: 12px; 
+            border: 2px solid #444450; 
+            border-radius: 8px; 
+            background-color: #1e1e21; 
+            color: #f0f2f5; 
+            font-family: 'Noto Sans KR', sans-serif; 
+            font-size: 14px; 
+            resize: none; 
+            transition: border-color 0.3s, box-shadow 0.3s;
+            min-height: 300px;
+            height: auto;
+        }
+        .controls textarea:focus { outline: none; border-color: #5383e8; box-shadow: 0 0 0 3px rgba(83, 131, 232, 0.3); }
+        .guide { font-size: 12px; color: #888; background-color: #333338; padding: 10px; border-radius: 6px; margin-top: 20px; line-height: 1.5; }
+        .guide a { color: #5383e8; text-decoration: none; font-weight: 700;}
+        .guide a:hover { text-decoration: underline; }
+        .button-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: auto; padding-top: 20px;}
+        .controls button { padding: 12px; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; background-color: #444450; color: #f0f2f5; }
+        .controls button i { margin-right: 8px; }
+        .controls button:hover { background-color: #555560; }
+        .controls button.primary { background-color: #5383e8; color: white; }
+        .controls button.primary:hover { background-color: #436fc8; }
+        .preview-area { 
+            flex: 1; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            padding: 50px; 
+            background-color: #2c2c34;
+            transition: background-color 0.5s ease;
+        }
+        .profile-card { width: 400px; height: 680px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); overflow: hidden; position: relative; }
+        .card-background { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; transition: all 0.5s; filter: brightness(0.7); }
+        .card-content { position: relative; z-index: 2; width: 100%; height: 100%; padding: 25px; display: flex; flex-direction: column; color: white; text-shadow: 0 2px 5px rgba(0, 0, 0, 0.7); }
+        .card-content::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.7) 70%, rgba(0,0,0,0.9) 100%); z-index: -1; }
+        .card-main-content { margin-top: auto; width: 100%; }
+        .block-label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; margin-bottom: 10px; }
+        .player-info { display: flex; align-items: flex-end; gap: 15px; margin-bottom: 20px; }
+        .champ-icon { width: 80px; height: 80px; border-radius: 12px; border: 3px solid rgba(255, 255, 255, 0.8); box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); }
+        .tier-text { font-size: 15px; font-weight: 700; color: #5383e8; text-transform: uppercase; }
+        .summoner-name { font-size: 32px; font-weight: 900; line-height: 1.1; }
+        .champ-and-position { font-size: 16px; font-weight: 500; opacity: 0.8; }
+        .stat-block, .build-block { background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.1); padding: 15px; border-radius: 12px; margin-bottom: 12px; }
+        .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); text-align: center; }
+        .stat-item .value { font-size: 20px; font-weight: 700; }
+        .stat-item .label { font-size: 10px; opacity: 0.7; }
+        .build-grid { display: grid; grid-template-columns: 95px 1fr; gap: 12px; }
+        .rune-spell-group { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: center; }
+        .rune-spell-group .rune { width: 40px; height: 40px; border-radius: 50%; background-color: black; }
+        .rune-spell-group .sub-rune { width: 28px; height: 28px; border-radius: 50%; background-color: black; }
+        .rune-spell-group .spell { width: 28px; height: 28px; border-radius: 6px; }
+        .skill-item-group { display: flex; flex-direction: column; justify-content: space-between; gap: 8px; }
+        .skill-sequence { display: flex; align-items: center; justify-content: flex-start; gap: 8px; }
+        .skill-box { display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 6px; font-size: 16px; font-weight: 900; color: rgba(255, 255, 255, 0.8); }
+        .skill-box.primary { border-color: #5383e8; color: #5383e8; }
+        .skill-sequence .separator { font-size: 12px; opacity: 0.5; }
+        .item-sequence { display: flex; align-items: center; justify-content: flex-start; gap: 4px; }
+        .item-icon { width: 32px; height: 32px; border-radius: 6px; border: 1px solid #5383e8; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 왼쪽: 컨트롤 패널 -->
+        <div class="controls">
+            <h1><i class="fa-solid fa-id-card"></i> LoL 프로필 카드 생성기</h1>
+            <p class="description">
+                아래 양식에 맞춰 정보를 입력하면<br>
+                캐릭터의 롤 프로필 카드가 생성됩니다.
+            </p>
+
+            <div class="control-group">
+                <label for="commandInput">명령어 입력</label>
+                <!-- 명령어 입력창을 빈 칸으로 설정 -->
+                <textarea id="commandInput" oninput="parseCommand()"></textarea>
+            </div>
+            
+            <p class="guide">
+                <i class="fa-solid fa-circle-info"></i> <strong>룬/스펠/아이템 ID</strong>는 <a href="https://github.com/paullol/league-data/tree/main/data" target="_blank">이곳</a>에서 확인하거나, op.gg 등에서 이미지 주소의 숫자/이름을 확인하세요.
+            </p>
+
+            <div class="button-group">
+                <button onclick="copyTemplate()"><i class="fa-solid fa-paste"></i> 양식 복사</button>
+                <button class="primary" onclick="downloadCard()"><i class="fa-solid fa-download"></i> 이미지로 저장</button>
+            </div>
+        </div>
+
+        <!-- 오른쪽: 카드 미리보기 -->
+        <div class="preview-area">
+            <div class="profile-card" id="lolCard">
+                <div class="card-background" id="cardBackground"></div>
+                <div class="card-content">
+                    <div class="card-main-content">
+                        <div class="player-info">
+                            <img id="champIcon" src="" alt="Champion Icon" class="champ-icon">
+                            <div class="name-tier-block">
+                                <span id="tier" class="tier-text"></span>
+                                <h2 id="summonerName" class="summoner-name"></h2>
+                                <p id="champAndPosition" class="champ-and-position"></p>
+                            </div>
+                        </div>
+                        <div class="stat-block">
+                            <span class="block-label">STATISTICS</span>
+                            <div class="stat-grid" id="statGrid"></div>
+                        </div>
+                        <div class="build-block">
+                            <span class="block-label">BUILD</span>
+                            <div class="build-grid">
+                                <div class="rune-spell-group" id="runeSpellGroup"></div>
+                                <div class="skill-item-group">
+                                    <div class="skill-sequence" id="skillSequence"></div>
+                                    <div class="item-sequence" id="itemSequence"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 외부 이미지 캡처 라이브러리 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <!-- JavaScript 코드 통합 -->
+    <script>
+        const LATEST_LOL_VERSION = '14.10.1';
+        const RUNE_IMG_URL_BASE = 'https://ddragon.leagueoflegends.com/cdn/img/';
+
+        let currentCardData = {};
+
+        function parseCommand() {
+            const rawCommand = document.getElementById('commandInput').value;
+            const command = rawCommand.replace(/\[OOC.*?\]/g, '').trim();
+            const regex = /\[\{.*?\}\]|\[.*?\]|\{.*?\}/g;
+            const matches = command.match(regex) || [];
+            
+            const cleanData = matches.map(match => {
+                if (match.startsWith('[{') && match.endsWith('}]')) return match.slice(2, -2);
+                if (match.startsWith('[') && match.endsWith(']')) return match.slice(1, -1);
+                if (match.startsWith('{') && match.endsWith('}')) return match.slice(1, -1);
+                return match;
+            });
+            
+            currentCardData = {
+                name:       cleanData[0] || "소환사 이름",
+                tier:       cleanData[1] || "UNRANKED",
+                championId: cleanData[2] || "Annie",
+                position:   cleanData[3] || "MID",
+                stats:      (cleanData[4] || "0-0-0-0").split('-'),
+                runes:      (cleanData[5] || "8112-8143").split('-'),
+                subRunes:   (cleanData[6] || "8226-8210").split('-'),
+                spells:     (cleanData[7] || "SummonerFlash-SummonerHeal").split('-'),
+                skillBuild: (cleanData[8] || "Q-W-E").split('-'),
+                items:      (cleanData[9] || "1055-1056-1029-1036-1038-1052").split('-'),
+                background: cleanData[10] || "",
+            };
+            
+            autoResizeTextarea(document.getElementById('commandInput'));
+            updateCardUI(currentCardData);
+        }
+
+        function autoResizeTextarea(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = (textarea.scrollHeight) + 'px';
+        }
+
+        async function updateCardUI(data) {
+            const splashArtUrl = `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${data.championId}_0.jpg`;
+            const championIconUrl = `https://ddragon.leagueoflegends.com/cdn/${LATEST_LOL_VERSION}/img/champion/${data.championId}.png`;
+
+            document.getElementById('summonerName').textContent = data.name;
+            document.getElementById('tier').textContent = data.tier;
+            document.getElementById('champAndPosition').textContent = `${data.championId} • ${data.position}`;
+            document.getElementById('champIcon').src = championIconUrl;
+            
+            const previewArea = document.querySelector('.preview-area');
+            const cardBackground = document.getElementById('cardBackground');
+            
+            if (data.background.startsWith('#')) {
+                previewArea.style.backgroundColor = data.background;
+            } else {
+                previewArea.style.backgroundColor = '#2c2c34';
+            }
+            
+            if (data.background.startsWith('http')) {
+                cardBackground.style.backgroundImage = `url('${data.background}')`;
+            } else {
+                cardBackground.style.backgroundImage = `url('${splashArtUrl}')`;
+            }
+
+            updateStats(data.stats);
+            await updateBuild(data);
+        }
+
+        function updateStats(stats) {
+            const statGrid = document.getElementById('statGrid');
+            statGrid.innerHTML = '';
+            const labels = ['KDA', 'CS/m', 'Kill P.', 'DMG/m'];
+            stats.forEach((value, i) => {
+                const displayValue = i === 2 ? `${value || 0}%` : (value || 0);
+                const item = document.createElement('div');
+                item.className = 'stat-item';
+                item.innerHTML = `<div class="value">${displayValue}</div><div class="label">${labels[i]}</div>`;
+                statGrid.appendChild(item);
+            });
+        }
+
+        async function updateBuild(data) {
+            if (!window.runeData) {
+                try {
+                    const response = await fetch(`https://ddragon.leagueoflegends.com/cdn/${LATEST_LOL_VERSION}/data/ko_KR/runesReforged.json`);
+                    window.runeData = await response.json();
+                } catch (error) { console.error("룬 데이터를 불러오는 데 실패했습니다.", error); return; }
+            }
+            const findRuneById = (id) => {
+                for (const style of window.runeData) {
+                    for (const slot of style.slots) {
+                        for (const rune of slot.runes) {
+                            if (rune.id == id) return rune;
+                        }
+                    }
+                }
+                return null;
+            };
+            const runeSpellGroup = document.getElementById('runeSpellGroup');
+            runeSpellGroup.innerHTML = '';
+            const mainRune = findRuneById(data.runes[0]);
+            const subRuneStyle = findRuneById(data.subRunes[0]);
+            if (mainRune) runeSpellGroup.innerHTML += `<img src="${RUNE_IMG_URL_BASE}${mainRune.icon}" class="rune" title="${mainRune.name}">`;
+            if (subRuneStyle) runeSpellGroup.innerHTML += `<img src="${RUNE_IMG_URL_BASE}${subRuneStyle.icon}" class="sub-rune" title="${subRuneStyle.name}">`;
+            data.spells.forEach(spell => {
+                runeSpellGroup.innerHTML += `<img src="https://ddragon.leagueoflegends.com/cdn/${LATEST_LOL_VERSION}/img/spell/${spell}.png" class="spell" title="${spell}">`;
+            });
+            const skillSequence = document.getElementById('skillSequence');
+            skillSequence.innerHTML = '';
+            data.skillBuild.forEach((skill, index) => {
+                skillSequence.innerHTML += `<span class="skill-box ${index === 0 ? 'primary' : ''}">${skill}</span>`;
+                if (index < data.skillBuild.length - 1) {
+                    skillSequence.innerHTML += `<i class="fas fa-chevron-right separator"></i>`;
+                }
+            });
+            const itemSequence = document.getElementById('itemSequence');
+            itemSequence.innerHTML = '';
+            data.items.forEach(item => {
+                itemSequence.innerHTML += `<img src="https://ddragon.leagueoflegends.com/cdn/${LATEST_LOL_VERSION}/img/item/${item}.png" class="item-icon">`;
+            });
+        }
+
+        async function downloadCard() {
+            const cardElement = document.getElementById('lolCard');
+            const summonerName = currentCardData.name || 'profile';
+            const margin = 100;
+            const finalCanvas = document.createElement('canvas');
+            finalCanvas.width = cardElement.offsetWidth + margin * 2;
+            finalCanvas.height = cardElement.offsetHeight + margin * 2;
+            const ctx = finalCanvas.getContext('2d');
+            const bgColor = currentCardData.background.startsWith('#') ? currentCardData.background : '#2c2c34';
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
+            ctx.save();
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.4)';
+            ctx.shadowBlur = 30;
+            ctx.shadowOffsetY = 10;
+            ctx.fillStyle = bgColor;
+            ctx.beginPath();
+            ctx.roundRect(margin, margin, cardElement.offsetWidth, cardElement.offsetHeight, 20);
+            ctx.fill();
+            ctx.restore();
+            const cardCanvas = await html2canvas(cardElement, {
+                useCORS: true,
+                backgroundColor: null,
+                scale: 2
+            });
+            ctx.drawImage(cardCanvas, margin, margin, cardElement.offsetWidth, cardElement.offsetHeight);
+            const image = finalCanvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.href = image;
+            link.download = `${summonerName.replace(/\s/g, '_')}_lol_card.png`;
+            link.click();
+        }
+
+        function copyTemplate() {
+            const template = `[OOC 모드: 잠시 롤플레이를 정지. 캐릭터 설정에 맞게 아래 양식으로만 답변해 줘.]
+
+
+[{소환사 닉네임}]
+[{티어와 LP}]
+[{주 챔피언 영문 ID}] [{포지션}]
+[{KDA-분당CS-킬관여율(숫자만)-분당데미지}]
+[{핵심룬ID-하위룬ID}] [{보조룬 핵심ID-보조룬 하위ID}]
+[{스펠1 영문ID-스펠2 영문ID}]
+[{스킬 마스터 순서 (예: Q-E-W)}]
+[{아이템1ID-아이템2ID-아이템3ID-아이템4ID-아이템5ID-아이템6ID}]
+[{헥스코드}]`;
+            navigator.clipboard.writeText(template).then(() => {
+                alert('양식이 클립보드에 복사되었습니다!');
+            }).catch(err => {
+                console.error('클립보드 복사 실패:', err);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', parseCommand);
+    </script>
+</body>
+</html>
