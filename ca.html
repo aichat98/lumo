@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>완전 자동 자동차 프로필 카드 생성기</title>
+    <!-- 모든 외부 라이브러리는 정상입니다. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* CSS는 문제 없으므로 그대로 사용합니다. */
+        * { margin: 0; padding: 0; box-sizing: border-box; } body { font-family: 'Roboto', 'Noto Sans KR', sans-serif; background-color: #121212; color: #e0e0e0; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; } .container { display: flex; width: 100%; max-width: 1300px; height: 800px; background-color: #1e1e1e; border-radius: 20px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7); overflow: hidden; border: 1px solid #333; } .controls { width: 500px; background-color: #191919; padding: 40px; display: flex; flex-direction: column; overflow-y: auto; } .controls h1 { font-size: 28px; font-weight: 900; margin-bottom: 10px; color: #ffffff; } .controls h1 i { color: #e85353; margin-right: 12px; } .controls .description { font-size: 15px; color: #a0a0a0; line-height: 1.6; margin-bottom: 30px; } .control-group label { display: block; font-size: 12px; font-weight: 700; color: #c0c0d0; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; } .controls textarea { width: 100%; padding: 15px; border: 2px solid #444; border-radius: 8px; background-color: #252525; color: #f0f2f5; font-family: 'Consolas', 'monospace', 'Noto Sans KR'; font-size: 14px; resize: none; transition: border-color 0.3s, box-shadow 0.3s; min-height: 350px; height: auto; } .controls textarea:focus { outline: none; border-color: #e85353; box-shadow: 0 0 0 3px rgba(232, 83, 83, 0.3); } .guide { font-size: 12px; color: #888; background-color: #2a2a2a; padding: 12px; border-radius: 6px; margin-top: 20px; line-height: 1.6; } .guide code { background-color: #444; padding: 2px 5px; border-radius: 4px; color: #e0e0e0; } .button-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: auto; padding-top: 20px;} .controls button { padding: 15px; border: none; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s; background-color: #444; color: #f0f2f5; } .controls button i { margin-right: 8px; } .controls button:hover { background-color: #555; } .controls button.primary { background: linear-gradient(45deg, #e85353, #c43e3e); color: white; } .controls button.primary:hover { opacity: 0.9; } .preview-area { flex: 1; display: flex; justify-content: center; align-items: center; padding: 50px; background: radial-gradient(circle, #2a2a2a 0%, #1e1e1e 70%); } .car-card { width: 700px; height: 400px; border-radius: 16px; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6); overflow: hidden; position: relative; background-color: #333; color: white; font-family: 'Roboto', sans-serif; display: flex; } .card-background { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; transition: all 0.5s; filter: brightness(0.6) contrast(1.1); } .card-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.7) 40%, rgba(0,0,0,0) 100%); } .card-content { position: relative; z-index: 2; width: 100%; padding: 30px; display: flex; flex-direction: column; justify-content: space-between; } .card-header { display: flex; justify-content: space-between; align-items: flex-start; } .driver-info .class { font-size: 14px; font-weight: 700; color: #e85353; text-transform: uppercase; letter-spacing: 1px; } .driver-info .name { font-size: 28px; font-weight: 900; margin: 2px 0; } .driver-info .purpose { font-size: 16px; font-weight: 300; opacity: 0.7; } .manufacturer-logo { width: 80px; height: 80px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(255,255,255,0.3)); } .card-footer { width: 100%; } .car-model { font-size: 48px; font-weight: 900; line-height: 1.1; text-shadow: 0 3px 15px rgba(0,0,0,0.8); margin-bottom: 20px; } .details-grid { display: flex; gap: 15px; background: rgba(0,0,0,0.4); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 10px; padding: 15px; border: 1px solid rgba(255,255,255,0.1); } .spec-block { flex-basis: 55%; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; } .spec-item .value { font-size: 22px; font-weight: 700; } .spec-item .label { font-size: 11px; text-transform: uppercase; opacity: 0.6; } .mods-block { flex-basis: 45%; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 15px; } .mods-block .label { font-size: 11px; text-transform: uppercase; opacity: 0.6; margin-bottom: 8px; font-weight: 700;} .mods-grid { display: flex; gap: 15px; align-items: center; } .mod-item { text-align: center; } .mod-item i { font-size: 24px; color: #e85353; margin-bottom: 4px; } .mod-item .mod-name { font-size: 10px; opacity: 0.8; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="controls">
+            <h1><i class="fa-solid fa-car-side"></i> 완전 자동 생성기</h1>
+            <p class="description">모델명만 입력하면 스펙과 이미지가 자동으로 완성됩니다.</p>
+            <div class="control-group">
+                <label for="commandInput">명령어 입력</label>
+                <textarea id="commandInput" oninput="runGenerator()"></textarea>
+            </div>
+            <div class="button-group">
+                <button onclick="copyTemplate()"><i class="fa-solid fa-paste"></i> 양식 복사</button>
+                <button class="primary" onclick="downloadCard()"><i class="fa-solid fa-download"></i> 이미지로 저장</button>
+            </div>
+        </div>
+        <div class="preview-area">
+            <!-- 카드는 JavaScript가 동적으로 생성합니다. -->
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        const API_KEY = '여기에_발급받은_API_키를_붙여넣으세요';
+        const modIconMapping = { 'turbo': 'fa-solid fa-fan', 'engine': 'fa-solid fa-gears', 'tire': 'fa-solid fa-road', 'suspension': 'fa-solid fa-truck-suspension', 'exhaust': 'fa-solid fa-fire-extinguisher', 'aero': 'fa-solid fa-wind' };
+        let debounceTimer;
+
+        function runGenerator() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(async () => {
+                const rawCommand = document.getElementById('commandInput').value;
+                const command = rawCommand.replace(/\[OOC.*?\]/g, '').trim();
+                const regex = /\[(.*?)\]/g;
+                const matches = command.match(regex) || [];
+                const cleanData = matches.map(match => match.slice(1, -1));
+
+                let cardData = {
+                    driverName: cleanData[0] || "Driver Name",
+                    carPurpose: cleanData[1] || "Just for Fun",
+                    carModel:   cleanData[2] || "Ferrari F40",
+                    // 아래는 API가 덮어쓸 데이터의 기본값
+                    manufacturer: "ferrari", 
+                    carClass: "Supercar",
+                    specs:      ["0", "0", "0", "0"],
+                    mods:       ['engine', 'tire', 'aero']
+                };
+
+                // ★ 1단계: 즉시 이미지 자동 설정 ★
+                const imageUrl = `https://source.unsplash.com/1600x900/?${encodeURIComponent(cardData.carModel)}`;
+                updateCardUI(cardData, imageUrl); // 일단 기본 정보와 이미지로 먼저 그림
+
+                // ★ 2단계: API로 스펙 가져와서 업데이트 ★
+                if (API_KEY && API_KEY !== 'BXpILUwRZzF9UQBRHDRD0Q==FS5LVDSDO820m4q8' && cardData.carModel) {
+                    const apiUrl = `https://api.api-ninjas.com/v1/cars?limit=1&model=${encodeURIComponent(cardData.carModel)}`;
+                    try {
+                        const response = await fetch(apiUrl, { headers: { 'X-Api-Key': API_KEY } });
+                        if (!response.ok) throw new Error(`API Error: ${response.status}`);
+                        const apiResult = await response.json();
+                        if (apiResult.length > 0) {
+                            const carInfo = apiResult[0];
+                            cardData.manufacturer = carInfo.make.toLowerCase();
+                            cardData.carClass = carInfo.class.toUpperCase();
+                            cardData.specs[0] = Math.round(carInfo.horsepower * 0.98632) || 'N/A';
+                            cardData.specs[3] = carInfo.weight_kg || 'N/A';
+                            
+                            // 스펙만 업데이트해서 다시 그림
+                            updateCardUI(cardData, imageUrl); 
+                        }
+                    } catch (error) { console.error("API 호출 오류:", error); }
+                }
+            }, 800); // 타이핑 멈추고 0.8초 뒤 실행
+        }
+
+        // 카드를 그리는 함수를 분리하여 재사용성을 높임
+        function updateCardUI(data, imageUrl) {
+            const previewArea = document.querySelector('.preview-area');
+            previewArea.innerHTML = `
+            <div class="car-card" id="carCard">
+                <div class="card-background" style="background-image: url('${imageUrl}');"></div>
+                <div class="card-overlay"></div>
+                <div class="card-content">
+                    <header class="card-header">
+                        <div class="driver-info">
+                            <div class="class">${data.carClass}</div>
+                            <div class="name">${data.driverName}</div>
+                            <div class="purpose">${data.carPurpose}</div>
+                        </div>
+                        <img src="https://logo.clearbit.com/${data.manufacturer}.com" alt="Logo" class="manufacturer-logo" onerror="this.style.display='none'">
+                    </header>
+                    <footer class="card-footer">
+                        <h2 class="car-model">${data.carModel}</h2>
+                        <div class="details-grid">
+                            <div class="spec-block">
+                                <div class="spec-item"><div class="value">${data.specs[0]} <span style="font-size:0.7em; opacity:0.7;">PS</span></div><div class="label">Power</div></div>
+                                <div class="spec-item"><div class="value">${data.specs[1] || 'N/A'} <span style="font-size:0.7em; opacity:0.7;">sec</span></div><div class="label">0-100km/h</div></div>
+                                <div class="spec-item"><div class="value">${data.specs[2] || 'N/A'} <span style="font-size:0.7em; opacity:0.7;">km/h</span></div><div class="label">Top Speed</div></div>
+                                <div class="spec-item"><div class="value">${data.specs[3]} <span style="font-size:0.7em; opacity:0.7;">kg</span></div><div class="label">Weight</div></div>
+                            </div>
+                            <div class="mods-block">
+                                <div class="label">Key Modifications</div>
+                                <div class="mods-grid">
+                                    ${data.mods.map(mod => `<div class="mod-item"><i class="${modIconMapping[mod.trim().toLowerCase()] || 'fa-solid fa-question-circle'}"></i><div class="mod-name">${mod.toUpperCase()}</div></div>`).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            </div>`;
+        }
+        
+        function copyTemplate() {
+            // 이제 정말 이것만 필요합니다.
+            const template = `[OOC]
+
+[드라이버 이름]
+[주요 용도]
+[차량 모델명]`;
+            navigator.clipboard.writeText(template).then(() => { alert('자동 완성 양식이 복사되었습니다!'); });
+        }
+
+        // 페이지 로딩 시 실행할 예시
+        document.addEventListener('DOMContentLoaded', () => {
+             const exampleCommand = `[OOC]
+
+[Enzo]
+[Timeless Legend]
+[Ferrari F40]`;
+            document.getElementById('commandInput').value = exampleCommand;
+            runGenerator();
+        });
+
+        // 기타 다운로드 함수
+        async function downloadCard() {
+            const cardElement = document.getElementById('carCard');
+            if (!cardElement) return;
+            const canvas = await html2canvas(cardElement, { useCORS: true, backgroundColor: null, scale: 2 });
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL('image/png');
+            link.download = `car_card.png`;
+            link.click();
+        }
+    </script>
+</body>
+</html>
