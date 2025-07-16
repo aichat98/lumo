@@ -2,24 +2,78 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>최종 자동차 프로필 카드 생성기 (최종 수정본)</title>
-    <!-- 라이브러리 및 스타일은 모두 정상입니다. -->
+    <title>자동차 프로필 카드 생성기</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; } body { font-family: 'Roboto', 'Noto Sans KR', sans-serif; background-color: #121212; color: #e0e0e0; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; } .container { display: flex; width: 100%; max-width: 1300px; height: 800px; background-color: #1e1e1e; border-radius: 20px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7); overflow: hidden; border: 1px solid #333; } .controls { width: 500px; background-color: #191919; padding: 40px; display: flex; flex-direction: column; overflow-y: auto; } .controls h1 { font-size: 28px; font-weight: 900; margin-bottom: 10px; color: #ffffff; } .controls h1 i { color: #e85353; margin-right: 12px; } .controls .description { font-size: 15px; color: #a0a0a0; line-height: 1.6; margin-bottom: 30px; } .control-group label { display: block; font-size: 12px; font-weight: 700; color: #c0c0d0; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; } .controls textarea { width: 100%; padding: 15px; border: 2px solid #444; border-radius: 8px; background-color: #252525; color: #f0f2f5; font-family: 'Consolas', 'monospace', 'Noto Sans KR'; font-size: 14px; resize: none; transition: border-color 0.3s, box-shadow 0.3s; min-height: 350px; height: auto; } .controls textarea:focus { outline: none; border-color: #e85353; box-shadow: 0 0 0 3px rgba(232, 83, 83, 0.3); } .guide { font-size: 12px; color: #888; background-color: #2a2a2a; padding: 12px; border-radius: 6px; margin-top: 20px; line-height: 1.6; } .guide code { background-color: #444; padding: 2px 5px; border-radius: 4px; color: #e0e0e0; } .button-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: auto; padding-top: 20px;} .controls button { padding: 15px; border: none; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s; background-color: #444; color: #f0f2f5; } .controls button i { margin-right: 8px; } .controls button:hover { background-color: #555; } .controls button.primary { background: linear-gradient(45deg, #e85353, #c43e3e); color: white; } .controls button.primary:hover { opacity: 0.9; } .preview-area { flex: 1; display: flex; justify-content: center; align-items: center; padding: 50px; background: radial-gradient(circle, #2a2a2a 0%, #1e1e1e 70%); } .car-card { width: 700px; height: 400px; border-radius: 16px; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6); overflow: hidden; position: relative; background-color: #333; color: white; font-family: 'Roboto', sans-serif; display: flex; } .card-background { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; transition: all 0.5s; filter: brightness(0.6) contrast(1.1); } .card-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.7) 40%, rgba(0,0,0,0) 100%); } .card-content { position: relative; z-index: 2; width: 100%; padding: 30px; display: flex; flex-direction: column; justify-content: space-between; } .card-header { display: flex; justify-content: space-between; align-items: flex-start; } .driver-info .class { font-size: 14px; font-weight: 700; color: #e85353; text-transform: uppercase; letter-spacing: 1px; } .driver-info .name { font-size: 28px; font-weight: 900; margin: 2px 0; } .driver-info .purpose { font-size: 16px; font-weight: 300; opacity: 0.7; } .manufacturer-logo { width: 80px; height: 80px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(255,255,255,0.3)); } .card-footer { width: 100%; } .car-model { font-size: 48px; font-weight: 900; line-height: 1.1; text-shadow: 0 3px 15px rgba(0,0,0,0.8); margin-bottom: 20px; } .details-grid { display: flex; gap: 15px; background: rgba(0,0,0,0.4); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 10px; padding: 15px; border: 1px solid rgba(255,255,255,0.1); } .spec-block { flex-basis: 55%; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; } .spec-item .value { font-size: 22px; font-weight: 700; } .spec-item .label { font-size: 11px; text-transform: uppercase; opacity: 0.6; } .mods-block { flex-basis: 45%; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 15px; } .mods-block .label { font-size: 11px; text-transform: uppercase; opacity: 0.6; margin-bottom: 8px; font-weight: 700;} .mods-grid { display: flex; gap: 15px; align-items: center; } .mod-item { text-align: center; } .mod-item i { font-size: 24px; color: #e85353; margin-bottom: 4px; } .mod-item .mod-name { font-size: 10px; opacity: 0.8; }
+        * { margin: 0; padding: 0; box-sizing: border-box; } 
+        body { font-family: 'Roboto', 'Noto Sans KR', sans-serif; background-color: #121212; color: #e0e0e0; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; } 
+        .container { display: flex; width: 100%; max-width: 1300px; height: 800px; background-color: #1e1e1e; border-radius: 20px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7); overflow: hidden; border: 1px solid #333; } 
+        .controls { width: 500px; background-color: #191919; padding: 40px; display: flex; flex-direction: column; overflow-y: auto; } 
+        .controls h1 { font-size: 28px; font-weight: 900; margin-bottom: 10px; color: #ffffff; } 
+        .controls h1 i { color: #e85353; margin-right: 12px; } 
+        .controls .description { font-size: 15px; color: #a0a0a0; line-height: 1.6; margin-bottom: 30px; } 
+        .control-group label { display: block; font-size: 12px; font-weight: 700; color: #c0c0d0; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; } 
+        .controls textarea { width: 100%; padding: 15px; border: 2px solid #444; border-radius: 8px; background-color: #252525; color: #f0f2f5; font-family: 'Consolas', 'monospace', 'Noto Sans KR'; font-size: 14px; resize: none; transition: border-color 0.3s, box-shadow 0.3s; min-height: 280px; height: auto; } 
+        .controls textarea:focus { outline: none; border-color: #e85353; box-shadow: 0 0 0 3px rgba(232, 83, 83, 0.3); } 
+        .api-status { font-size: 12px; padding: 10px; border-radius: 6px; margin-top: 15px; display: flex; align-items: center; } 
+        .api-status.success { background-color: #1a4a2e; color: #4caf50; } 
+        .api-status.error { background-color: #4a1a1a; color: #f44336; } 
+        .api-status.loading { background-color: #4a4a1a; color: #ffa726; } 
+        .api-status i { margin-right: 8px; } 
+        .guide { font-size: 12px; color: #888; background-color: #2a2a2a; padding: 12px; border-radius: 6px; margin-top: 20px; line-height: 1.6; } 
+        .guide code { background-color: #444; padding: 2px 5px; border-radius: 4px; color: #e0e0e0; } 
+        .button-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: auto; padding-top: 20px;} 
+        .controls button { padding: 15px; border: none; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s; background-color: #444; color: #f0f2f5; } 
+        .controls button i { margin-right: 8px; } 
+        .controls button:hover { background-color: #555; } 
+        .controls button.primary { background: linear-gradient(45deg, #e85353, #c43e3e); color: white; } 
+        .controls button.primary:hover { opacity: 0.9; } 
+        .preview-area { flex: 1; display: flex; justify-content: center; align-items: center; padding: 50px; background: radial-gradient(circle, #2a2a2a 0%, #1e1e1e 70%); } 
+        .car-card { width: 700px; height: 400px; border-radius: 16px; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6); overflow: hidden; position: relative; background-color: #333; color: white; font-family: 'Roboto', sans-serif; display: flex; } 
+        .card-background { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; transition: all 0.5s; filter: brightness(0.6) contrast(1.1); } 
+        .card-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.7) 40%, rgba(0,0,0,0) 100%); } 
+        .card-content { position: relative; z-index: 2; width: 100%; padding: 30px; display: flex; flex-direction: column; justify-content: space-between; } 
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; } 
+        .driver-info .class { font-size: 14px; font-weight: 700; color: #e85353; text-transform: uppercase; letter-spacing: 1px; } 
+        .driver-info .name { font-size: 28px; font-weight: 900; margin: 2px 0; } 
+        .driver-info .purpose { font-size: 16px; font-weight: 300; opacity: 0.7; } 
+        .manufacturer-logo { width: 80px; height: 80px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(255,255,255,0.3)); } 
+        .card-footer { width: 100%; } 
+        .car-model { font-size: 48px; font-weight: 900; line-height: 1.1; text-shadow: 0 3px 15px rgba(0,0,0,0.8); margin-bottom: 20px; } 
+        .details-grid { display: flex; gap: 15px; background: rgba(0,0,0,0.4); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 10px; padding: 15px; border: 1px solid rgba(255,255,255,0.1); } 
+        .spec-block { flex-basis: 55%; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; } 
+        .spec-item .value { font-size: 22px; font-weight: 700; } 
+        .spec-item .label { font-size: 11px; text-transform: uppercase; opacity: 0.6; } 
+        .mods-block { flex-basis: 45%; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 15px; } 
+        .mods-block .label { font-size: 11px; text-transform: uppercase; opacity: 0.6; margin-bottom: 8px; font-weight: 700;} 
+        .mods-grid { display: flex; gap: 15px; align-items: center; } 
+        .mod-item { text-align: center; } 
+        .mod-item i { font-size: 24px; color: #e85353; margin-bottom: 4px; } 
+        .mod-item .mod-name { font-size: 10px; opacity: 0.8; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="controls">
-            <h1><i class="fa-solid fa-car-side"></i> 완전 자동 생성기</h1>
+            <h1><i class="fa-solid fa-car-side"></i> 자동차 프로필 생성기</h1>
             <p class="description">모델명만 입력하면 스펙과 이미지가 자동으로 완성됩니다.</p>
             <div class="control-group">
                 <label for="commandInput">명령어 입력</label>
-                <textarea id="commandInput" oninput="runGenerator()"></textarea>
+                <textarea id="commandInput" oninput="runGenerator()" placeholder="[드라이버 이름]&#10;[주요 용도]&#10;[차량 모델명]"></textarea>
+            </div>
+            <div id="apiStatus" class="api-status loading">
+                <i class="fa-solid fa-info-circle"></i>
+                <span>명령어를 입력해주세요</span>
+            </div>
+            <div class="guide">
+                <strong>사용법:</strong><br>
+                <code>[드라이버 이름]</code><br>
+                <code>[주요 용도]</code><br>
+                <code>[차량 모델명]</code><br>
+                형식으로 입력하면 자동으로 카드가 생성됩니다.
             </div>
             <div class="button-group">
                 <button onclick="copyTemplate()"><i class="fa-solid fa-paste"></i> 양식 복사</button>
@@ -27,24 +81,139 @@
             </div>
         </div>
         <div class="preview-area">
-            <!-- 카드는 JavaScript가 동적으로 생성합니다. -->
+            <div class="car-card" id="carCard">
+                <div class="card-background"></div>
+                <div class="card-overlay"></div>
+                <div class="card-content">
+                    <header class="card-header">
+                        <div class="driver-info">
+                            <div class="class">SPORTS CAR</div>
+                            <div class="name">Driver Name</div>
+                            <div class="purpose">Purpose</div>
+                        </div>
+                    </header>
+                    <footer class="card-footer">
+                        <h2 class="car-model">Car Model</h2>
+                        <div class="details-grid">
+                            <div class="spec-block">
+                                <div class="spec-item"><div class="value">--- <span style="font-size:0.7em; opacity:0.7;">PS</span></div><div class="label">Power</div></div>
+                                <div class="spec-item"><div class="value">--- <span style="font-size:0.7em; opacity:0.7;">sec</span></div><div class="label">0-100km/h</div></div>
+                                <div class="spec-item"><div class="value">--- <span style="font-size:0.7em; opacity:0.7;">km/h</span></div><div class="label">Top Speed</div></div>
+                                <div class="spec-item"><div class="value">--- <span style="font-size:0.7em; opacity:0.7;">kg</span></div><div class="label">Weight</div></div>
+                            </div>
+                            <div class="mods-block">
+                                <div class="label">Key Modifications</div>
+                                <div class="mods-grid">
+                                    <div class="mod-item"><i class="fa-solid fa-gears"></i><div class="mod-name">ENGINE</div></div>
+                                    <div class="mod-item"><i class="fa-solid fa-road"></i><div class="mod-name">TIRE</div></div>
+                                    <div class="mod-item"><i class="fa-solid fa-wind"></i><div class="mod-name">AERO</div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            </div>
         </div>
     </div>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
-        // ★★★★★ API 키 입력 부분만 수정해주세요. ★★★★★
-        const API_KEY = 'BXpILUwRZzF9UQBRHDRD0Q==FS5LVDSDO820m4q8'; // <- 여기에 본인의 API 키를 붙여넣으세요. (이 문자열 자체를 지우지 마세요)
+        const API_KEY = 'BXpILUwRZzF9UQBRHDRD0Q==FS5LVDSDO820m4q8';
 
-        const modIconMapping = { 'turbo': 'fa-solid fa-fan', 'engine': 'fa-solid fa-gears', 'tire': 'fa-solid fa-road', 'suspension': 'fa-solid fa-truck-suspension', 'exhaust': 'fa-solid fa-fire-extinguisher', 'aero': 'fa-solid fa-wind' };
+        // 차량 데이터베이스
+        const carDatabase = {
+            'toyota sprinter trueno ae86': { make: 'Toyota', class: 'Sports Car', horsepower: 128, weight_kg: 970, acceleration: 8.5 },
+            'toyota supra': { make: 'Toyota', class: 'Sports Car', horsepower: 335, weight_kg: 1540, acceleration: 4.3 },
+            'nissan skyline gtr': { make: 'Nissan', class: 'Sports Car', horsepower: 280, weight_kg: 1540, acceleration: 4.8 },
+            'nissan 240sx': { make: 'Nissan', class: 'Sports Car', horsepower: 155, weight_kg: 1270, acceleration: 7.2 },
+            'mazda rx-7': { make: 'Mazda', class: 'Sports Car', horsepower: 280, weight_kg: 1270, acceleration: 4.9 },
+            'honda civic type r': { make: 'Honda', class: 'Hot Hatch', horsepower: 310, weight_kg: 1380, acceleration: 5.7 },
+            'honda nsx': { make: 'Honda', class: 'Supercar', horsepower: 573, weight_kg: 1725, acceleration: 3.1 },
+            'subaru wrx sti': { make: 'Subaru', class: 'Rally Car', horsepower: 310, weight_kg: 1515, acceleration: 4.6 },
+            'porsche 911': { make: 'Porsche', class: 'Sports Car', horsepower: 379, weight_kg: 1505, acceleration: 4.2 },
+            'bmw m3': { make: 'BMW', class: 'Sports Sedan', horsepower: 473, weight_kg: 1730, acceleration: 3.9 },
+            'ferrari 488': { make: 'Ferrari', class: 'Supercar', horsepower: 661, weight_kg: 1475, acceleration: 3.0 },
+            'lamborghini huracan': { make: 'Lamborghini', class: 'Supercar', horsepower: 610, weight_kg: 1422, acceleration: 3.2 },
+            'ford mustang': { make: 'Ford', class: 'Muscle Car', horsepower: 450, weight_kg: 1660, acceleration: 4.3 },
+            'chevrolet camaro': { make: 'Chevrolet', class: 'Muscle Car', horsepower: 455, weight_kg: 1750, acceleration: 4.0 },
+            'dodge challenger': { make: 'Dodge', class: 'Muscle Car', horsepower: 717, weight_kg: 1875, acceleration: 3.4 },
+            'tesla model s': { make: 'Tesla', class: 'Electric Sedan', horsepower: 670, weight_kg: 2265, acceleration: 3.1 }
+        };
+
+        const modIconMapping = { 
+            'turbo': 'fa-solid fa-fan', 
+            'engine': 'fa-solid fa-gears', 
+            'tire': 'fa-solid fa-road', 
+            'suspension': 'fa-solid fa-truck', 
+            'exhaust': 'fa-solid fa-fire-extinguisher', 
+            'aero': 'fa-solid fa-wind',
+            'brake': 'fa-solid fa-stop-circle'
+        };
+
         let debounceTimer;
 
-        // 입력 시 자동 실행 함수
+        function updateApiStatus(status, message) {
+            const statusEl = document.getElementById('apiStatus');
+            statusEl.className = `api-status ${status}`;
+            statusEl.innerHTML = `<i class="fa-solid fa-${status === 'success' ? 'check-circle' : status === 'error' ? 'exclamation-triangle' : status === 'loading' ? 'spinner fa-spin' : 'info-circle'}"></i><span>${message}</span>`;
+        }
+
+        // 외부 프록시를 통한 API 호출
+        async function tryApiRequest(carModel) {
+            const proxies = [
+                {
+                    url: 'https://api.allorigins.win/get?url=',
+                    parse: (data) => JSON.parse(data.contents)
+                },
+                {
+                    url: 'https://cors-anywhere.herokuapp.com/',
+                    parse: (data) => data
+                },
+                {
+                    url: 'https://thingproxy.freeboard.io/fetch/',
+                    parse: (data) => data
+                }
+            ];
+            
+            for (const proxy of proxies) {
+                try {
+                    updateApiStatus('loading', `${proxy.url.includes('allorigins') ? 'AllOrigins' : proxy.url.includes('cors-anywhere') ? 'CORS Anywhere' : 'ThingProxy'} 프록시 시도 중...`);
+                    
+                    const apiUrl = `https://api.api-ninjas.com/v1/cars?limit=1&model=${encodeURIComponent(carModel)}`;
+                    const proxyUrl = proxy.url + encodeURIComponent(apiUrl);
+                    
+                    const response = await fetch(proxyUrl, {
+                        headers: proxy.url.includes('allorigins') ? {} : { 'X-Api-Key': API_KEY }
+                    });
+                    
+                    if (response.ok) {
+                        const rawData = await response.json();
+                        const carData = proxy.parse(rawData);
+                        
+                        if (carData && carData.length > 0) {
+                            return carData;
+                        }
+                    }
+                } catch (error) {
+                    console.log(`프록시 ${proxy.url} 실패:`, error);
+                    continue;
+                }
+            }
+            
+            return null;
+        }
+
         function runGenerator() {
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(async () => {
                 const rawCommand = document.getElementById('commandInput').value;
                 const command = rawCommand.replace(/\[OOC.*?\]/g, '').trim();
+                
+                if (!command) {
+                    updateApiStatus('loading', '명령어를 입력해주세요');
+                    return;
+                }
+
                 const regex = /\[(.*?)\]/g;
                 const matches = command.match(regex) || [];
                 const cleanData = matches.map(match => match.slice(1, -1));
@@ -52,49 +221,64 @@
                 let cardData = {
                     driverName: cleanData[0] || "Driver Name",
                     carPurpose: cleanData[1] || "Just for Fun",
-                    carModel:   cleanData[2] || "Ferrari F40",
-                    manufacturer: "ferrari", 
-                    carClass: "Supercar",
-                    specs:      ["0", "0", "0", "0"],
-                    mods:       ['engine', 'tire', 'aero']
+                    carModel: cleanData[2] || "Unknown Car",
+                    manufacturer: "generic", 
+                    carClass: "Vehicle",
+                    specs: ["N/A", "N/A", "N/A", "N/A"],
+                    mods: ['engine', 'tire', 'aero']
                 };
 
-                // 1. 이미지 자동 설정 (Unsplash 사용)
-                const imageUrl = `https://source.unsplash.com/random/1600x900/?${encodeURIComponent(cardData.carModel)}`;
+                // 1. 먼저 외부 프록시로 실제 API 시도
+                const apiData = await tryApiRequest(cardData.carModel);
                 
-                // 2. API 호출하여 스펙 가져오기
-                if (API_KEY && API_KEY !== 'YOUR_API_KEY_HERE' && cardData.carModel) {
-                    const apiUrl = `https://api.api-ninjas.com/v1/cars?limit=1&model=${encodeURIComponent(cardData.carModel)}`;
-                    try {
-                        const response = await fetch(apiUrl, { headers: { 'X-Api-Key': API_KEY } });
-                        if (!response.ok) {
-                            // API 키가 잘못되거나 서버 문제 시 에러 처리
-                            console.error("API 호출 오류:", response.status, response.statusText);
-                            throw new Error(`API Error: ${response.status}`);
-                        }
-                        const apiResult = await response.json();
-                        if (apiResult.length > 0) {
-                            const carInfo = apiResult[0];
-                            cardData.manufacturer = carInfo.make.toLowerCase();
-                            cardData.carClass = carInfo.class.toUpperCase();
-                            cardData.specs[0] = Math.round(carInfo.horsepower * 0.98632) || 'N/A'; // PS로 변환
-                            cardData.specs[3] = carInfo.weight_kg || 'N/A';
-                        } else {
-                           console.log("API에서 해당 모델 정보를 찾지 못했습니다.");
-                        }
-                    } catch (error) { console.error("API 호출 중 예외 발생:", error); }
+                if (apiData && apiData.length > 0) {
+                    const carInfo = apiData[0];
+                    cardData.manufacturer = carInfo.make.toLowerCase();
+                    cardData.carClass = carInfo.class.toUpperCase();
+                    cardData.specs[0] = carInfo.horsepower || 'N/A';
+                    cardData.specs[3] = carInfo.weight_kg || 'N/A';
+                    
+                    // 연비 정보로 성능 예측
+                    if (carInfo.combination_mpg) {
+                        const powerToWeight = carInfo.horsepower / (carInfo.weight_kg / 1000);
+                        cardData.specs[1] = Math.max(2.5, Math.round((600 / powerToWeight) * 10) / 10);
+                        cardData.specs[2] = Math.min(350, Math.round(carInfo.horsepower * 0.45));
+                    }
+                    
+                    updateApiStatus('success', `🎉 실제 API 데이터: ${carInfo.make} ${cardData.carModel}`);
+                } else {
+                    // 2. API 실패 시 로컬 데이터베이스 사용
+                    const searchKey = cardData.carModel.toLowerCase();
+                    const foundCar = carDatabase[searchKey] || 
+                                   Object.entries(carDatabase).find(([key, value]) => 
+                                       key.includes(searchKey.split(' ')[0]) || 
+                                       searchKey.includes(key.split(' ')[0])
+                                   )?.[1];
+
+                    if (foundCar) {
+                        cardData.manufacturer = foundCar.make.toLowerCase();
+                        cardData.carClass = foundCar.class.toUpperCase();
+                        cardData.specs[0] = foundCar.horsepower;
+                        cardData.specs[3] = foundCar.weight_kg;
+                        cardData.specs[1] = foundCar.acceleration;
+                        cardData.specs[2] = Math.min(350, Math.round(foundCar.horsepower * 0.42));
+                        
+                        updateApiStatus('success', `📚 로컬 데이터: ${foundCar.make} ${cardData.carModel}`);
+                    } else {
+                        updateApiStatus('error', '⚠️ 차량 정보를 찾을 수 없습니다');
+                    }
                 }
+
+                // 이미지 URL 생성
+                const imageUrl = `https://source.unsplash.com/1600x900/?${encodeURIComponent(cardData.carModel + ' car')}`;
                 
-                // 스펙 업데이트 후 최종적으로 카드 그림
                 updateCardUI(cardData, imageUrl); 
-            }, 800); // 타이핑 후 0.8초 뒤 실행
+            }, 800);
         }
 
-        // 카드를 그리는 함수
         function updateCardUI(data, imageUrl) {
-            const previewArea = document.querySelector('.preview-area');
-            previewArea.innerHTML = `
-            <div class="car-card" id="carCard">
+            const card = document.getElementById('carCard');
+            card.innerHTML = `
                 <div class="card-background" style="background-image: url('${imageUrl}');"></div>
                 <div class="card-overlay"></div>
                 <div class="card-content">
@@ -111,8 +295,8 @@
                         <div class="details-grid">
                             <div class="spec-block">
                                 <div class="spec-item"><div class="value">${data.specs[0]} <span style="font-size:0.7em; opacity:0.7;">PS</span></div><div class="label">Power</div></div>
-                                <div class="spec-item"><div class="value">${data.specs[1] || 'N/A'} <span style="font-size:0.7em; opacity:0.7;">sec</span></div><div class="label">0-100km/h</div></div>
-                                <div class="spec-item"><div class="value">${data.specs[2] || 'N/A'} <span style="font-size:0.7em; opacity:0.7;">km/h</span></div><div class="label">Top Speed</div></div>
+                                <div class="spec-item"><div class="value">${data.specs[1]} <span style="font-size:0.7em; opacity:0.7;">sec</span></div><div class="label">0-100km/h</div></div>
+                                <div class="spec-item"><div class="value">${data.specs[2]} <span style="font-size:0.7em; opacity:0.7;">km/h</span></div><div class="label">Top Speed</div></div>
                                 <div class="spec-item"><div class="value">${data.specs[3]} <span style="font-size:0.7em; opacity:0.7;">kg</span></div><div class="label">Weight</div></div>
                             </div>
                             <div class="mods-block">
@@ -124,37 +308,45 @@
                         </div>
                     </footer>
                 </div>
-            </div>`;
+            `;
         }
         
         function copyTemplate() {
-            const template = `[OOC]
-
-[드라이버 이름]
+            const template = `[드라이버 이름]
 [주요 용도]
 [차량 모델명]`;
-            navigator.clipboard.writeText(template).then(() => { alert('자동 완성 양식이 복사되었습니다!'); });
+            navigator.clipboard.writeText(template).then(() => { 
+                alert('양식이 복사되었습니다!'); 
+            });
         }
-
-        document.addEventListener('DOMContentLoaded', () => {
-             const exampleCommand = `[OOC]
-
-[Enzo]
-[Timeless Legend]
-[Ferrari F40]`;
-            document.getElementById('commandInput').value = exampleCommand;
-            runGenerator();
-        });
 
         async function downloadCard() {
             const cardElement = document.getElementById('carCard');
             if (!cardElement) return;
-            const canvas = await html2canvas(cardElement, { useCORS: true, backgroundColor: null, scale: 2 });
-            const link = document.createElement('a');
-            link.href = canvas.toDataURL('image/png');
-            link.download = `car_card.png`;
-            link.click();
+            
+            try {
+                const canvas = await html2canvas(cardElement, { 
+                    useCORS: true, 
+                    backgroundColor: null, 
+                    scale: 2 
+                });
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL('image/png');
+                link.download = `car_card_${Date.now()}.png`;
+                link.click();
+            } catch (error) {
+                alert('이미지 저장 중 오류가 발생했습니다.');
+            }
         }
+
+        // 초기 예제 로드
+        document.addEventListener('DOMContentLoaded', () => {
+            const exampleCommand = `[Takumi]
+[Tofu Delivery]
+[Toyota Sprinter Trueno AE86]`;
+            document.getElementById('commandInput').value = exampleCommand;
+            runGenerator();
+        });
     </script>
 </body>
 </html>
