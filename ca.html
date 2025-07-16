@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>완전 자동 자동차 프로필 카드 생성기</title>
+    <title>완전 자동 자동차 프로필 카드 생성기 (최종 수정본)</title>
     <!-- 모든 외부 라이브러리는 정상입니다. -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,7 +34,8 @@
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
-        const API_KEY = '여기에_발급받은_API_키를_붙여넣으세요';
+        // ★★★★★ 한글 안내 문구를 안전한 영어로 변경했습니다. ★★★★★
+        const API_KEY = 'YOUR_API_KEY_HERE';
         const modIconMapping = { 'turbo': 'fa-solid fa-fan', 'engine': 'fa-solid fa-gears', 'tire': 'fa-solid fa-road', 'suspension': 'fa-solid fa-truck-suspension', 'exhaust': 'fa-solid fa-fire-extinguisher', 'aero': 'fa-solid fa-wind' };
         let debounceTimer;
 
@@ -51,18 +52,16 @@
                     driverName: cleanData[0] || "Driver Name",
                     carPurpose: cleanData[1] || "Just for Fun",
                     carModel:   cleanData[2] || "Ferrari F40",
-                    // 아래는 API가 덮어쓸 데이터의 기본값
                     manufacturer: "ferrari", 
                     carClass: "Supercar",
                     specs:      ["0", "0", "0", "0"],
                     mods:       ['engine', 'tire', 'aero']
                 };
 
-                // ★ 1단계: 즉시 이미지 자동 설정 ★
                 const imageUrl = `https://source.unsplash.com/1600x900/?${encodeURIComponent(cardData.carModel)}`;
-                updateCardUI(cardData, imageUrl); // 일단 기본 정보와 이미지로 먼저 그림
+                updateCardUI(cardData, imageUrl); 
 
-                // ★ 2단계: API로 스펙 가져와서 업데이트 ★
+                // ★★★★★ 한글 안내 문구를 안전한 영어로 변경했습니다. ★★★★★
                 if (API_KEY && API_KEY !== 'BXpILUwRZzF9UQBRHDRD0Q==FS5LVDSDO820m4q8' && cardData.carModel) {
                     const apiUrl = `https://api.api-ninjas.com/v1/cars?limit=1&model=${encodeURIComponent(cardData.carModel)}`;
                     try {
@@ -76,15 +75,13 @@
                             cardData.specs[0] = Math.round(carInfo.horsepower * 0.98632) || 'N/A';
                             cardData.specs[3] = carInfo.weight_kg || 'N/A';
                             
-                            // 스펙만 업데이트해서 다시 그림
                             updateCardUI(cardData, imageUrl); 
                         }
                     } catch (error) { console.error("API 호출 오류:", error); }
                 }
-            }, 800); // 타이핑 멈추고 0.8초 뒤 실행
+            }, 800);
         }
 
-        // 카드를 그리는 함수를 분리하여 재사용성을 높임
         function updateCardUI(data, imageUrl) {
             const previewArea = document.querySelector('.preview-area');
             previewArea.innerHTML = `
@@ -122,7 +119,6 @@
         }
         
         function copyTemplate() {
-            // 이제 정말 이것만 필요합니다.
             const template = `[OOC]
 
 [드라이버 이름]
@@ -131,7 +127,6 @@
             navigator.clipboard.writeText(template).then(() => { alert('자동 완성 양식이 복사되었습니다!'); });
         }
 
-        // 페이지 로딩 시 실행할 예시
         document.addEventListener('DOMContentLoaded', () => {
              const exampleCommand = `[OOC]
 
@@ -142,7 +137,6 @@
             runGenerator();
         });
 
-        // 기타 다운로드 함수
         async function downloadCard() {
             const cardElement = document.getElementById('carCard');
             if (!cardElement) return;
