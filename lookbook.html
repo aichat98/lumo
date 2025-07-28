@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magazine Lookbook</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 50px;
+            min-height: 100vh;
+        }
+        
+        .magazine-page {
+            width: 1200px;
+            height: 800px;
+            background: white;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .text-box {
+            position: absolute;
+            background: transparent;
+            padding: 10px;
+            font-size: 9px;
+            line-height: 1.2;
+            width: 160px;
+            cursor: move;
+            border: 1px solid transparent;
+            z-index: 10;
+        }
+        
+        .text-box:hover {
+            border: 1px dashed #999;
+        }
+        
+        .number {
+            font-weight: bold;
+            font-size: 12px;
+            color: #333;
+            margin-bottom: 5px;
+            background: rgba(255,255,255,0.9);
+            padding: 2px 4px;
+        }
+        
+        .title {
+            font-weight: bold;
+            font-size: 10px;
+            margin-bottom: 5px;
+            color: #000;
+            background: rgba(255,255,255,0.9);
+            padding: 2px 4px;
+        }
+        
+        .description {
+            font-size: 8px;
+            margin-bottom: 5px;
+            color: #333;
+            background: rgba(255,255,255,0.9);
+            padding: 2px 4px;
+        }
+        
+        .price {
+            font-size: 8px;
+            font-weight: bold;
+            margin-bottom: 3px;
+            color: #000;
+            background: rgba(255,255,255,0.9);
+            padding: 2px 4px;
+        }
+        
+        .brand {
+            font-size: 7px;
+            color: #666;
+            background: rgba(255,255,255,0.9);
+            padding: 2px 4px;
+        }
+        
+        .editable {
+            background: transparent;
+            border: none;
+            outline: none;
+            width: 100%;
+            font-family: inherit;
+            font-size: inherit;
+            color: inherit;
+            font-weight: inherit;
+            resize: none;
+            overflow: hidden;
+            height: auto;
+            min-height: 20px;
+        }
+        
+        .editable:focus {
+            background: #f0f8ff;
+        }
+        
+        .dropped-image {
+            position: absolute;
+            cursor: move;
+            z-index: 1;
+            border: 2px solid transparent;
+        }
+        
+        .dropped-image:hover {
+            border: 2px solid #007bff;
+        }
+        
+        .dropped-image.selected {
+            border: 2px solid #007bff;
+        }
+        
+        .resize-handle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #007bff;
+            bottom: -5px;
+            right: -5px;
+            cursor: se-resize;
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .dropped-image:hover .resize-handle {
+            opacity: 1;
+        }
+        
+        .delete-btn {
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            width: 20px;
+            height: 20px;
+            background: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 12px;
+            display: none;
+            z-index: 20;
+        }
+        
+        .dropped-image:hover .delete-btn {
+            display: block;
+        }
+        
+        .horizontal-line {
+            position: absolute;
+            height: 1px;
+            background: #000;
+            cursor: move;
+            z-index: 5;
+        }
+        
+        .horizontal-line:hover {
+            height: 3px;
+            background: #007bff;
+        }
+        
+        .image-drop {
+            display: none;
+        }
+        
+        .controls {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: white;
+            padding: 10px;
+            border: 1px solid #ddd;
+            font-size: 11px;
+            width: 180px;
+        }
+        
+        .controls button {
+            width: 100%;
+            padding: 5px;
+            margin: 2px 0;
+            font-size: 10px;
+            border: 1px solid #ccc;
+            background: white;
+            cursor: pointer;
+        }
+        
+        .controls input[type="file"] {
+            width: 100%;
+            font-size: 10px;
+            margin: 2px 0;
+        }
+        
+        .controls input[type="range"] {
+            width: 100%;
+            margin: 2px 0;
+        }
+        
+        .size-control {
+            margin: 5px 0;
+            font-size: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="magazine-page" id="magazine">
+        
+        <!-- 텍스트 박스들 -->
+        <div class="text-box" style="top: 20px; left: 0px;">
+            <div class="number">#01</div>
+            <div class="title">
+                <textarea class="editable">Our fabled paired jeans with Tommy Hilfiger</textarea>
+            </div>
+            <div class="description">
+                <textarea class="editable">For his next big AW16-17 runway collection and together they create the ultimate all-ages gift list carefully matching silk handmade premium Tommy x Gigi Collection.</textarea>
+            </div>
+            <div class="price">
+                <textarea class="editable">$346.84, oab</textarea>
+            </div>
+        </div>
+        
+        <div class="text-box" style="top: 350px; left: 171px;">
+            <div class="number">#02</div>
+            <div class="title">
+                <textarea class="editable">New Melbourne label Jasne & Elsa is in the spotlight</textarea>
+            </div>
+            <div class="description">
+                <textarea class="editable">It's a cool start once again. The dainty gold studs and precious stones sparkle with sophistication all over them.</textarea>
+            </div>
+            <div class="price">
+                <textarea class="editable">From $38 each, Jasne</textarea>
+            </div>
+            <div class="brand">
+                <textarea class="editable">& Elsa jasneandelsa.com.au</textarea>
+            </div>
+        </div>
+        
+        <div class="text-box" style="top: 180px; left: 342px;">
+            <div class="number">#03</div>
+            <div class="title">
+                <textarea class="editable">The easiest way to master seasonal dressing</textarea>
+            </div>
+            <div class="description">
+                <textarea class="editable">It with a casual pleasing shop. We suggest this structured Chloé cross it, as in vibrant on the outside as it is inside thanks to its bright print.</textarea>
+            </div>
+            <div class="price">
+                <textarea class="editable">Chloé $2950</textarea>
+            </div>
+            <div class="brand">
+                <textarea class="editable">David Bromley, Mistress Wednesday, $29.95, wolfblass.com</textarea>
+            </div>
+        </div>
+        
+        <div class="text-box" style="top: 450px; left: 513px;">
+            <div class="number">#04</div>
+            <div class="title">
+                <textarea class="editable">Channelling the brand signature hokey-pokey</textarea>
+            </div>
+            <div class="description">
+                <textarea class="editable">looking ice in fresh Coconut. $425 for 100ml, Afreidche.</textarea>
+            </div>
+            <div class="price">
+                <textarea class="editable">Fresh Coconut, $425</textarea>
+            </div>
+        </div>
+        
+        <div class="text-box" style="top: 60px; left: 684px;">
+            <div class="number">#05</div>
+            <div class="title">
+                <textarea class="editable">The designer Michael Kors takes on the famous Selma Medi</textarea>
+            </div>
+            <div class="description">
+                <textarea class="editable">cem leather handbag and camera bag, best of all, features a special Selfix Mode, which tracks your face and gestures. Michael Kors X Instagram Mini 7J with camera bag $200, Michael Kors X Fujifilm INSTAX 7J $185</textarea>
+            </div>
+        </div>
+        
+        <div class="text-box" style="top: 400px; left: 855px;">
+            <div class="number">#06</div>
+            <div class="title">
+                <textarea class="editable">This is the world's most coveted T-shirt right now.</textarea>
+            </div>
+            <div class="description">
+                <textarea class="editable">Buy it for someone who already know that.</textarea>
+            </div>
+            <div class="price">
+                <textarea class="editable">T-shirt, $59, Gucci. gucci.com/au</textarea>
+            </div>
+        </div>
+        
+        <div class="text-box" style="top: 250px; left: 1026px;">
+            <div class="number">#07</div>
+            <div class="title">
+                <textarea class="editable">Great for beauty junkies, this compact set of</textarea>
+            </div>
+            <div class="description">
+                <textarea class="editable">six shades is just enough to colour up the cheeks. Charlotte, $45, Clinique. clinique.com.au</textarea>
+            </div>
+        </div>
+        
+        <div class="text-box" style="top: 520px; left: 855px;">
+            <div class="number">#08</div>
+            <div class="title">
+                <textarea class="editable">There's a pair of eternally chic patent leather</textarea>
+            </div>
+            <div class="description">
+                <textarea class="editable">heels that can be dressed so they can be worn rather than stiff or formal. Earrings, $600, Artistics Fine Jewels. artisticfinejewels.com</textarea>
+            </div>
+        </div>
+        
+        <div class="text-box" style="top: 150px; left: 1026px;">
+            <div class="number">#09</div>
+            <div class="title">
+                <textarea class="editable">All Karen Walker's cult favourite eyewear shapes now come in gold metal.</textarea>
+            </div>
+            <div class="description">
+                <textarea class="editable">A must have update for fashion lovers. Sunglasses, $450 each, Karen Walker. karenwalker.com</textarea>
+            </div>
+        </div>
+    </div>
+    
+    <div class="controls">
+        <h4>편집 도구</h4>
+        <button onclick="addTextBox()">텍스트 추가</button>
+        <input type="file" id="imageFile" accept="image/*" onchange="addImage(event); console.log('파일 input 변경됨');" style="display:none;">
+        <button onclick="document.getElementById('imageFile').click(); console.log('이미지 버튼 클릭됨');">이미지 업로드</button>
+        <button onclick="addHorizontalLine()">가로선 추가</button>
+        <button onclick="takeScreenshot()">스크린샷</button>
+        <button onclick="clearImages()">이미지 초기화</button>
+        
+        <div class="size-control" id="sizeControl" style="display:none;">
+            <label>이미지 크기:</label>
+            <input type="range" id="sizeSlider" min="50" max="400" value="150" oninput="resizeSelectedImage(this.value)">
+            <span id="sizeValue">150px</span>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        let dragElement = null;
+        let selectedImage = null;
+        let isResizing = false;
+        
+        // 초기 설정
+        document.addEventListener('DOMContentLoaded', function() {
+            setupDrag();
+            
+            // textarea 높이 자동 조정
+            document.querySelectorAll('.editable').forEach(textarea => {
+                textarea.style.height = 'auto';
+                textarea.style.height = textarea.scrollHeight + 'px';
+            });
+            
+            document.addEventListener('input', function(e) {
+                if (e.target.classList.contains('editable')) {
+                    e.target.style.height = 'auto';
+                    e.target.style.height = e.target.scrollHeight + 'px';
+                }
+            });
+        });
+        
+        // 드래그 설정
+        function setupDrag() {
+            const magazine = document.getElementById('magazine');
+            const columnWidth = 1200 / 7;
+            
+            // 요소 드래그 이벤트
+            magazine.addEventListener('dragover', function(e) {
+                if (dragElement) {
+                    e.preventDefault();
+                }
+            });
+            
+            magazine.addEventListener('drop', function(e) {
+                if (dragElement) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const rect = magazine.getBoundingClientRect();
+                    const mouseX = e.clientX - rect.left;
+                    const mouseY = e.clientY - rect.top;
+                    
+                    if (dragElement.classList.contains('text-box')) {
+                        // 텍스트: 7열 그리드
+                        const column = Math.floor(mouseX / columnWidth);
+                        const snapX = Math.max(0, Math.min(column * columnWidth, 6 * columnWidth));
+                        const snapY = Math.max(0, Math.min(mouseY - 50, 750));
+                        dragElement.style.left = snapX + 'px';
+                        dragElement.style.top = snapY + 'px';
+                    } else if (dragElement.classList.contains('horizontal-line')) {
+                        // 가로선: 7열 그리드
+                        const column = Math.floor(mouseX / columnWidth);
+                        const snapX = Math.max(0, Math.min(column * columnWidth, 6 * columnWidth));
+                        const snapY = Math.max(0, Math.min(mouseY - 1, 790));
+                        dragElement.style.left = snapX + 'px';
+                        dragElement.style.top = snapY + 'px';
+                    } else {
+                        // 이미지: 자유 이동
+                        const img = dragElement.querySelector('img');
+                        const imgWidth = parseInt(img.style.width) || 150;
+                        const targetX = mouseX - (imgWidth / 2);
+                        const targetY = mouseY - (imgWidth * 0.6 / 2);
+                        const boundedX = Math.max(0, Math.min(targetX, 1200 - imgWidth));
+                        const boundedY = Math.max(0, Math.min(targetY, 800 - imgWidth));
+                        dragElement.style.left = boundedX + 'px';
+                        dragElement.style.top = boundedY + 'px';
+                    }
+                }
+            });
+            
+            // 기존 요소들 드래그 가능하게
+            document.querySelectorAll('.text-box').forEach(setupElementDrag);
+        }
+        
+        function setupElementDrag(element) {
+            element.draggable = true;
+            element.addEventListener('dragstart', function(e) {
+                // 이미지 컨테이너인 경우 드래그 이미지 숨기기
+                if (this.querySelector('img')) {
+                    const emptyImg = new Image();
+                    emptyImg.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=';
+                    e.dataTransfer.setDragImage(emptyImg, 0, 0);
+                }
+                dragElement = this;
+                this.style.opacity = '0.5';
+            });
+            element.addEventListener('dragend', function(e) {
+                this.style.opacity = '1';
+                dragElement = null;
+            });
+        }
+        
+        // 파일 드롭 설정
+        function setupFileDrop() {
+            const magazine = document.getElementById('magazine');
+            
+            magazine.addEventListener('dragenter', function(e) {
+                if (e.dataTransfer.types.includes('Files')) {
+                    e.preventDefault();
+                    magazine.classList.add('drag-over');
+                }
+            });
+            
+            magazine.addEventListener('dragover', function(e) {
+                if (e.dataTransfer.types.includes('Files')) {
+                    e.preventDefault();
+                }
+            });
+            
+            magazine.addEventListener('dragleave', function(e) {
+                if (!magazine.contains(e.relatedTarget)) {
+                    magazine.classList.remove('drag-over');
+                }
+            });
+            
+            magazine.addEventListener('drop', function(e) {
+                magazine.classList.remove('drag-over');
+                if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleFileDrop(e);
+                }
+            });
+        }
+        
+        function handleFileDrop(e) {
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const rect = document.getElementById('magazine').getBoundingClientRect();
+                    const dropX = e.clientX - rect.left;
+                    const dropY = e.clientY - rect.top;
+                    createImageAtPosition(event.target.result, dropX, dropY);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        // 이미지 생성
+        function createImageAtPosition(imageSrc, x, y) {
+            const imgContainer = document.createElement('div');
+            imgContainer.style.position = 'absolute';
+            imgContainer.style.left = Math.max(0, x - 75) + 'px';
+            imgContainer.style.top = Math.max(0, y - 75) + 'px';
+            
+            const img = document.createElement('img');
+            img.src = imageSrc;
+            img.className = 'dropped-image';
+            img.style.width = '150px';
+            img.style.height = 'auto';
+            img.draggable = false; // 이미지 자체 드래그 방지
+            
+            const resizeHandle = document.createElement('div');
+            resizeHandle.className = 'resize-handle';
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.innerHTML = '×';
+            deleteBtn.onclick = function(e) {
+                e.stopPropagation();
+                if (confirm('이미지를 삭제하시겠습니까?')) {
+                    imgContainer.remove();
+                    if (selectedImage === imgContainer) {
+                        selectedImage = null;
+                        document.getElementById('sizeControl').style.display = 'none';
+                    }
+                }
+            };
+            
+            imgContainer.appendChild(img);
+            imgContainer.appendChild(resizeHandle);
+            imgContainer.appendChild(deleteBtn);
+            
+            // 이미지 이벤트
+            img.addEventListener('click', (e) => {
+                e.stopPropagation();
+                selectImage(imgContainer);
+            });
+            
+            // 더블클릭 삭제
+            img.addEventListener('dblclick', () => {
+                if (confirm('이미지를 삭제하시겠습니까?')) {
+                    imgContainer.remove();
+                    if (selectedImage === imgContainer) {
+                        selectedImage = null;
+                        document.getElementById('sizeControl').style.display = 'none';
+                    }
+                }
+            });
+            
+            // 이미지 드래그 설정 (img가 아닌 컨테이너에)
+            imgContainer.draggable = true;
+            imgContainer.style.cursor = 'move';
+            imgContainer.addEventListener('dragstart', function(e) {
+                e.stopPropagation();
+                const emptyImg = new Image();
+                emptyImg.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=';
+                e.dataTransfer.setDragImage(emptyImg, 0, 0);
+                dragElement = this;
+                this.style.opacity = '0.5';
+                console.log('이미지 드래그 시작:', this);
+            });
+            imgContainer.addEventListener('dragend', function(e) {
+                this.style.opacity = '1';
+                dragElement = null;
+                console.log('이미지 드래그 끝');
+            });
+            
+            // 리사이즈
+            let startX, startWidth;
+            resizeHandle.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                isResizing = true;
+                startX = e.clientX;
+                startWidth = parseInt(img.style.width);
+                
+                function resize(e) {
+                    const newWidth = startWidth + (e.clientX - startX);
+                    if (newWidth > 50 && newWidth < 500) {
+                        img.style.width = newWidth + 'px';
+                    }
+                }
+                
+                function stopResize() {
+                    isResizing = false;
+                    document.removeEventListener('mousemove', resize);
+                    document.removeEventListener('mouseup', stopResize);
+                }
+                
+                document.addEventListener('mousemove', resize);
+                document.addEventListener('mouseup', stopResize);
+            });
+            
+            document.getElementById('magazine').appendChild(imgContainer);
+        }
+        
+        // 이미지 업로드 (버튼에서)
+        function addImage(event) {
+            console.log('addImage 함수 호출됨');
+            const file = event.target.files[0];
+            if (file) {
+                console.log('파일 선택됨:', file.name);
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    console.log('파일 읽기 완료');
+                    // 랜덤한 위치에 이미지 생성
+                    const randomX = Math.random() * 600 + 100;
+                    const randomY = Math.random() * 400 + 100;
+                    console.log('이미지 생성 위치:', randomX, randomY);
+                    createImageAtPosition(e.target.result, randomX, randomY);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                console.log('파일이 선택되지 않음');
+            }
+        }
+        
+        // 이미지 선택
+        function selectImage(imgContainer) {
+            if (selectedImage) {
+                selectedImage.querySelector('img').classList.remove('selected');
+            }
+            selectedImage = imgContainer;
+            const img = imgContainer.querySelector('img');
+            img.classList.add('selected');
+            
+            const sizeControl = document.getElementById('sizeControl');
+            const sizeSlider = document.getElementById('sizeSlider');
+            const sizeValue = document.getElementById('sizeValue');
+            
+            sizeControl.style.display = 'block';
+            sizeSlider.value = parseInt(img.style.width);
+            sizeValue.textContent = img.style.width;
+        }
+        
+        function resizeSelectedImage(size) {
+            if (selectedImage) {
+                const img = selectedImage.querySelector('img');
+                img.style.width = size + 'px';
+                document.getElementById('sizeValue').textContent = size + 'px';
+            }
+        }
+        
+        // 텍스트 박스 추가
+        function addTextBox() {
+            const magazine = document.getElementById('magazine');
+            const textBox = document.createElement('div');
+            textBox.className = 'text-box';
+            
+            const columnWidth = 1200 / 7;
+            const randomColumn = Math.floor(Math.random() * 7);
+            
+            textBox.style.top = Math.random() * 400 + 'px';
+            textBox.style.left = (randomColumn * columnWidth) + 'px';
+            textBox.innerHTML = `
+                <div class="number">#${document.querySelectorAll('.text-box').length + 1}</div>
+                <div class="title">
+                    <textarea class="editable">새 제목</textarea>
+                </div>
+                <div class="description">
+                    <textarea class="editable">설명을 입력하세요</textarea>
+                </div>
+                <div class="price">
+                    <textarea class="editable">$0</textarea>
+                </div>
+                <div class="brand">
+                    <textarea class="editable">브랜드명</textarea>
+                </div>
+            `;
+            
+            setupElementDrag(textBox);
+            magazine.appendChild(textBox);
+        }
+        
+        // 가로선 추가
+        function addHorizontalLine() {
+            const magazine = document.getElementById('magazine');
+            const line = document.createElement('div');
+            line.className = 'horizontal-line';
+            line.style.width = (1200 / 7 - 15) + 'px';
+            line.style.top = Math.random() * 400 + 'px';
+            line.style.left = Math.floor(Math.random() * 7) * (1200 / 7) + 'px';
+            
+            setupElementDrag(line);
+            
+            line.addEventListener('dblclick', () => {
+                if (confirm('가로선을 삭제하시겠습니까?')) {
+                    line.remove();
+                }
+            });
+            
+            magazine.appendChild(line);
+        }
+        
+        // 선택 해제
+        document.getElementById('magazine').addEventListener('click', (e) => {
+            if (!e.target.closest('img') && !e.target.classList.contains('resize-handle') && !e.target.classList.contains('delete-btn')) {
+                if (selectedImage) {
+                    selectedImage.querySelector('img').classList.remove('selected');
+                    selectedImage = null;
+                    document.getElementById('sizeControl').style.display = 'none';
+                }
+            }
+        });
+        
+        // 스크린샷
+        function takeScreenshot() {
+            const controls = document.querySelector('.controls');
+            
+            controls.style.display = 'none';
+            
+            if (selectedImage) {
+                selectedImage.querySelector('img').classList.remove('selected');
+            }
+            
+            setTimeout(() => {
+                html2canvas(document.documentElement, {
+                    scale: 1,
+                    useCORS: true,
+                    allowTaint: true,
+                    foreignObjectRendering: true,
+                    logging: false,
+                    ignoreElements: function(element) {
+                        return element.classList.contains('controls') ||
+                               element.classList.contains('resize-handle') ||
+                               element.classList.contains('delete-btn') ||
+                               element.classList.contains('selected') ||
+                               element.tagName === 'SCRIPT';
+                    }
+                }).then(canvas => {
+                    const croppedCanvas = document.createElement('canvas');
+                    const ctx = croppedCanvas.getContext('2d');
+                    
+                    croppedCanvas.width = 1300;
+                    croppedCanvas.height = canvas.height;
+                    
+                    const startX = (canvas.width - 1300) / 2;
+                    ctx.drawImage(canvas, startX, 0, 1300, canvas.height, 0, 0, 1300, canvas.height);
+                    
+                    const link = document.createElement('a');
+                    link.download = 'lookbook_' + new Date().getTime() + '.png';
+                    link.href = croppedCanvas.toDataURL();
+                    link.click();
+                    
+                    controls.style.display = 'block';
+                    dropZones.forEach(zone => {
+                        zone.style.display = 'flex';
+                    });
+                    
+                    if (selectedImage) {
+                        selectedImage.querySelector('img').classList.add('selected');
+                    }
+                });
+            }, 100);
+        }
+        
+        // 초기화
+        function clearImages() {
+            document.querySelectorAll('.dropped-image').forEach(img => img.parentElement.remove());
+            document.querySelectorAll('.horizontal-line').forEach(line => line.remove());
+            selectedImage = null;
+            document.getElementById('sizeControl').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
