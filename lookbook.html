@@ -106,7 +106,7 @@
         
         .dropped-image {
             position: absolute;
-            cursor: move;
+            cursor: grab;
             z-index: 1;
             border: 2px solid transparent;
         }
@@ -160,8 +160,8 @@
             position: absolute;
             height: 1px;
             background: #000;
-            cursor: move;
-            z-index: 5;
+            cursor: grab;
+            z-index: 2;
         }
         
         .horizontal-line:hover {
@@ -208,6 +208,82 @@
         .size-control {
             margin: 5px 0;
             font-size: 10px;
+        }
+        
+        /* 팝업 모달 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 400px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        
+        .modal h3 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: inherit;
+            font-size: 12px;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        
+        .modal-buttons {
+            text-align: right;
+            margin-top: 20px;
+        }
+        
+        .modal-buttons button {
+            padding: 8px 16px;
+            margin-left: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .modal-buttons .save-btn {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        
+        .modal-buttons .cancel-btn {
+            background: white;
+            color: #666;
         }
     </style>
 </head>
@@ -327,6 +403,33 @@
         </div>
     </div>
     
+    <!-- 텍스트 편집 모달 -->
+    <div id="textModal" class="modal">
+        <div class="modal-content">
+            <h3>텍스트 편집</h3>
+            <div class="form-group">
+                <label>제목:</label>
+                <textarea id="modalTitle" rows="2"></textarea>
+            </div>
+            <div class="form-group">
+                <label>설명:</label>
+                <textarea id="modalDescription" rows="4"></textarea>
+            </div>
+            <div class="form-group">
+                <label>가격:</label>
+                <input type="text" id="modalPrice">
+            </div>
+            <div class="form-group">
+                <label>브랜드명:</label>
+                <input type="text" id="modalBrand">
+            </div>
+            <div class="modal-buttons">
+                <button class="cancel-btn" onclick="closeTextModal()">취소</button>
+                <button class="save-btn" onclick="saveTextChanges()">저장</button>
+            </div>
+        </div>
+    </div>
+    
     <div class="controls">
         <h4>편집 도구</h4>
         <button onclick="addTextBox()">텍스트 추가</button>
@@ -348,6 +451,7 @@
         let dragElement = null;
         let selectedImage = null;
         let isResizing = false;
+        let currentTextBox = null; // 현재 편집 중인 텍스트 박스
         
         // 초기 설정
         document.addEventListener('DOMContentLoaded', function() {
@@ -436,6 +540,14 @@
                 this.style.opacity = '1';
                 dragElement = null;
             });
+            
+            // 텍스트 박스에 클릭 이벤트 추가
+            if (element.classList.contains('text-box')) {
+                element.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    openTextModal(this);
+                });
+            }
         }
         
         // 파일 드롭 설정
@@ -537,23 +649,50 @@
                 }
             });
             
-            // 이미지 드래그 설정 (img가 아닌 컨테이너에)
-            imgContainer.draggable = true;
-            imgContainer.style.cursor = 'move';
-            imgContainer.addEventListener('dragstart', function(e) {
-                e.stopPropagation();
-                const emptyImg = new Image();
-                emptyImg.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=';
-                e.dataTransfer.setDragImage(emptyImg, 0, 0);
-                dragElement = this;
-                this.style.opacity = '0.5';
-                console.log('이미지 드래그 시작:', this);
+            // 이미지 드래그 설정 (마우스 드래그 방식으로 변경)
+            let isDragging = false;
+            let dragStartX, dragStartY, initialLeft, initialTop;
+            
+            imgContainer.addEventListener('mousedown', function(e) {
+                if (e.target.classList.contains('resize-handle') || e.target.classList.contains('delete-btn')) {
+                    return; // 리사이즈 핸들이나 삭제 버튼이면 드래그 안 함
+                }
+                
+                isDragging = true;
+                dragStartX = e.clientX;
+                dragStartY = e.clientY;
+                initialLeft = parseInt(imgContainer.style.left);
+                initialTop = parseInt(imgContainer.style.top);
+                
+                imgContainer.style.opacity = '0.7';
+                document.body.style.cursor = 'grabbing';
+                
+                e.preventDefault();
             });
-            imgContainer.addEventListener('dragend', function(e) {
-                this.style.opacity = '1';
-                dragElement = null;
-                console.log('이미지 드래그 끝');
+            
+            document.addEventListener('mousemove', function(e) {
+                if (!isDragging) return;
+                
+                const deltaX = e.clientX - dragStartX;
+                const deltaY = e.clientY - dragStartY;
+                
+                const newLeft = Math.max(0, Math.min(initialLeft + deltaX, 1200 - 150));
+                const newTop = Math.max(0, Math.min(initialTop + deltaY, 800 - 150));
+                
+                imgContainer.style.left = newLeft + 'px';
+                imgContainer.style.top = newTop + 'px';
             });
+            
+            document.addEventListener('mouseup', function() {
+                if (isDragging) {
+                    isDragging = false;
+                    imgContainer.style.opacity = '1';
+                    document.body.style.cursor = 'default';
+                }
+            });
+            
+            // 기존 HTML5 드래그 제거
+            imgContainer.draggable = false;
             
             // 리사이즈
             let startX, startWidth;
@@ -664,22 +803,79 @@
         
         // 가로선 추가
         function addHorizontalLine() {
+            console.log('가로선 추가 함수 호출됨');
             const magazine = document.getElementById('magazine');
             const line = document.createElement('div');
             line.className = 'horizontal-line';
             line.style.width = (1200 / 7 - 15) + 'px';
-            line.style.top = Math.random() * 400 + 'px';
+            line.style.top = Math.random() * 300 + 200 + 'px'; // 200~500px
             line.style.left = Math.floor(Math.random() * 7) * (1200 / 7) + 'px';
+            line.style.backgroundColor = '#000'; // 검은색으로 원복
+            line.style.height = '1px'; // 원래 두께로
             
-            setupElementDrag(line);
+            // 가로선별 고유 드래그 변수
+            let isThisLineDragging = false;
+            let thisLineStartX, thisLineStartY, thisLineInitialLeft, thisLineInitialTop;
             
+            line.addEventListener('mousedown', function(e) {
+                isThisLineDragging = true;
+                thisLineStartX = e.clientX;
+                thisLineStartY = e.clientY;
+                thisLineInitialLeft = parseInt(this.style.left);
+                thisLineInitialTop = parseInt(this.style.top);
+                
+                this.style.opacity = '0.7';
+                this.style.height = '3px'; // 드래그 중 두껍게
+                this.style.backgroundColor = '#007bff';
+                document.body.style.cursor = 'grabbing';
+                
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('가로선 드래그 시작');
+            });
+            
+            const mouseMoveHandler = function(e) {
+                if (!isThisLineDragging) return;
+                
+                const deltaX = e.clientX - thisLineStartX;
+                const deltaY = e.clientY - thisLineStartY;
+                
+                // 7열 그리드에 스냅
+                const columnWidth = 1200 / 7;
+                const mouseX = thisLineInitialLeft + deltaX;
+                const column = Math.floor(mouseX / columnWidth);
+                const snapX = Math.max(0, Math.min(column * columnWidth, 6 * columnWidth));
+                const snapY = Math.max(0, Math.min(thisLineInitialTop + deltaY, 790));
+                
+                line.style.left = snapX + 'px';
+                line.style.top = snapY + 'px';
+            };
+            
+            const mouseUpHandler = function() {
+                if (isThisLineDragging) {
+                    isThisLineDragging = false;
+                    line.style.opacity = '1';
+                    line.style.height = '1px'; // 원래 두께로
+                    line.style.backgroundColor = '#000';
+                    document.body.style.cursor = 'default';
+                    console.log('가로선 드래그 끝');
+                }
+            };
+            
+            document.addEventListener('mousemove', mouseMoveHandler);
+            document.addEventListener('mouseup', mouseUpHandler);
+            
+            // 더블클릭 삭제
             line.addEventListener('dblclick', () => {
                 if (confirm('가로선을 삭제하시겠습니까?')) {
+                    document.removeEventListener('mousemove', mouseMoveHandler);
+                    document.removeEventListener('mouseup', mouseUpHandler);
                     line.remove();
                 }
             });
             
             magazine.appendChild(line);
+            console.log('가로선이 magazine에 추가됨');
         }
         
         // 선택 해제
@@ -751,6 +947,78 @@
             selectedImage = null;
             document.getElementById('sizeControl').style.display = 'none';
         }
+        
+        // 텍스트 편집 모달
+        function openTextModal(textBox) {
+            currentTextBox = textBox;
+            
+            // 현재 값들 가져오기
+            const titleTextarea = textBox.querySelector('.title textarea');
+            const descTextarea = textBox.querySelector('.description textarea');
+            const priceTextarea = textBox.querySelector('.price textarea');
+            const brandTextarea = textBox.querySelector('.brand textarea');
+            
+            // 모달에 현재 값 설정
+            document.getElementById('modalTitle').value = titleTextarea ? titleTextarea.value : '';
+            document.getElementById('modalDescription').value = descTextarea ? descTextarea.value : '';
+            document.getElementById('modalPrice').value = priceTextarea ? priceTextarea.value : '';
+            document.getElementById('modalBrand').value = brandTextarea ? brandTextarea.value : '';
+            
+            // 모달 표시
+            document.getElementById('textModal').style.display = 'block';
+        }
+        
+        function closeTextModal() {
+            document.getElementById('textModal').style.display = 'none';
+            currentTextBox = null;
+        }
+        
+        function saveTextChanges() {
+            if (!currentTextBox) return;
+            
+            // 새로운 값들 가져오기
+            const newTitle = document.getElementById('modalTitle').value;
+            const newDescription = document.getElementById('modalDescription').value;
+            const newPrice = document.getElementById('modalPrice').value;
+            const newBrand = document.getElementById('modalBrand').value;
+            
+            // 텍스트 박스 업데이트
+            const titleTextarea = currentTextBox.querySelector('.title textarea');
+            const descTextarea = currentTextBox.querySelector('.description textarea');
+            const priceTextarea = currentTextBox.querySelector('.price textarea');
+            const brandTextarea = currentTextBox.querySelector('.brand textarea');
+            
+            if (titleTextarea) {
+                titleTextarea.value = newTitle;
+                titleTextarea.style.height = 'auto';
+                titleTextarea.style.height = titleTextarea.scrollHeight + 'px';
+            }
+            if (descTextarea) {
+                descTextarea.value = newDescription;
+                descTextarea.style.height = 'auto';
+                descTextarea.style.height = descTextarea.scrollHeight + 'px';
+            }
+            if (priceTextarea) {
+                priceTextarea.value = newPrice;
+                priceTextarea.style.height = 'auto';
+                priceTextarea.style.height = priceTextarea.scrollHeight + 'px';
+            }
+            if (brandTextarea) {
+                brandTextarea.value = newBrand;
+                brandTextarea.style.height = 'auto';
+                brandTextarea.style.height = brandTextarea.scrollHeight + 'px';
+            }
+            
+            closeTextModal();
+        }
+        
+        // 모달 외부 클릭시 닫기
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('textModal');
+            if (event.target === modal) {
+                closeTextModal();
+            }
+        });
     </script>
 </body>
 </html>
