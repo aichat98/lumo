@@ -525,27 +525,66 @@
         }
         
         function setupElementDrag(element) {
-            element.draggable = true;
-            element.addEventListener('dragstart', function(e) {
-                // 이미지 컨테이너인 경우 드래그 이미지 숨기기
-                if (this.querySelector('img')) {
-                    const emptyImg = new Image();
-                    emptyImg.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=';
-                    e.dataTransfer.setDragImage(emptyImg, 0, 0);
-                }
-                dragElement = this;
-                this.style.opacity = '0.5';
-            });
-            element.addEventListener('dragend', function(e) {
-                this.style.opacity = '1';
-                dragElement = null;
-            });
-            
             // 텍스트 박스에 클릭 이벤트 추가
             if (element.classList.contains('text-box')) {
-                element.addEventListener('click', function(e) {
+                // 마우스 드래그로 텍스트 박스 이동
+                let isTextDragging = false;
+                let textStartX, textStartY, textInitialLeft, textInitialTop;
+                
+                element.addEventListener('mousedown', function(e) {
+                    // textarea나 버튼이 아닌 경우에만 드래그 시작
+                    if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'BUTTON') {
+                        return;
+                    }
+                    
+                    isTextDragging = true;
+                    textStartX = e.clientX;
+                    textStartY = e.clientY;
+                    textInitialLeft = parseInt(this.style.left);
+                    textInitialTop = parseInt(this.style.top);
+                    
+                    this.style.opacity = '0.7';
+                    document.body.style.cursor = 'grabbing';
+                    
+                    e.preventDefault();
                     e.stopPropagation();
-                    openTextModal(this);
+                });
+                
+                const textMoveHandler = function(e) {
+                    if (!isTextDragging) return;
+                    
+                    const deltaX = e.clientX - textStartX;
+                    const deltaY = e.clientY - textStartY;
+                    
+                    // 7열 그리드에 스냅
+                    const columnWidth = 1200 / 7;
+                    const mouseX = textInitialLeft + deltaX;
+                    const column = Math.floor(mouseX / columnWidth);
+                    const snapX = Math.max(0, Math.min(column * columnWidth, 6 * columnWidth));
+                    const snapY = Math.max(0, Math.min(textInitialTop + deltaY, 750));
+                    
+                    element.style.left = snapX + 'px';
+                    element.style.top = snapY + 'px';
+                };
+                
+                const textUpHandler = function() {
+                    if (isTextDragging) {
+                        isTextDragging = false;
+                        element.style.opacity = '1';
+                        document.body.style.cursor = 'default';
+                    }
+                };
+                
+                document.addEventListener('mousemove', textMoveHandler);
+                document.addEventListener('mouseup', textUpHandler);
+                
+                // 빈 공간 클릭시 팝업 열기
+                element.addEventListener('click', function(e) {
+                    // 드래그가 아니고, textarea가 아닌 경우에만 팝업
+                    if (!isTextDragging && e.target.tagName !== 'TEXTAREA') {
+                        e.stopPropagation();
+                        openTextModal(this);
+                    }
                 });
             }
         }
