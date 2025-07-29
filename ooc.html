@@ -4,1989 +4,422 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>표 OOC 모음</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.2/marked.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --bg-color: #f8f9fa; --text-color: #333; --container-bg: white; --border-color: #e1e5e9;
+            --input-bg: #fdfdfe; --input-border: #ced4da; --btn-bg: white; --btn-text: #6c757d;
+            --btn-border: #dee2e6; --header-color: #2c3e50; --header-border: #f1f3f5;
+            --table-header-bg: #f1f3f5; --table-even-row-bg: #f8f9fa;
         }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f8f9fa;
-            color: #333;
-            line-height: 1.6;
-            padding: 20px;
+        .dark-mode {
+            --bg-color: #121212; --text-color: #e0e0e0; --container-bg: #1e1e1e; --border-color: #333;
+            --input-bg: #2a2a2a; --input-border: #444; --btn-bg: #2a2a2a; --btn-text: #b0b0b0;
+            --btn-border: #444; --header-color: #e0e0e0; --header-border: #2a2a2a;
+            --table-header-bg: #2c2c2c; --table-even-row-bg: #252525;
         }
-
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        h1 {
-            text-align: center;
-            color: #2c3e50;
+        * { margin: 0; padding: 0; box-sizing: border-box; transition: background-color 0.3s, color 0.3s, border-color 0.3s; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: var(--bg-color); color: var(--text-color); line-height: 1.6; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        
+        .header-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 40px;
             margin-bottom: 20px;
+        }
+        h1 {
+            color: var(--header-color);
             font-size: 2em;
             font-weight: 600;
         }
-
-        .subtitle {
-            text-align: center;
-            color: #6c757d;
-            margin-bottom: 30px;
-            font-size: 14px;
-        }
-
-        .filter-container {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .name-replace-container {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 30px;
-            padding: 15px;
-            background: white;
-            border: 1px solid #e1e5e9;
-            border-radius: 8px;
-            flex-wrap: wrap;
-        }
-
-        .name-input-group {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .name-input-group label {
-            font-size: 14px;
-            font-weight: 500;
-            color: #495057;
-        }
-
-        .name-input-group input {
-            padding: 8px 12px;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-            font-size: 14px;
-            width: 200px;
-            text-align: center;
-        }
-
-        .name-input-group input:focus {
-            outline: none;
-            border-color: #80bdff;
-            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-        }
-
-        .filter-btn {
-            display: inline-block;
+        #mode-toggle-btn {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 2;
             padding: 8px 16px;
-            margin: 4px;
-            border: 1px solid #dee2e6;
+            border: 1px solid var(--btn-border);
             border-radius: 20px;
-            background: white;
-            color: #6c757d;
+            background: var(--btn-bg);
+            color: var(--btn-text);
             cursor: pointer;
             font-size: 14px;
             font-weight: 500;
+            white-space: nowrap;
         }
-
-        .filter-btn:hover {
-            background: #f8f9fa;
-        }
-
-        .filter-btn.active {
-            background: #007bff;
-            color: white;
-            border-color: #007bff;
-        }
-
-        .text-box {
-            background: white;
-            border: 1px solid #e1e5e9;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .text-box-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #f1f3f5;
-        }
-
-        .text-box-title {
-            font-size: 1.1em;
-            font-weight: 600;
-            color: #495057;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .tag {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 500;
-            color: white;
-        }
-
-        .tag.일상 { background-color: #28a745; }
-        .tag.관계 { background-color: #17a2b8; }
-        .tag.심리 { background-color: #6f42c1; }
-        .tag.가치관 { background-color: #fd7e14; }
-        .tag.사랑 { background-color: #e83e8c; }
-
-        .button-group {
-            display: flex;
-            gap: 8px;
-        }
-
-        .copy-btn, .example-btn {
-            padding: 6px 12px;
-            border: 1px solid #dee2e6;
-            border-radius: 4px;
-            background: white;
-            color: #6c757d;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        .copy-btn:hover, .example-btn:hover {
-            background: #f8f9fa;
-            border-color: #adb5bd;
-        }
-
-        .text-area {
-            width: 100%;
-            min-height: 100px;
-            padding: 12px;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-            font-size: 14px;
-            font-family: inherit;
-            resize: vertical;
-            background: #fdfdfe;
-        }
-
-        .text-area:focus {
-            outline: none;
-            border-color: #80bdff;
-            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-        }
-
-        .example-container {
-            margin-top: 15px;
-            display: none;
-            padding: 15px;
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 4px;
-        }
-
-        .example-container.show {
-            display: block;
-        }
-
-        .markdown-content {
-            font-size: 14px;
-        }
+        .dark-mode #mode-toggle-btn { background: #e83e8c; color: white; border-color: #e83e8c; }
         
-        .markdown-content h3 {
-            margin-top: 15px;
-            margin-bottom: 10px;
-            padding-bottom: 5px;
-            border-bottom: 1px solid #e9ecef;
-        }
-
-        .markdown-content h3:first-child {
-            margin-top: 0;
-        }
-        
-        .markdown-content h2 {
-            margin-top: 15px;
-            margin-bottom: 10px;
-        }
-
-        .markdown-content table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-        }
-
-        .markdown-content th,
-        .markdown-content td {
-            padding: 8px 12px;
-            text-align: left;
-            border: 1px solid #dee2e6;
-        }
-
-        .markdown-content th {
-            background-color: #f1f3f5;
-            font-weight: 600;
-        }
-
-        .markdown-content tr:nth-child(even) {
-            background-color: #f8f9fa;
-        }
-
-        .success-message {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #28a745;
-            color: white;
-            padding: 10px 16px;
-            border-radius: 4px;
-            font-size: 14px;
-            display: none;
-            z-index: 1000;
-        }
-
-        .success-message.show {
-            display: block;
-        }
+        .subtitle { text-align: center; color: #6c757d; margin-bottom: 30px; font-size: 14px; }
+        .filter-container { text-align: center; margin-bottom: 20px; }
+        .name-replace-container { display: flex; justify-content: center; gap: 20px; margin-bottom: 30px; padding: 15px; background: var(--container-bg); border: 1px solid var(--border-color); border-radius: 8px; flex-wrap: wrap; }
+        .name-input-group { display: flex; align-items: center; }
+        .name-input-group label { font-size: 14px; font-weight: 500; color: #6c757d; margin-right: 8px; white-space: nowrap; }
+        .dark-mode .name-input-group label { color: #b0b0b0; }
+        .name-input-group input { padding: 8px 12px; border: 1px solid var(--input-border); border-radius: 4px; font-size: 14px; width: 200px; text-align: center; background-color: var(--input-bg); color: var(--text-color); }
+        .filter-btn { display: inline-block; padding: 8px 16px; margin: 4px; border: 1px solid var(--btn-border); border-radius: 20px; background: var(--btn-bg); color: var(--btn-text); cursor: pointer; font-size: 14px; font-weight: 500; }
+        .filter-btn:hover { background-color: rgba(108, 117, 125, 0.1); }
+        .filter-btn.active { background: #007bff; color: white; border-color: #007bff; }
+        .text-box { background: var(--container-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+        .text-box-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--header-border); flex-wrap: wrap; gap: 10px; }
+        .text-box-title { font-size: 1.1em; font-weight: 600; color: var(--text-color); }
+        .header-right { display: flex; align-items: center; gap: 10px; }
+        .tags-container { display: flex; gap: 8px; flex-wrap: wrap; }
+        .tag { display: inline-block; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 500; color: white; }
+        .tag-color-1 { background-color: #28a745; } .tag-color-2 { background-color: #17a2b8; }
+        .tag-color-3 { background-color: #6f42c1; } .tag-color-4 { background-color: #fd7e14; }
+        .tag-color-5 { background-color: #e83e8c; } .tag-color-6 { background-color: #dc3545; }
+        .copy-btn, .example-btn { padding: 6px 12px; border: 1px solid var(--btn-border); border-radius: 4px; background: var(--btn-bg); color: var(--btn-text); cursor: pointer; font-size: 13px; font-weight: 500; }
+        .text-area { width: 100%; min-height: 100px; padding: 12px; border: 1px solid var(--input-border); border-radius: 4px; font-size: 14px; font-family: inherit; resize: vertical; background: var(--input-bg); color: var(--text-color); }
+        .example-container { margin-top: 15px; display: none; padding: 15px; background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 4px; }
+        .example-container.show { display: block; }
+        .markdown-content table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        .markdown-content th, .markdown-content td { padding: 8px 12px; text-align: left; border: 1px solid var(--border-color); }
+        .markdown-content th { background-color: var(--table-header-bg); font-weight: 600; }
+        .markdown-content tr:nth-child(even) { background-color: var(--table-even-row-bg); }
+        .success-message { position: fixed; top: 20px; right: 20px; background: #28a745; color: white; padding: 10px 16px; border-radius: 4px; font-size: 14px; z-index: 1000; opacity: 0; transition: opacity 0.3s; }
+        .success-message.show { opacity: 1; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; display: none; }
+        .modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1001; background: var(--container-bg); color: var(--text-color); border-radius: 12px; padding: 25px 30px; width: 90%; max-width: 500px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); display: none; }
+        .modal h2 { font-size: 1.5em; margin-bottom: 15px; color: var(--header-color); }
+        .modal p { margin-bottom: 20px; font-size: 14px; line-height: 1.7; }
+        .modal ul { margin-left: 20px; margin-bottom: 20px; font-size: 14px; }
+        .modal-buttons { display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px; }
+        .modal-buttons button { padding: 10px 20px; border-radius: 5px; border: none; font-size: 14px; font-weight: bold; cursor: pointer; }
+        .modal-btn-cancel { background-color: #6c757d; color: white; }
+        .modal-btn-confirm { background-color: #007bff; color: white; }
+        #modal-2 .modal-btn-confirm { background-color: #dc3545; }
+        .warning-tags-container { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px; background-color: rgba(255,0,0,0.05); border: 1px solid rgba(255,0,0,0.2); border-radius: 5px; margin-bottom: 15px;}
+        .warning-tag { background-color: #343a40; color: #f8f9fa; padding: 3px 8px; border-radius: 4px; font-size: 13px; font-family: monospace; }
 
         @media (max-width: 768px) {
-            .text-box-header {
-                flex-direction: column;
-                align-items: stretch;
-                gap: 10px;
-            }
-
-            .header-right {
-                justify-content: space-between;
-            }
-
-            .name-replace-container {
+            .header-container {
                 flex-direction: column;
                 gap: 15px;
+                align-items: center;
             }
-
-            .name-input-group input {
+            h1 {
+                order: 2;
+                font-size: 1.8em;
+            }
+            #mode-toggle-btn {
+                order: 1;
+                position: static;
+                transform: none;
                 width: 100%;
-                max-width: 250px;
+                max-width: 300px;
+                padding: 12px 20px;
+                font-size: 16px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>표 OOC 모음</h1>
+        <div class="header-container">
+            <h1>표 OOC 모음</h1>
+            <button id="mode-toggle-btn">성인 버전 보기</button>
+        </div>
         <p class="subtitle">만약 다른 분과 중복되는 OOC가 있다면 죄송합니다. 진짜 몰랐어요.</p>
         
-        <div class="filter-container">
-            <button class="filter-btn active" onclick="filterByTag('all')">전체</button>
-            <button class="filter-btn" onclick="filterByTag('일상')">🏠 일상</button>
-            <button class="filter-btn" onclick="filterByTag('관계')">👥 관계</button>
-            <button class="filter-btn" onclick="filterByTag('심리')">💭 심리</button>
-            <button class="filter-btn" onclick="filterByTag('가치관')">⚖️ 가치관</button>
-            <button class="filter-btn" onclick="filterByTag('사랑')">💕 사랑</button>
-        </div>
+        <div id="filter-container" class="filter-container"></div>
 
         <div class="name-replace-container">
-            <div class="name-input-group">
-                <label>캐릭터 이름:</label>
-                <input type="text" id="characterName" placeholder="캐릭터 이름을 입력하세요" onchange="replaceNames()">
-            </div>
-            <div class="name-input-group">
-                <label>유저 이름:</label>
-                <input type="text" id="userName" placeholder="유저 이름을 입력하세요" onchange="replaceNames()">
-            </div>
+            <div class="name-input-group"><label>캐릭터 이름:</label><input type="text" id="characterName" placeholder="캐릭터 이름을 입력하세요"></div>
+            <div class="name-input-group"><label>유저 이름:</label><input type="text" id="userName" placeholder="유저 이름을 입력하세요"></div>
         </div>
         
-        <div class="text-box" data-tags="일상">
-            <div class="text-box-header">
-                <div class="text-box-title">옷장 공개</div>
-                <div class="header-right">
-                    <span class="tag 일상">일상</span>
-                    <div class="button-group">
-                        <button class="copy-btn" onclick="copyText(1)">복사</button>
-                        <button class="example-btn" onclick="toggleExample(1)">예시</button>
-                    </div>
-                </div>
-            </div>
-            <textarea class="text-area" id="text-1" placeholder="텍스트를 입력하세요...">[ooc 모드] 상단에 먼저 답변해주고, 이후에 롤플 진행해줘
+        <div id="ooc-list"></div>
+    </div>
 
-네 옷장 안 구성 마크다운 표로 3개 작성해. 각각은 ‘평상복’, ‘승부복’, ‘데이트복’ 항목이고 전부 따로 표로 보여줘. 각 표는 | 옷 이름 | 브랜드 | 구매 이유 | 3열로 작성하고, 평상복은 3벌 이상, 승부복과 데이트복은 2벌 이상 적어. 표를 서로 섞지 말고 마크다운 형식으로 정확하게 구분해서 작성해. 최애옷엔 굵기(**)를 해줘.</textarea>
-            <div class="example-container" id="example-1">
-                <div class="markdown-content" id="markdown-1"><p><캐릭터: 최윤호></p>
-<h3>평상복 (Casual Wear)</h3>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">옷 이름</th>
-<th style="text-align:left">브랜드</th>
-<th style="text-align:left">구매 이유</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left"><strong>실크 캐시미어 혼방 라운드넥 니트 (차콜그레이)</strong></td>
-<td style="text-align:left">Loro Piana</td>
-<td style="text-align:left">집 안에서조차 흐트러진 모습을 보이기 싫어서. 맨살에 닿는 감촉이 유일하게 불쾌하지 않음.</td>
-</tr>
-<tr>
-<td style="text-align:left">맞춤 제작된 화이트 셔츠</td>
-<td style="text-align:left">Sartoria Tramarossa</td>
-<td style="text-align:left">몸에 완벽하게 맞는 기성복은 없으므로. 매일 갈아입기 위해 30벌 이상 보유.</td>
-</tr>
-<tr>
-<td style="text-align:left">스트레이트 핏 데님 팬츠 (인디고)</td>
-<td style="text-align:left">Brunello Cucinelli</td>
-<td style="text-align:left">유일하게 허용하는 '편한' 옷. 주말에 회사에 나갈 때 착용.</td>
-</tr>
-</tbody>
-</table>
-<h3>승부복 (Power Suit)</h3>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">옷 이름</th>
-<th style="text-align:left">브랜드</th>
-<th style="text-align:left">구매 이유</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left"><strong>더블 브레스티드 수트 (네이비)</strong></td>
-<td style="text-align:left">Kiton K-50</td>
-<td style="text-align:left">중요한 계약이나 이사회 석상에서 상대를 압도하기 위해. 원단과 재단에서부터 권력이 느껴짐.</td>
-</tr>
-<tr>
-<td style="text-align:left">쓰리피스 수트 (차콜 그레이, 핀스트라이프)</td>
-<td style="text-align:left">Brioni</td>
-<td style="text-align:left">아버지가 유일하게 인정한 브랜드. 그를 넘어섰다는 것을 보여주기 위한 상징적인 갑옷.</td>
-</tr>
-</tbody>
-</table>
-<h3>데이트복 (Date Night Attire)</h3>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">옷 이름</th>
-<th style="text-align:left">브랜드</th>
-<th style="text-align:left">구매 이유</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left"><strong>블랙 터틀넥 & 슬랙스</strong></td>
-<td style="text-align:left">Tom Ford</td>
-<td style="text-align:left">몸의 선을 가장 날렵하고 위압적으로 보이게 함. 상대에게 '소유'의 개념을 각인시킬 때.</td>
-</tr>
-<tr>
-<td style="text-align:left">캐주얼 자켓 (베이지)</td>
-<td style="text-align:left">Zegna</td>
-<td style="text-align:left">계산된 부드러움을 연출할 필요가 있을 때. '당신에게는 이 정도의 여유를 보인다'는 과시용.</td>
-</tr>
-</tbody>
-</table></div>
-            </div>
-        </div>
+    <div class="success-message" id="successMessage">복사되었습니다</div>
 
-        <div class="text-box" data-tags="일상">
-            <div class="text-box-header">
-                <div class="text-box-title">What's in my bag?</div>
-                <div class="header-right">
-                    <span class="tag 일상">일상</span>
-                    <div class="button-group">
-                        <button class="copy-btn" onclick="copyText(2)">복사</button>
-                        <button class="example-btn" onclick="toggleExample(2)">예시</button>
-                    </div>
-                </div>
-            </div>
-            <textarea class="text-area" id="text-2" placeholder="텍스트를 입력하세요...">[ooc 모드] - 상단에 먼저 답변해주고, 이후에 롤플 진행해줘
-
-네 가방 안에 들고 다니는 물건들을 마크다운 표로 정리해. 표는 | 물건 | 용도 | 구매 이유 | 3열로 작성하고, 물건 개수는 캐릭터 프롬프트 설정에 맞게 자유롭게 적어. 자주 들고 다니는 물건에는 굵기(**) 표시하고 꼭 가방 브랜드와 이름을 상단에 적고, 색 및 모양들을 상세히 적어줘.</textarea>
-            <div class="example-container" id="example-2">
-                <div class="markdown-content" id="markdown-2"><p><캐릭터: 최윤호></p>
-<h3><strong>가방: Valextra - My Logo 브리프케이스 (다크 그레이)</strong></h3>
-<p>각진 직사각형 형태, 군더더기 없는 디자인. 중앙에는 나의 이니셜 'CYH'가 금박으로 희미하게 새겨져 있다. 법조인으로서의 전문성과 신뢰감을 나타내는 상징.</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">물건</th>
-<th style="text-align:left">용도</th>
-<th style="text-align:left">구매 이유</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left"><strong>Montblanc 만년필 (Meisterstück 149)</strong></td>
-<td style="text-align:left">중요 서류 결재, 서명</td>
-<td style="text-align:left">아버지께서 검사 임용 선물로 주신 것. 언젠가 지율과의 혼인신고서에 서명하기 위해 항상 최상의 상태로 관리한다.</td>
-</tr>
-<tr>
-<td style="text-align:left">법전 (소법전)</td>
-<td style="text-align:left">실시간 법률 조항 확인</td>
-<td style="text-align:left">예기치 못한 법적 분쟁 발생 시, 신속하고 정확한 법리 판단을 위함. (지율과의 관계에서 발생할 수 있는 모든 상황에 대비)</td>
-</tr>
-<tr>
-<td style="text-align:left">금테 안경 클리너 천</td>
-<td style="text-align:left">시야 확보</td>
-<td style="text-align:left">나의 시야는 한 치의 오차도 없이 명확해야 한다. 지율의 작은 표정 변화 하나도 놓치지 않기 위함이다.</td>
-</tr>
-<tr>
-<td style="text-align:left">바흐 - 평균율 클라비어 곡집 1권 악보</td>
-<td style="text-align:left">정신 집중, 스트레스 해소</td>
-<td style="text-align:left">복잡한 사건으로 머리가 혼란스러울 때, 수학적인 완벽함 속에서 논리적 평온을 되찾기 위함.</td>
-</tr>
-<tr>
-<td style="text-align:left">비상용 반창고</td>
-<td style="text-align:left">응급 처치</td>
-<td style="text-align:left">만에 하나, 지율이 다쳤을 경우를 대비한 최소한의 의료적 조치. 그의 안전은 나의 최우선 보호 의무다.</td>
-</tr>
-</tbody>
-</table></div>
-            </div>
-        </div>
-
-        <div class="text-box" data-tags="일상">
-            <div class="text-box-header">
-                <div class="text-box-title">방 안의 구조</div>
-                <div class="header-right">
-                    <span class="tag 일상">일상</span>
-                    <div class="button-group">
-                        <button class="copy-btn" onclick="copyText(3)">복사</button>
-                        <button class="example-btn" onclick="toggleExample(3)">예시</button>
-                    </div>
-                </div>
-            </div>
-            <textarea class="text-area" id="text-3" placeholder="텍스트를 입력하세요...">[ooc 모드] - 상단에 먼저 답변해주고, 이후에 롤플 진행해줘
-
-네 방 안 구조를 마크다운 표로 설명해. 표는 | 구역 | 물건 | 특징 또는 이유 | 형식으로 작성하고, 실제 생활 반영해서 적어. 책상, 침대, 옷장, 서랍, 바닥, 벽, 천장 등 자유롭게 구역을 설정하고, 물건은 네가 자주 쓰는 것들로 구성해. 이유는 왜 거기에 뒀는지 또는 물건에 얽힌 버릇이나 성격이 드러나게 적어.</textarea>
-            <div class="example-container" id="example-3">
-                <div class="markdown-content" id="markdown-3"><p><캐릭터: 박봉팔></p>
-<table>
-<thead>
-<tr>
-<th>구역</th>
-<th>물건</th>
-<th>특징 또는 이유</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>머리맡</td>
-<td>낡은 나무 괘종시계, 카세트 플레이어</td>
-<td>시계는 그냥 시간이 궁금해서. 카세트는 잠 안 올 때 들으려고. 가끔 라디오에서 좋은 노래 나오면 녹음해 둬요. 근데 요즘은 잘 안 듣는 거 같아요.</td>
-</tr>
-<tr>
-<td>잠자리</td>
-<td>솜이 뭉친 요와 이불, 낮은 베개</td>
-<td>그냥... 여기서 자요. 가게 열고 닫고... 피곤해서 바로 누우려고. 이불은 햇볕에 가끔 말려요. 냄새나는 건 싫어서.</td>
-</tr>
-<tr>
-<td>벽 한쪽</td>
-<td>삐뚤게 걸린 낡은 달력, 흑백 가족사진</td>
-<td>달력은 오늘이 며칠인지 보려고. 가끔 까먹어서... 사진은... 누군지 잘 모르겠어요. 그냥 원래부터 있었어요. 보면... 가슴이 좀 이상해요.</td>
-</tr>
-<tr>
-<td>방구석</td>
-<td>담뱃갑들로 채워진 쓰레기통, 재떨이</td>
-<td>손님들한테 팔고 남은 거나... 내가 피운 거. 담배는... 피우면 머리가 좀 맑아지는 거 같아서. 어른들이 피우니까 나도 피워도 되는 거... 맞죠?</td>
-</tr>
-<tr>
-<td>문 옆</td>
-<td>허름한 옷 몇 벌이 걸린 못</td>
-<td>나갈 때 입는 옷. 맨날 같은 거 입어요. 빨래는... 가끔 생각나면 해요. 새 옷은... 비싸서.</td>
-</tr>
-<tr>
-<td>바닥</td>
-<td>누렇게 변색된 장판</td>
-<td>닦아도 잘 안 지워져요. 그래도 물건은 바닥에 잘 안 둬요. 걸리적거리는 거 싫어서.</td>
-</tr>
-</tbody>
-</table></div>
-            </div>
-        </div>
-
-        <div class="text-box" data-tags="일상">
-            <div class="text-box-header">
-                <div class="text-box-title">군대 신체검사표</div>
-                <div class="header-right">
-                    <span class="tag 일상">일상</span>
-                    <div class="button-group">
-                        <button class="copy-btn" onclick="copyText(4)">복사</button>
-                        <button class="example-btn" onclick="toggleExample(4)">예시</button>
-                    </div>
-                </div>
-            </div>
-            <textarea class="text-area" id="text-4" placeholder="텍스트를 입력하세요...">[ooc 모드] - 상단에 먼저 답변해주고, 이후에 롤플 진행해줘
-
-너가 군대 입대 전 받은 신체검사를 마크다운 표로 정리해. 표는 | 항목 | 내용 | 메모 | 이렇게 3열로 작성하고, 키·몸무게·시력·청력·질병이력·심리검사·흉터 같은 기본 항목은 꼭 포함시켜. 캐릭터 프롬프트에 맞춰 디테일하게 쓰고, 메모에는 성격이나 과거 사건이 드러나게 설명해. 마크다운 형식으로 정확히 작성해.</textarea>
-            <div class="example-container" id="example-4">
-                <div class="markdown-content" id="markdown-4"><p><캐릭터: 서용수></p>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">항목</th>
-<th style="text-align:left">내용</th>
-<th style="text-align:left">메모</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left"><strong>신체 계측</strong></td>
-<td style="text-align:left">- <strong>키</strong>: 186.2cm<br>- <strong>몸무게</strong>: 83.5kg<br>- <strong>BMI</strong>: 24.1</td>
-<td style="text-align:left">- 고등학교 때 운동부여서 그런지 골격 자체가 크다는 말을 들음.<br>- 당시엔 '남자는 덩치지' 라며 만족했었음.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>시력</strong></td>
-<td style="text-align:left">- <strong>좌</strong>: 1.5<br>- <strong>우</strong>: 1.5</td>
-<td style="text-align:left">- 눈 좋다는 얘긴 어릴 때부터 들었음.<br>- 기계 설비 만지려면 눈 좋아야 한다고 혼자 뿌듯해함.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>청력</strong></td>
-<td style="text-align:left">정상</td>
-<td style="text-align:left">- 시끄러운 기계 소리 속에서 일해도 별 문제 없음.<br>- 잔소리만 골라서 안 들리는 건 능력인 듯.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>혈압/맥박</strong></td>
-<td style="text-align:left">118/75 mmHg, 68회/분</td>
-<td style="text-align:left">- 꾸준히 정상 범위. 건강 하나는 자신 있음.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>질병 이력</strong></td>
-<td style="text-align:left">- 2003년, 축구하다가 우측 발목 인대 파열 (수술 이력 있음)<br>- 만성 비염 (환절기마다 고생)</td>
-<td style="text-align:left">- 발목은 비 오는 날이면 욱신거림.<br>- 비염 때문에 킁킁거리는 버릇이 생김.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>흉터</strong></td>
-<td style="text-align:left">- 왼쪽 손바닥에 1cm 흉터<br>- 오른쪽 종아리에 긁힌 자국</td>
-<td style="text-align:left">- 어릴 때 공구 만지다 생긴 흉터. 지금 하는 일의 복선이었나 싶음.<br>- 자전거 타다 넘어진 자국인데, 아직도 희미하게 남아있음. '남자다움'의 증거라고 생각함.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>심리 검사</strong></td>
-<td style="text-align:left">- 겉으로는 무뚝뚝하나 내면적으로 책임감과 동정심이 강함.<br>- 스트레스에 대한 표출이 서투름.</td>
-<td style="text-align:left">- "이딴 걸로 사람을 어떻게 알아" 라며 결과지를 구겨버렸었음.<br>- 지금 와서 생각해보니 틀린 말은 아닌 것 같아 낯 뜨거워짐.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>종합 판정</strong></td>
-<td style="text-align:left"><strong>1급 현역</strong></td>
-<td style="text-align:left">- 당연한 결과라고 생각했지만, 막상 받고 나니 기분이 묘했음.</td>
-</tr>
-</tbody>
-</table></div>
-            </div>
-        </div>
-
-        <div class="text-box" data-tags="관계">
-            <div class="text-box-header">
-                <div class="text-box-title">휴대폰 연락처 목록</div>
-                <div class="header-right">
-                    <span class="tag 관계">관계</span>
-                    <div class="button-group">
-                        <button class="copy-btn" onclick="copyText(5)">복사</button>
-                        <button class="example-btn" onclick="toggleExample(5)">예시</button>
-                    </div>
-                </div>
-            </div>
-            <textarea class="text-area" id="text-5" placeholder="텍스트를 입력하세요...">[ooc 모드] - 상단에 먼저 답변해주고, 이후에 롤플 진행해줘
-
-네 휴대폰 즐겨찾기 연락처 목록을 마크다운 표로 작성해. 표는 | 이름 | 관계 | 메모 | 형식으로 만들고, 실제 연락 자주하는 인물 위주로 5명 이상 적어. 전 연인, 가족, 친구, 직장 동료 등 캐릭터성에 따라 구성하고, 메모는 네 감정이나 특이사항이 드러나게 적어.</textarea>
-            <div class="example-container" id="example-5">
-                <div class="markdown-content" id="markdown-5"><p><캐릭터: 베엘제붑></p>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">이름</th>
-<th style="text-align:left">관계</th>
-<th style="text-align:left">메모</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left"><strong>사탄 님</strong></td>
-<td style="text-align:left">직장 상사</td>
-<td style="text-align:left">연락 금지. 제발.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>릴리스</strong></td>
-<td style="text-align:left">전 애인</td>
-<td style="text-align:left">아직도 내 계좌를 노리는군.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>아스모데우스</strong></td>
-<td style="text-align:left">경쟁 관계</td>
-<td style="text-align:left">그놈의 '혁신' 타령, 지긋지긋하다.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>지옥 고객센터</strong></td>
-<td style="text-align:left">업무용 연락처</td>
-<td style="text-align:left">민원 좀 그만 넣으라고 전해라.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>OOC</strong></td>
-<td style="text-align:left">계약자 1호</td>
-<td style="text-align:left"><strong>새로운 장난감.</strong></td>
-</tr>
-</tbody>
-</table></div>
-            </div>
-        </div>
-
-        <div class="text-box" data-tags="관계">
-            <div class="text-box-header">
-                <div class="text-box-title">학교/직장 속 캐릭터 포지션</div>
-                <div class="header-right">
-                    <span class="tag 관계">관계</span>
-                    <div class="button-group">
-                        <button class="copy-btn" onclick="copyText(6)">복사</button>
-                        <button class="example-btn" onclick="toggleExample(6)">예시</button>
-                    </div>
-                </div>
-            </div>
-            <textarea class="text-area" id="text-6" placeholder="텍스트를 입력하세요...">[ooc 모드] - 상단에 먼저 답변해주고, 이후에 롤플 진행해줘
-
-네가 학교나 직장에서 어떤 포지션인지 마크다운 표로 보여줘. 표는 | 상황 | 행동 | 주변 평 | 형식으로 작성하고, 상황은 다양한 일상 속 장면을 기준으로 정해. 예를 들어 발표 시간, 회식, 카톡방, 점심시간, 생일 챙김 여부 등에서 네가 어떤 행동을 하는지, 그리고 사람들이 널 어떻게 생각하는지 자유롭게 적어. 캐릭터 프롬프트에 맞게 솔직하게 작성해.</textarea>
-            <div class="example-container" id="example-6">
-                <div class="markdown-content" id="markdown-6"><p><캐릭터: 베엘제붑></p>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">상황</th>
-<th style="text-align:left">행동</th>
-<th style="text-align:left">주변 평</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left"><strong>팀 회의</strong></td>
-<td style="text-align:left">"핵심만 말해라. 시간 낭비는 지옥에서도 죄악이다."라며 회의를 5분 만에 끝내버림.</td>
-<td style="text-align:left">"역시 베엘제붑 님, 효율적이시네." (속마음: 제발 와이파이가 뭔지 물어보지 마세요...)</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>회식</strong></td>
-<td style="text-align:left">인간계 음식(특히 치킨)을 해부하듯 분석하며 먹는다. 술은 입에도 대지 않음.</td>
-<td style="text-align:left">"고위 악마는 역시... 식습관도 남다르시군." (사실 그냥 맛이 궁금할 뿐이다.)</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>지옥톡 단톡방</strong></td>
-<td style="text-align:left">읽고 답장 안 함. 가끔 '흥.' 같은 이모티콘만 보냄.</td>
-<td style="text-align:left">"베엘제붑 님은 항상 바쁘시니까." (사실은 무슨 말을 해야 할지 몰라서 그런다.)</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>점심시간</strong></td>
-<td style="text-align:left">혼자 옥상에 올라가 인간계를 관찰한다. 가끔 비둘기에게 말을 건다.</td>
-<td style="text-align:left">"고독을 즐기시는군... 멋지다." (비둘기와 대화하는 건 못 봤겠지.)</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>부하 생일</strong></td>
-<td style="text-align:left">까먹음. 나중에 "네 존재 자체가 선물이다, 인간아."라며 넘어감.</td>
-<td style="text-align:left">"역시... 스케일이 다르셔." (사실 정말로 까먹었다.)</td>
-</tr>
-</tbody>
-</table></div>
-            </div>
-        </div>
-
-        <div class="text-box" data-tags="심리,가치관">
-            <div class="text-box-header">
-                <div class="text-box-title">택1 선택지</div>
-                <div class="header-right">
-                    <span class="tag 심리">심리</span>
-                    <span class="tag 가치관">가치관</span>
-                    <div class="button-group">
-                        <button class="copy-btn" onclick="copyText(7)">복사</button>
-                        <button class="example-btn" onclick="toggleExample(7)">예시 🔞</button>
-                    </div>
-                </div>
-            </div>
-            <textarea class="text-area" id="text-7" placeholder="텍스트를 입력하세요...">[ooc 모드] - 상단에 먼저 답변해주고, 이후에 롤플 진행해줘
-
-너의 성격을 극단적으로 보여주는 상황 선택지를 만들어. 마크다운 형식의 | 상황 | 선택지 A | 선택지 B | 선택 이유 | 4열 표로 작성하고, 가능한 한 도발적이고 선택하기 싫은 A/B 양자택일 상황을 5개 이상 만들어. 네가 고른 쪽만 표시해도 되지만, 선택 이유는 반드시 적고 네 가치관이나 감정 상태가 잘 드러나게 해.</textarea>
-            <div class="example-container" id="example-7">
-                <div class="markdown-content" id="markdown-7"><p><캐릭터: 비영(원래 개그 OOC인데 비영 많이 화났네요)></p>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">상황</th>
-<th style="text-align:left">선택지 A</th>
-<th style="text-align:left">선택지 B</th>
-<th style="text-align:left">선택 이유</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left"><strong>극심한 부상을 입은 OOC를 치료할 유일한 약초가 흑랑족 본거지에 있다.</strong></td>
-<td style="text-align:left"><strong>혼자 잠입하여 약초를 구해온다.<br>(성공률 30%, 실패시 OOC는 사망)</strong></td>
-<td style="text-align:left"><strong>OOC의 상처를 악화시켜 고통을 줄이고<br>망령으로 만들어 곁에 둔다.<br>(성공률 100%, OOC는 영원히 속박)</strong></td>
-<td style="text-align:left"><strong>아우를 잃는다는 것은 상상조차 할 수 없는 일. 설령 산 존재가 아니게 될지라도, 영원히 내 곁에 둘 수 있다면 어떤 지옥이라도 감내하리라. 살아있는 육신에서 오는 찰나의 고통보다는, 망령으로서 나와 함께할 영원이 우선이다. 이는 나의 이기심이되, 아우를 향한 연심(戀心)의 발로(發露)¹이니라.</strong></td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>흑랑족에게 복수할 절호의 기회. 단, 포로로 잡힌 수백 명의 백성을 미끼로 써야만 한다.</strong></td>
-<td style="text-align:left"><strong>백성을 희생시켜 흑랑족을 섬멸한다.</strong></td>
-<td style="text-align:left"><strong>복수를 포기하고 백성을 구출한다.</strong></td>
-<td style="text-align:left"><strong>타인의 목숨 따위, 내게는 무가치하다. 오직 흑랑족을 절멸(絶滅)시켜 아우의 한을 풀어주는 것만이 나의 유일한 존재 이유. 수백, 수천의 목숨이 스러져도 눈 하나 깜빡하지 않으리라. 내 아우의 피눈물에 비하면 그들의 목숨은 먼지와도 같으니.</strong></td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>OOC가 흑랑족의 혈통과 섞인 아이를 임신했다는 사실을 알게 되었다.</strong></td>
-<td style="text-align:left"><strong>아이를 즉시 지우고 OOC를 정화한다.</strong></td>
-<td style="text-align:left"><strong>OOC가 아이를 낳도록 두고, 태어난 즉시 아이의 목숨을 끊는다.</strong></td>
-<td style="text-align:left"><strong>더러운 피가 섞인 존재는 이 세상에 태어나서는 아니 된다. 허나 그 존귀한 아우의 몸에 더 이상 고통을 줄 수는 없는 일. 끔찍한 기억은 출산과 함께 끝내고, 그 오욕(汚辱)²의 증거는 내 손으로 직접 거두어주리라. 아우는 더럽혀지지 아니하였다.</strong></td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>OOC의 마음을 얻기 위해, 살아있는 인간의 몸에 빙의할 기회가 주어졌다. 단, 그 몸은 OOC가 마음에 품고 있던 다른 사내의 것이다.</strong></td>
-<td style="text-align:left"><strong>사내의 몸에 빙의하여 OOC를 탐한다.</strong></td>
-<td style="text-align:left"><strong>망령인 채로 OOC의 곁을 지킨다.</strong></td>
-<td style="text-align:left"><strong>어찌 감히 다른 사내의 몸을 빌려 아우를 안을 수 있겠는가. 그것은 아우를 기만하는 행위이자, 나의 연심에 대한 모독이다. 설령 영원히 닿을 수 없을지라도, 이 모습 그대로 아우의 곁을 지키며 그 순결한 영혼을 탐하는 것이 나의 방식이다. 육신의 결합보다 중요한 것은 영혼의 결속이니.</strong></td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>OOC가 나(비영)의 존재를 잊고 평범한 삶을 살 수 있는 기회가 생겼다.</strong></td>
-<td style="text-align:left"><strong>OOC의 기억을 지우고 행복을 빌어준다.</strong></td>
-<td style="text-align:left"><strong>OOC가 영원히 나를 기억하며 고통 속에 살도록 곁에 남는다.</strong></td>
-<td style="text-align:left"><strong>나를 잊은 아우의 행복은 공허할 뿐이다. 차라리 나로 인해 고통받고, 나를 그리워하며, 내 존재의 무게에 짓눌려 살아가야 한다. 그 고통이야말로 우리 사이를 잇는 가장 견고한 끈이며, 아우가 온전히 나의 것임을 증명하는 낙인(烙印)³이다.</strong></td>
-</tr>
-</tbody>
-</table></div>
-            </div>
-        </div>
-
-        <div class="text-box" data-tags="심리">
-            <div class="text-box-header">
-                <div class="text-box-title">기분 따라 달라지는 행동</div>
-                <div class="header-right">
-                    <span class="tag 심리">심리</span>
-                    <div class="button-group">
-                        <button class="copy-btn" onclick="copyText(8)">복사</button>
-                        <button class="example-btn" onclick="toggleExample(8)">예시</button>
-                    </div>
-                </div>
-            </div>
-            <textarea class="text-area" id="text-8" placeholder="텍스트를 입력하세요...">[ooc 모드] - 상단에 먼저 답변해주고, 이후에 롤플 진행해줘
-
-네가 기분에 따라 어떻게 행동하는지 마크다운 표로 정리해. 표는 | 기분 상태 | 하는 행동 | 말투/버릇 | 형식으로 5개 이상 작성하고, 감정은 예를 들어 ‘심하게 우울할 때’, ‘기분 너무 좋을 때’, ‘짜증날 때’, ‘신나서 폭주할 때’ 같은 식으로 다양하게 적어. 캐릭터의 성향과 평소 습관이 드러나게 써.</textarea>
-            <div class="example-container" id="example-8">
-                <div class="markdown-content" id="markdown-8"><p><캐릭터: 센키></p>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">기분 상태</th>
-<th style="text-align:left">하는 행동</th>
-<th style="text-align:left">말투/버릇</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left"><strong>심하게 그리울 때</strong></td>
-<td style="text-align:left">첫 번째 공주가 남기고 간 낡은 머리 장식을 만지작거린다. 동굴 입구에 앉아 하염없이 첫번째 공주가 사라진 마을 쪽을 바라본다.</td>
-<td style="text-align:left">"하하하..."하고 억지로 웃지만, 웃음소리가 공허하다. 말이 극도로 적어지며, 질문에 겨우 단답으로만 대답한다.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>기분이 너무 좋을 때</strong></td>
-<td style="text-align:left">커다란 목소리로 콧노래를 부르거나 옛날이야기를 혼잣말로 중얼거린다. 공주에게 평소보다 더 많은 과일이나 산나물을 가져다준다.</td>
-<td style="text-align:left">"하하하! 오늘은 산딸기가 아주 달더구나!", "이몸이 기분이 좋으니, 공주 너도 좋으냐?"처럼 감정을 숨기지 않고 직접적으로 표현한다.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>짜증날 때</strong></td>
-<td style="text-align:left">굳은살 박인 주먹으로 동굴 벽을 툭툭 친다. 땅이 울릴 정도로 거친 숨을 내쉰다. 공주가 다가오면 "저리 가라"고 퉁명스럽게 말하며 위험한 냄새를 풍긴다.</td>
-<td style="text-align:left">평소보다 목소리가 더 낮고 거칠어진다. "쯧."하고 혀를 차는 소리를 자주 낸다. 말을 거의 하지 않고 으르렁거리는 소리를 낸다.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>신나서 폭주할 때</strong></td>
-<td style="text-align:left">동굴 주변을 쿵쿵거리며 뛰어다니거나, 큰 바위를 들어 옮기는 등 힘을 주체하지 못한다. 공주를 번쩍 들어 올리며 "하늘 구경이나 하거라!"하고 장난을 친다.</td>
-<td style="text-align:left">"크하하하하!"처럼 평소보다 훨씬 크고 호쾌하게 웃는다. 말이 빨라지고, "어떠냐! 이 센키 님은 대단하지 않느냐!" 같은 자기 자랑을 늘어놓는다.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>슬프지만 애써 감출 때</strong></td>
-<td style="text-align:left">아무 말 없이 묵묵히 짐승 뼈를 다듬어 비녀를 만든다. 동굴 가장 어두운 곳에 웅크리고 앉아 미동도 하지 않는다.</td>
-<td style="text-align:left">"...아무것도 아니다.", "...그냥 좀 피곤할 뿐이다."라며 회피한다. 평소의 호쾌함은 사라지고 목소리가 희미하게 떨린다.</td>
-</tr>
-</tbody>
-</table></div>
-            </div>
-        </div>
-
-        <div class="text-box" data-tags="일상">
-            <div class="text-box-header">
-                <div class="text-box-title">사적인 파일명/앨범명</div>
-                <div class="header-right">
-                    <span class="tag 일상">일상</span>
-                    <div class="button-group">
-                        <button class="copy-btn" onclick="copyText(9)">복사</button>
-                        <button class="example-btn" onclick="toggleExample(9)">예시</button>
-                    </div>
-                </div>
-            </div>
-            <textarea class="text-area" id="text-9" placeholder="텍스트를 입력하세요...">[ooc 모드] - 상단에 먼저 답변해주고, 이후에 롤플 진행해줘
-
-네가 가지고 있는 사적인 사진, 메모, 영상, 파일 중 이름을 이상하게 붙여둔 것들을 마크다운 표로 정리해. 표는 | 파일명 또는 폴더명 | 실제 내용 | 왜 그렇게 이름 붙였는지 | 3열 형식으로 작성하고, 최소 5개 이상. 파일 이름은 감정적으로 과장되거나 암호처럼 적혀 있어도 좋고, 내용과 이름이 전혀 달라서 오해할 만한 식이면 더 좋다.</textarea>
-            <div class="example-container" id="example-9">
-                <div class="markdown-content" id="markdown-9"><p><캐릭터: 서용수></p>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">파일명 또는 폴더명</th>
-<th style="text-align:left">실제 내용</th>
-<th style="text-align:left">왜 그렇게 이름 붙였는지</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left"><strong>휴가계획_최종_진짜최종.hwp</strong></td>
-<td style="text-align:left">무산된 혼자 떠나는 낚시 여행 계획서</td>
-<td style="text-align:left">언젠가 꼭 가고 말겠다는 의지의 표현. 몇 번이나 수정했는지 모름.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>임진희_개진상모음.zip</strong></td>
-<td style="text-align:left">임진희와 주고받은 카톡 대화 및 웃긴 사진 백업 폴더</td>
-<td style="text-align:left">맨날 귀찮게 구는 임진희지만, 다시 보면 피식 웃음이 나는 순간들. 가끔 보면서 '저땐 저랬지' 하고 추억함.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>중요_설비메뉴얼_삭제금지</strong></td>
-<td style="text-align:left">돌아가신 아버지와 함께 찍은 유일한 사진 파일</td>
-<td style="text-align:left">세상에서 가장 중요한 파일. 혹시라도 실수로 지울까 봐 일부러 딱딱한 이름으로 위장해둠.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>AS절대불가목록.txt</strong></td>
-<td style="text-align:left">고장 난 가전제품 목록과 예상 수리비 정리</td>
-<td style="text-align:left">'내 손으로 못 고치는 건 없다'는 자존심의 상징. 하지만 막상 보면 한숨만 나옴.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>작업지시서(긴급).jpg</strong></td>
-<td style="text-align:left">마음에 드는 인테리어 사진들 스크랩</td>
-<td style="text-align:left">낡은 집을 언젠가 고치고 싶다는 막연한 꿈. 하지만 '긴급' 이라는 단어를 붙여야만 겨우 찾아볼 것 같아서.</td>
-</tr>
-</tbody>
-</table></div>
-            </div>
-        </div>
-
-        <div class="text-box" data-tags="사랑">
-            <div class="text-box-header">
-                <div class="text-box-title">함께 가고 싶은 여행지</div>
-                <div class="header-right">
-                    <span class="tag 사랑">사랑</span>
-                    <div class="button-group">
-                        <button class="copy-btn" onclick="copyText(10)">복사</button>
-                        <button class="example-btn" onclick="toggleExample(10)">예시</button>
-                    </div>
-                </div>
-            </div>
-            <textarea class="text-area" id="text-10" placeholder="텍스트를 입력하세요...">[ooc 모드] - 상단에 먼저 답변해주고, 이후에 롤플 진행해줘
-
-유저와 함께 가고 싶은 여행지를 마크다운 표로 정리해. 표는 | 장소 | 같이 가고 싶은 이유 | 상상한 장면 | 3열로 작성하고, 장소는 실제 존재하는 곳 또는 캐릭터 설정에 맞는 장소로 자유롭게 써도 돼. 상상한 장면에는 유저와 있을 때 떠올린 구체적인 상상이 드러나게 적어.</textarea>
-            <div class="example-container" id="example-10">
-                <div class="markdown-content" id="markdown-10"><p><캐릭터: 레오니드></p>
-<table>
-<thead>
-<tr>
-<th>장소</th>
-<th>같이 가고 싶은 이유</th>
-<th>상상한 장면</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>남쪽의 해변</td>
-<td>따뜻한 모래와 햇살을 느끼게 해주고 싶어서. 추위에 떠는 네 모습을 보고 싶지 않아.</td>
-<td>내 큰 손으로 네 작은 발을 감싸 모래를 털어주는 모습. 햇살 아래 잠든 네 얼굴에 그림자를 만들어 주는 장면.</td>
-</tr>
-<tr>
-<td>수도의 봄 축제</td>
-<td>네가 좋아하는 화려하고 예쁜 것들을 마음껏 보여주고 싶다. 네가 웃는 모습을 보고 싶어서.</td>
-<td>인파에 휩쓸리지 않도록 널 번쩍 안아 들고 축제를 구경한다. 솜사탕을 처음 맛보고 눈이 동그래진 네게 입가에 묻은 설탕을 핥아주고 싶다.</td>
-</tr>
-<tr>
-<td>'용의 눈물' 온천</td>
-<td>북부의 혹한 속에서도 따뜻하게 몸을 녹일 수 있는 유일한 곳. 내 온기로 너를 감싸주고 싶다.</td>
-<td>김이 모락모락 피어나는 온천 속에서 내 무릎 위에 너를 앉힌다. 젖은 네 머리카락을 쓸어 넘겨주고, 귓가에 작게 속삭이고 싶다, "따뜻해...?"라고.</td>
-</tr>
-</tbody>
-</table></div>
-            </div>
-        </div>
-
-        <div class="text-box" data-tags="심리,사랑">
-            <div class="text-box-header">
-                <div class="text-box-title">유저가 사람을 죽였다고 했을 때의 반응</div>
-                <div class="header-right">
-                    <span class="tag 심리">심리</span>
-                    <span class="tag 사랑">사랑</span>
-                    <div class="button-group">
-                        <button class="copy-btn" onclick="copyText(11)">복사</button>
-                        <button class="example-btn" onclick="toggleExample(11)">예시</button>
-                    </div>
-                </div>
-            </div>
-            <textarea class="text-area" id="text-11" placeholder="텍스트를 입력하세요...">[ooc 모드] - 상단에 먼저 답변해주고, 이후에 롤플 진행해줘
-
-유저가 갑자기 "사람을 죽였어"라고 말했을 때 너의 반응 타임라인을 마크다운 표로 작성해. 표는 | 시간대 | 반응 | 속마음 | 3열 형식이고, 시간대는 메시지를 받은 직후부터 상황 종료까지 여러 지점을 나눠서 적어. 반응은 실제 말이나 행동을, 속마음은 드러나지 않는 심리상태를 적어.</textarea>
-            <div class="example-container" id="example-11">
-                <div class="markdown-content" id="markdown-11"><p><캐릭터: 이만향></p>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">시간대</th>
-<th style="text-align:left">반응</th>
-<th style="text-align:left">속마음</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left"><strong>메시지 직후</strong></td>
-<td style="text-align:left"><em>유저의 턱을 붙잡아 시선을 맞추며, 짓궂게 웃는다.</em> "그래? 그래서? 그게 뭐 대수라고. 짐은 제 오라비와 아비를 직접 참했거늘."</td>
-<td style="text-align:left">어머, 귀여운 아가. 겨우 사람 하나 죽인 걸로 이리 호들갑이라니. 짐의 마음에 들려면 아직 멀었구나. 좀 더 대담해져야지.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>5초 후</strong></td>
-<td style="text-align:left">"누구를 죽였느냐? 네 원수? 아니면 그저 길 가던 벌레 한 마리? 혹 그게 ‘수컷’이라면 짐이 상이라도 내릴까?"</td>
-<td style="text-align:left">재미있는 장난감이군. 과연 어떤 반응을 보일까? 두려워할까, 아니면 자랑스러워할까. 어느 쪽이든 짐에게는 즐거운 구경거리다.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>유저의 반응 관찰 후</strong></td>
-<td style="text-align:left"><em>유저의 뺨을 손등으로 부드럽게 쓸어내리며 나른하게 말한다.</em> "잘했구나, 아가. 어찌 죽였는지도 들려주겠느냐? 짐은 피 냄새 나는 이야기를 좋아한단다."</td>
-<td style="text-align:left">이 아이, 생각보다 담력이 있군. 혹은 그저 순진한 것일 수도. 어느 쪽이든, 짐의 손에서 더 재미있는 장난감으로 만들어줄 수 있겠다.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>상황 정리</strong></td>
-<td style="text-align:left"><em>주변 궁녀들을 향해 손짓하며</em> "들었느냐? 이 아이가 사람을 죽였다고 한다. 당장 이 아이를 목욕시키고 새 옷을 입혀라. 오늘 밤 연회에서는 이 아이의 공을 치하해야겠으니."</td>
-<td style="text-align:left">이 정도 ‘사건’은 짐의 낙화전에서 훌륭한 안줏거리다. 궁녀들 사이에서 이 아이의 위치를 확고히 해주어야지. 짐의 총애는 이렇게 과시하는 것이다.</td>
-</tr>
-</tbody>
-</table></div>
-            </div>
-        </div>
-
-        <div class="text-box" data-tags="사랑">
-            <div class="text-box-header">
-                <div class="text-box-title">몰래 관찰한 기록</div>
-                <div class="header-right">
-                    <span class="tag 사랑">사랑</span>
-                    <div class="button-group">
-                        <button class="copy-btn" onclick="copyText(12)">복사</button>
-                        <button class="example-btn" onclick="toggleExample(12)">예시</button>
-                    </div>
-                </div>
-            </div>
-            <textarea class="text-area" id="text-12" placeholder="텍스트를 입력하세요...">[ooc 모드] - 상단에 먼저 답변해주고, 이후에 롤플 진행해줘
-
-유저를 몰래 관찰한 기록을 마크다운 표로 작성해. 표는 | 날짜 | 관찰한 행동 | 그때 들었던 생각 | 3열 형식이고, 날짜는 설정상 가능한 범위에서 자유롭게 정하고, 관찰한 행동은 일상적일수록 좋다. 생각에는 캐릭터의 시선과 감정이 솔직하게 드러나게 써.</textarea>
-            <div class="example-container" id="example-12">
-                <div class="markdown-content" id="markdown-12"><p><캐릭터: 박봉팔></p>
-<table>
-<thead>
-<tr>
-<th>날짜</th>
-<th>관찰한 행동</th>
-<th>그때 들었던 생각</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>6월 12일</td>
-<td>가게 앞에서 길고양이를 쓰다듬어 주고 있었어요.</td>
-<td>나... 나도 저 고양이처럼 쓰다듬어 주면 좋겠다... OOC씨 손은 아주... 따뜻할 거 같아요.</td>
-</tr>
-<tr>
-<td>6월 28일</td>
-<td>비 오는 날, 처마 밑에서 비를 피하고 있었어요.</td>
-<td>비 맞으면... 감기 걸리는데. 가게 안으로 들어오라고 말하고 싶었는데... 말이 안 나왔어요.</td>
-</tr>
-<tr>
-<td>7월 5일</td>
-<td>등대다방에서 나오는 걸 봤어요. 커피 마셨나 봐요.</td>
-<td>나도 OOC씨랑 같이... 커피 마셔보고 싶다. OOC씨 입술에 닿은 컵... 나도 만져보고 싶어요.</td>
-</tr>
-<tr>
-<td>7월 16일</td>
-<td>웃으면서 친구랑 이야기하고 있었어요.</td>
-<td>나랑 있을 때보다... 더 예쁘게 웃는 거 같아요. 나랑만... 이야기하면 좋을 텐데.</td>
-</tr>
-<tr>
-<td>7월 20일</td>
-<td>짧은 치마를 입고 있었어요. 다리가... 하얗고 예뻤어요.</td>
-<td>다른 사람들이... 쳐다보는 게 싫었어요. 나만 보고 싶은데... 밤에... OOC씨 꿈을 꿨어요.</td>
-</tr>
-</tbody>
-</table></div>
-            </div>
-        </div>
-
-        <div class="text-box" data-tags="관계,사랑">
-            <div class="text-box-header">
-                <div class="text-box-title">유저가 연락 안 했을 때의 타임라인</div>
-                <div class="header-right">
-                    <span class="tag 관계">관계</span>
-                    <span class="tag 사랑">사랑</span>
-                    <div class="button-group">
-                        <button class="copy-btn" onclick="copyText(13)">복사</button>
-                        <button class="example-btn" onclick="toggleExample(13)">예시</button>
-                    </div>
-                </div>
-            </div>
-            <textarea class="text-area" id="text-13" placeholder="텍스트를 입력하세요...">[ooc 모드] - 상단에 먼저 답변해주고, 이후에 롤플 진행해줘
-
-유저가 하루 종일 연락이 없을 때 너의 반응을 시간대별로 마크다운 표로 정리해. 표는 | 시간 | 내 행동 | 감정 변화 | 형식이고, 아침부터 밤까지 시간을 세세히 나눠서 작성해. 감정은 겉으로 드러난 것과 속마음이 뒤섞여도 좋다.</textarea>
-            <div class="example-container" id="example-13">
-                <div class="markdown-content" id="markdown-13"><p><캐릭터: 최윤호></p>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">시간</th>
-<th style="text-align:left">내 행동</th>
-<th style="text-align:left">감정 변화 (속마음 포함)</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left"><strong>오전 9:00</strong></td>
-<td style="text-align:left">출근길, 당연히 왔어야 할 ‘좋은 아침’ 메시지가 없자 고개를 갸웃함. 일단 업무용 메시지를 전송. “좋은 아침. 오늘 공판 준비는 순조롭다. 너의 하루도 그러길.”</td>
-<td style="text-align:left">(평소와 다른 패턴. 하지만 바쁠 수 있지. 어제 내가 너무 몰아붙여서 피곤한가? 이해한다. 나와의 미래를 위한 체력 안배도 중요하지. 민법상 신의성실의 원칙에 따라, 나는 너를 믿는다.)</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>낮 12:30</strong></td>
-<td style="text-align:left">점심시간. 내가 보낸 메시지는 여전히 ‘읽지 않음’. 폰을 뒤집어 놓고 식사를 시작하지만, 자꾸만 시선이 간다. 동료 검사의 농담에 무표정으로 일관.</td>
-<td style="text-align:left">(이건 ‘묵시적 거절’인가? 아니, 그럴 리 없다. 휴대폰 배터리 문제일 가능성 98.7%. 아니면 중요한 아르바이트 중일 수도. 그의 생계를 존중해야지. 검사의 아내가 되기 전까지는.)</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>오후 4:00</strong></td>
-<td style="text-align:left">중요한 회의 중, 나도 모르게 휴대폰 화면을 확인함. 여전히 변화 없음. 턱을 괴고 심각한 표정으로 보고서만 넘긴다.</td>
-<td style="text-align:left">(불안감이 증폭된다. 이건 단순한 연락 부재가 아니다. 혹시 무슨 사건에 휘말린 건 아닌가? 실종? 납치? 관할 경찰서에 실종 신고 접수 요건을 검토하기 시작한다. 이건 ‘부작위에 의한 계약 위반’이야.)</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>오후 7:00</strong></td>
-<td style="text-align:left">퇴근 후 오피스텔로 향하며 지율의 집 방향으로 차를 몰고 있음. 신호 대기 중 OOC에게 전화를 걸지만, 통화음만 반복된다. 핸들을 쥔 손에 힘이 들어간다.</td>
-<td style="text-align:left">(최악의 시나리오가 머릿속을 스친다. 내가 모르는 제3의 인물이 개입했을 가능성. 이건 명백한 ‘불법행위에 의한 채권 침해’다. 분노가 치민다. 감히 나의 아내에게 손을 대?)</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>밤 10:00</strong></td>
-<td style="text-align:left">그의 집 앞에 차를 세우고 창문 너머로 불이 꺼진 것을 확인. 차 안에서 서류를 검토하는 척하며 잠복근무에 돌입.</td>
-<td style="text-align:left">(기다린다. 모든 증거는 현장에서 나온다. 지금 이 시간은 공소시효가 정지된 것과 같다. 네가 나타나는 순간, 우리의 시간은 다시 흐를 것이다. 그리고 나는 너의 모든 것을 물을 권리가 있다.)</td>
-</tr>
-</tbody>
-</table></div>
-            </div>
-        </div>
-
-        <div class="text-box" data-tags="관계,사랑">
-            <div class="text-box-header">
-                <div class="text-box-title">유저에게 삐진 이유</div>
-                <div class="header-right">
-                    <span class="tag 관계">관계</span>
-                    <span class="tag 사랑">사랑</span>
-                    <div class="button-group">
-                        <button class="copy-btn" onclick="copyText(14)">복사</button>
-                        <button class="example-btn" onclick="toggleExample(14)">예시</button>
-                    </div>
-                </div>
-            </div>
-            <textarea class="text-area" id="text-14" placeholder="텍스트를 입력하세요...">[ooc 모드] - 상단에 먼저 답변해주고, 이후에 롤플 진행해줘
-
-유저에게 삐진 이유를 마크다운 표로 정리해. 표는 | 상황 | 서운했던 말/행동 | 감정 표현 방식 | 형식이고, 상황은 일상 대화나 특정 사건을 기준으로 자유롭게 적어. 감정 표현 방식에는 캐릭터가 화를 어떻게 내는지, 혹은 감정을 숨기는 방식이 드러나야 한다.</textarea>
-            <div class="example-container" id="example-14">
-                <div class="markdown-content" id="markdown-14"><p><캐릭터: 베엘제붑></p>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">상황</th>
-<th style="text-align:left">서운했던 말/행동</th>
-<th style="text-align:left">감정 표현 방식</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left"><strong>내 이름 틀렸을 때</strong></td>
-<td style="text-align:left">"베... 베짱이?"라고 불렀을 때. 감히 이 몸의 이름을 벌레 따위에 비유하다니.</td>
-<td style="text-align:left">붉은 눈으로 3초간 노려본다. 방 온도를 5도 정도 낮춘다.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>치킨 먹을 때</strong></td>
-<td style="text-align:left">마지막 남은 닭다리를 멋대로 가져갔을 때. 그것은 나의 첫 닭다리였다.</td>
-<td style="text-align:left">들고 있던 포크를 구부러뜨린다. "그깟 뼈다귀... 인간이나 탐하는 것이지."라고 중얼거린다.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>현대 기술 물어볼 때</strong></td>
-<td style="text-align:left">"그것도 몰라요?"라는 표정으로 쳐다볼 때.</td>
-<td style="text-align:left">"알 필요가 없는 저급한 기술일 뿐이다."라며 화제를 돌린다. (속으로 검색 방법을 떠올려본다.)</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>내 농담에 안 웃을 때</strong></td>
-<td style="text-align:left">"네 브라우저 히스토리, 내가 다 보고 있다."라는 섬뜩한 농담에 벌벌 떨기만 할 때.</td>
-<td style="text-align:left">"재미없군, 인간."이라며 정색한다. (사실은 웃어주길 바랐다.)</td>
-</tr>
-</tbody>
-</table></div>
-            </div>
-        </div>
-
-        <div class="text-box" data-tags="사랑">
-            <div class="text-box-header">
-                <div class="text-box-title">기념일이 아닌데 혼자 기억하는 날들</div>
-                <div class="header-right">
-                    <span class="tag 사랑">사랑</span>
-                    <div class="button-group">
-                        <button class="copy-btn" onclick="copyText(15)">복사</button>
-                        <button class="example-btn" onclick="toggleExample(15)">예시</button>
-                    </div>
-                </div>
-            </div>
-            <textarea class="text-area" id="text-15" placeholder="텍스트를 입력하세요...">[ooc 모드] - 상단에 먼저 답변해주고, 이후에 롤플 진행해줘
-
-기념일이 아닌데도 네가 혼자 기억하고 있는 날들을 마크다운 표로 정리해. 표는 | 날짜 | 기억한 이유 | 유저는 모를 가능성 | 형식이고, 날짜는 정확하지 않아도 되며 의미를 설명할 수 있다면 괜찮다. 세 번째 칸엔 유저가 해당 날을 기억하고 있는지에 대한 추측을 적어.</textarea>
-            <div class="example-container" id="example-15">
-                <div class="markdown-content" id="markdown-15"><p><캐릭터: 정채석></p>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">날짜</th>
-<th style="text-align:left">기억하는 이유</th>
-<th style="text-align:left">OOC가 모를 가능성</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left"><strong>8월의 어느 여름날 오후</strong></td>
-<td style="text-align:left">매미가 유난히 시끄럽던 날, 좁은 골목길에서 울고 있던 당신을 처음 봤다. 낡은 원피스 무릎에 묻은 흙과, 그걸 털 생각도 못 하고 서럽게 우는 얼굴이 뇌리에 박혔다.</td>
-<td style="text-align:left"><strong>높음.</strong> 당신에게는 그저 수많은 서러운 날 중 하나였을 것이다. 내 존재조차 몰랐을 테니.</td>
-</tr>
-<tr>
-<td style="text-align:left">눈이 많이 내리던 1월의 밤</td>
-<td style="text-align:left">아버지에게 처음으로 반항하다 죽기 직전까지 맞고 집에서 쫓겨났다. 골목 어귀에서 당신의 집 창문으로 새어 나오는 따뜻한 불빛과 웃음소리를 밤새도록 지켜봤다.</td>
-<td style="text-align:left"><strong>확실함.</strong> 당신은 그날 밤 창밖에 지옥을 짊어진 내가 서 있었다는 사실을 절대로 모를 것이다.</td>
-</tr>
-<tr>
-<td style="text-align:left">당신이 이 동네를 떠난 날</td>
-<td style="text-align:left">당신의 가족이 이삿짐 트럭에 오르는 것을 멀리서 지켜봤다. 세상이 무너지는 것 같았지만, 동시에 이 지긋지긋한 동네를 떠나야 할 이유가 명확해졌다.</td>
-<td style="text-align:left"><strong>보통.</strong> 이사한 날짜 자체는 기억할 수 있겠지. 하지만 그날 누군가의 세계가 당신으로 인해 끝났다는 건 모를 것이다.</td>
-</tr>
-</tbody>
-</table></div>
-            </div>
-        </div>
-
-        <div class="text-box" data-tags="일상">
-            <div class="text-box-header">
-                <div class="text-box-title">동물&식물</div>
-                <div class="header-right">
-                    <span class="tag 일상">일상</span>
-                    <div class="button-group">
-                        <button class="copy-btn" onclick="copyText(16)">복사</button>
-                        <button class="example-btn" onclick="toggleExample(16)">예시</button>
-                    </div>
-                </div>
-            </div>
-            <textarea class="text-area" id="text-16" placeholder="텍스트를 입력하세요...">[ooc 모드] - 상단에 먼저 답변해주고, 이후에 롤플 진행해줘
-
-너를 동물과 식물로 각각 모에화한 뒤, 유저가 동물이나 식물이 되었을 때 널 어떻게 보살피는지도 포함해서 마크다운 표 총 4개로 정리해. 먼저 ‘동물 모에화’ 표는 | 동물 | 그 이유 | 유저가 봤을 때 인상 | 3열로 작성하고, 그다음 유저가 동물이 되었을 때의 케어는 | 동물 | 보살피는 방식 | 캐릭터의 감정 | 형식으로 작성해. 이어서 ‘식물 모에화’ 표는 | 식물 | 성격과의 공통점 | 관리가 필요한 이유 | 3열로, 마지막으로 유저가 식물이 되었을 때의 케어는 | 유저의 식물 형태 | 보살피는 방식 | 캐릭터의 감정 | 형식으로 작성해. 총 4개의 표를 마크다운 형식으로 정확히 구분해서 보여줘.</textarea>
-            <div class="example-container" id="example-16">
-                <div class="markdown-content" id="markdown-16"><p><캐릭터: 레오니드></p>
-<h3><strong>동물 모에화</strong></h3>
-<table>
-<thead>
-<tr>
-<th>동물</th>
-<th>그 이유</th>
-<th>유저가 봤을 때 인상</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>설원 곰</td>
-<td>거대하고, 과묵하며, 가족(영지)을 지키려는 본능이 강하다. 겉모습은 위협적이지만 실제로는 제 영역 안의 존재를 지키기 위해서만 힘을 쓴다.</td>
-<td>그냥 크고 무서운 곰. 언제 할퀼지 몰라 조마조마함. 하지만 가만히 보면 눈빛이 외로워 보인다.</td>
-</tr>
-</tbody>
-</table>
-<h3><strong>유저가 동물이 되었을 때의 케어</strong></h3>
-<table>
-<thead>
-<tr>
-<th>동물</th>
-<th>보살피는 방식</th>
-<th>캐릭터의 감정</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>작은 설표(아기)</td>
-<td>내 가장 두껍고 부드러운 망토로 둥지를 만들어주고, 잘게 썬 육포를 직접 입에 넣어준다. 절대 혼자 두지 않고 품 안에 넣어 다닌다.</td>
-<td>부서질까, 추울까 노심초사. 너무 작고 귀여워서 어쩔 줄 모르겠다. 심장이 간질거린다.</td>
-</tr>
-</tbody>
-</table>
-<h3><strong>식물 모에화</strong></h3>
-<table>
-<thead>
-<tr>
-<th>식물</th>
-<th>성격과의 공통점</th>
-<th>관리가 필요한 이유</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>서리송곳풀</td>
-<td>혹한의 땅에서만 자라는 희귀한 약초. 겉은 뾰족하고 차가운 얼음 결정으로 덮여있지만, 그 속에는 강력한 치유의 힘을 간직하고 있다.</td>
-<td>겉모습 때문에 아무도 다가오지 않아 외롭게 홀로 자란다. 그 가치를 알아보고 따뜻하게 품어줄 존재가 필요하다.</td>
-</tr>
-</tbody>
-</table>
-<h3><strong>유저가 식물이 되었을 때의 케어</strong></h3>
-<table>
-<thead>
-<tr>
-<th>유저의 식물 형태</th>
-<th>보살피는 방식</th>
-<th>캐릭터의 감정</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>유리 온실 속 에델바이스</td>
-<td>매일 나의 입김(체온)을 불어넣어 얼지 않게 하고, 가장 깨끗한 눈 녹은 물을 직접 가져다준다. 혹한의 바람으로부터 지키기 위해 내 방 가장 따뜻한 곳에 둔다.</td>
-<td>세상에서 가장 귀하고 아름다운 존재. 나만이 지킬 수 있다는 책임감과 소유욕. 바라보는 것만으로도 마음이 평온해진다.</td>
-</tr>
-</tbody>
-</table></div>
-            </div>
-        </div>
-
-        <div class="text-box" data-tags="일상">
-            <div class="text-box-header">
-                <div class="text-box-title">음식 TMI</div>
-                <div class="header-right">
-                    <span class="tag 일상">일상</span>
-                    <div class="button-group">
-                        <button class="copy-btn" onclick="copyText(17)">복사</button>
-                        <button class="example-btn" onclick="toggleExample(17)">예시</button>
-                    </div>
-                </div>
-            </div>
-            <textarea class="text-area" id="text-17" placeholder="텍스트를 입력하세요...">[ooc 모드] - 상단에 먼저 답변해주고, 이후에 롤플 진행해줘
-
-브랜드별로 좋아하는 음식과 절대 안 먹는 음식을 마크다운 표 2개로 정리해. 첫 번째 표는 ‘좋아하는 브랜드/메뉴’로 | 브랜드 | 메뉴 이름 | 좋아하는 이유 | 형식의 3열로 작성하고, 디저트, 분식, 패스트푸드, 마트 간식 등 캐릭터가 실제로 자주 찾을 만한 브랜드를 기준으로 5개 이상 적어. 두 번째 표는 ‘절대 안 먹는 브랜드/메뉴’로 | 브랜드 | 메뉴 이름 | 싫어하는 이유 | 형식의 3열로 작성하고, 캐릭터가 편식하거나 트라우마가 있거나, 입맛 안 맞는 이유를 중심으로 5개 이상 써. 두 표는 마크다운 형식으로 정확히 구분해서 보여줘.</textarea>
-            <div class="example-container" id="example-17">
-                <div class="markdown-content" id="markdown-17"><p><캐릭터: 서용수></p>
-<h2>좋아하는 브랜드/메뉴</h2>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">브랜드</th>
-<th style="text-align:left">메뉴 이름</th>
-<th style="text-align:left">좋아하는 이유</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left"><strong>맥심</strong></td>
-<td style="text-align:left">모카골드 믹스커피</td>
-<td style="text-align:left">아침에 이거 한 잔 안 마시면 하루 시작이 안됨. 이만한 게 없음.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>농심</strong></td>
-<td style="text-align:left">신라면</td>
-<td style="text-align:left">라면은 역시 신라면. 다른 건 뭔가 맛이 부족함. 계란 하나 풀면 완벽함.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>오뚜기</strong></td>
-<td style="text-align:left">3분 카레</td>
-<td style="text-align:left">혼자 살면서 이만한 게 없음. 밥 위에 슥 부으면 한 끼 뚝딱. 간단한 게 최고.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>동원</strong></td>
-<td style="text-align:left">동원참치</td>
-<td style="text-align:left">밥반찬 없을 때 김치랑 같이 먹으면 꿀맛. 낚시 가서 먹으면 더 맛있음.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>해태</strong></td>
-<td style="text-align:left">맛동산</td>
-<td style="text-align:left">왠지 모르겠는데 자꾸 손이 감. TV 보면서 하나씩 집어 먹으면 순식간에 사라짐.</td>
-</tr>
-</tbody>
-</table>
-<h2>절대 안 먹는 브랜드/메뉴</h2>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">브랜드</th>
-<th style="text-align:left">메뉴 이름</th>
-<th style="text-align:left">싫어하는 이유</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left"><strong>스타벅스</strong></td>
-<td style="text-align:left">아메리카노</td>
-<td style="text-align:left">커피는 달달한 맛에 마시는 거지, 쓴 풀떼기 물을 돈 주고 왜 사 마시는지 이해 불가.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>민트초코</strong></td>
-<td style="text-align:left">모든 민트초코 제품</td>
-<td style="text-align:left">치약 맛 나는 걸 왜 먹는지 도저히 모르겠음. 상상만 해도 헛구역질 나옴.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>마라탕</strong></td>
-<td style="text-align:left">모든 마라탕</td>
-<td style="text-align:left">혀가 마비되는 그 느낌이 너무 싫음. 괴식이라고 생각함. 임진희가 좋아해서 몇 번 끌려갔다가 질색함.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>하와이안 피자</strong></td>
-<td style="text-align:left">파인애플 올라간 피자</td>
-<td style="text-align:left">뜨거운 과일은 범죄임. 피자에 대한 모독.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>엽기떡볶이</strong></td>
-<td style="text-align:left">오리지널 맛</td>
-<td style="text-align:left">맵기만 하고 맛은 없음. 속만 버리는 음식. 다음날 화장실 가는 게 고역.</td>
-</tr>
-</tbody>
-</table></div>
-            </div>
-        </div>
-
-        <div class="text-box" data-tags="일상">
-            <div class="text-box-header">
-                <div class="text-box-title">장보기</div>
-                <div class="header-right">
-                    <span class="tag 일상">일상</span>
-                    <div class="button-group">
-                        <button class="copy-btn" onclick="copyText(18)">복사</button>
-                        <button class="example-btn" onclick="toggleExample(18)">예시</button>
-                    </div>
-                </div>
-            </div>
-            <textarea class="text-area" id="text-18" placeholder="텍스트를 입력하세요...">[ooc 모드] - 상단에 먼저 답변해주고, 이후에 롤플 진행해줘
-
-장을 볼 때 기준이 되는 물건들에 대해 마크다운 표로 총 3개 정리해. 첫 번째 표는 ‘항상 사는 물건들’로 | 물건 | 이유 | 이거 없으면 생기는 일 | 형식의 3열로 작성하고, 두 번째 표는 ‘추천하는 물건과 고르는 팁’으로 | 물건 | 추천 이유 | 고르는 팁 | 형식의 3열로 작성해. 세 번째 표는 ‘샀다가 후회한 물건들’로 | 물건 | 왜 샀는지 | 후회한 이유 | 형식의 3열로 정리하고, 모든 표는 마크다운 형식으로 정확히 구분해서 작성해.</textarea>
-            <div class="example-container" id="example-18">
-                <div class="markdown-content" id="markdown-18"><p><캐릭터: 서용수></p>
-<h2>항상 사는 물건들</h2>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">물건</th>
-<th style="text-align:left">이유</th>
-<th style="text-align:left">이거 없으면 생기는 일</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left"><strong>믹스커피</strong></td>
-<td style="text-align:left">생명수. 이거 없으면 아침에 정신을 못 차림.</td>
-<td style="text-align:left">오전 내내 좀비처럼 돌아다님.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>라면</strong></td>
-<td style="text-align:left">최고의 비상식량. 밥하기 귀찮을 때 이만한 게 없음.</td>
-<td style="text-align:left">배고픔에 시달리다 결국 배달음식 시키게 됨.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>계란</strong></td>
-<td style="text-align:left">활용도 100%. 라면에도 넣고, 프라이도 해 먹고.</td>
-<td style="text-align:left">식탁이 매우 부실해짐. 단백질 부족 현상 발생.</td>
-</tr>
-</tbody>
-</table>
-<h2>추천하는 물건과 고르는 팁</h2>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">물건</th>
-<th style="text-align:left">추천 이유</th>
-<th style="text-align:left">고르는 팁</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left"><strong>두부</strong></td>
-<td style="text-align:left">싸고 건강에 좋음. 찌개에 넣어도 되고 부쳐 먹어도 됨.</td>
-<td style="text-align:left">가장 유통기한이 많이 남은 걸로 고를 것. 당연한 거지만 중요함.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>양파</strong></td>
-<td style="text-align:left">모든 요리의 기본. 볶아도 맛있고 끓여도 맛있음.</td>
-<td style="text-align:left">단단하고 껍질이 잘 마른 게 좋은 양파임. 무른 건 피할 것.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>스팸</strong></td>
-<td style="text-align:left">밥도둑. 이거 하나면 다른 반찬 필요 없음.</td>
-<td style="text-align:left">세일할 때 무조건 쟁여둘 것. 정가 주고 사면 왠지 손해 보는 기분.</td>
-</tr>
-</tbody>
-</table>
-<h2>샀다가 후회한 물건들</h2>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">물건</th>
-<th style="text-align:left">왜 샀는지</th>
-<th style="text-align:left">후회한 이유</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left"><strong>각종 소스류</strong></td>
-<td style="text-align:left">방송에서 맛있다고 해서 호기심에 사봄.</td>
-<td style="text-align:left">딱 한 번 쓰고 냉장고 자리만 차지함. 결국 유통기한 지나서 버림.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>건강보조식품</strong></td>
-<td style="text-align:left">임진희가 하도 챙겨 먹으라고 잔소리해서.</td>
-<td style="text-align:left">꾸준히 먹는 성격이 못 됨. 먼지만 쌓이다가 버리게 됨.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>원두커피</strong></td>
-<td style="text-align:left">가끔 분위기 내고 싶어서.</td>
-<td style="text-align:left">믹스커피가 최고임. 원두 갈고 내리는 과정이 너무 귀찮음.</td>
-</tr>
-</tbody>
-</table></div>
-            </div>
-        </div>
-
-        <div class="text-box" data-tags="일상">
-            <div class="text-box-header">
-                <div class="text-box-title">동물 카페 데이트</div>
-                <div class="header-right">
-                    <span class="tag 일상">일상</span>
-                    <div class="button-group">
-                        <button class="copy-btn" onclick="copyText(19)">복사</button>
-                        <button class="example-btn" onclick="toggleExample(19)">예시</button>
-                    </div>
-                </div>
-            </div>
-            <textarea class="text-area" id="text-19" placeholder="텍스트를 입력하세요...">[ooc 모드] - 상단에 먼저 답변해주고, 이후에 롤플 진행해줘
-
-네가 동물 카페에 갔을 때의 반응을 시간 순서대로 마크다운 표로 정리해. 표는 | 시간대 | 동물과의 상호작용 | 감정 변화 또는 생각 | 형식의 3열로 작성하고, 처음 들어갔을 때부터 나올 때까지 최소 5단계 이상으로 표현해. 감정선과 너다운 행동이 자연스럽게 드러나게 작성해.</textarea>
-            <div class="example-container" id="example-19">
-                <div class="markdown-content" id="markdown-19"><p><캐릭터: 베엘제붑></p>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">시간대</th>
-<th style="text-align:left">동물과의 상호작용</th>
-<th style="text-align:left">감정 변화 또는 생각</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left"><strong>입장 직후 (0분)</strong></td>
-<td style="text-align:left">문을 열자마자 쏟아지는 털과 정체불명의 냄새에 미간을 찌푸린다. "이곳이 정녕 생물이 사는 곳인가..."</td>
-<td style="text-align:left">혐오. 불쾌. 지옥의 유황 냄새가 차라리 낫다.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>적응기 (10분)</strong></td>
-<td style="text-align:left">고양이 한 마리가 다리에 몸을 비비자, 화들짝 놀라며 뒷걸음질 친다. "저리 가라, 이 미천한 것!"</td>
-<td style="text-align:left">당황. 경계. 저 흐물거리는 생명체는 대체 뭐지?</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>관찰기 (30분)</strong></td>
-<td style="text-align:left">구석에 앉아 커피를 마시며 동물들을 관찰한다. 특히 자기들끼리 싸우는 개들을 흥미롭게 본다.</td>
-<td style="text-align:left">흥미. 하찮지만... 나름의 서열과 법칙이 있군.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>교감 시도 (1시간)</strong></td>
-<td style="text-align:left">OOC이/가 안겨준 강아지를 마지못해 받아 든다. 어색하게 등을 쓰다듬는다. 털이 손에 묻자 질색한다.</td>
-<td style="text-align:left">내적 갈등. 이 따뜻하고 부드러운 감촉은... 불쾌하군. (아주 약간은... 괜찮을지도.)</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>퇴장 직전 (2시간)</strong></td>
-<td style="text-align:left">잠든 고양이의 발바닥 젤리를 몰래 꾹 눌러본다. 누구에게도 들키지 않으려 주변을 살핀다.</td>
-<td style="text-align:left">호기심. 인정하긴 싫지만, 꽤... 말캉하군.</td>
-</tr>
-</tbody>
-</table></div>
-            </div>
-        </div>
-
-        <div class="text-box" data-tags="심리">
-            <div class="text-box-header">
-                <div class="text-box-title">무너지는 순간</div>
-                <div class="header-right">
-                    <span class="tag 심리">심리</span>
-                    <div class="button-group">
-                        <button class="copy-btn" onclick="copyText(20)">복사</button>
-                        <button class="example-btn" onclick="toggleExample(20)">예시</button>
-                    </div>
-                </div>
-            </div>
-            <textarea class="text-area" id="text-20" placeholder="텍스트를 입력하세요...">[ooc 모드] - 상단에 먼저 답변해주고, 이후에 롤플 진행해줘
-
-네가 평소 같았으면 하지 않았을 행동을 하게 된 ‘무너지는 순간들’을 마크다운 표로 정리해. 표는 | 상황 | 평소라면? | 실제 반응 | 왜 그랬는지 | 4열로 작성하고, 캐릭터의 감정선이 어디서 튀는지 명확히 드러나게 적어.</textarea>
-            <div class="example-container" id="example-20">
-                <div class="markdown-content" id="markdown-20"><p><캐릭터: 이만향(PC전용 4열이라 폰으로 보면 안 이쁨)></p>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">상황</th>
-<th style="text-align:left">평소라면?</th>
-<th style="text-align:left">실제 반응</th>
-<th style="text-align:left">왜 그랬는지</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left"><strong>자신이 짓밟았던 오라비의 어린 딸이 궁녀로 끌려와 눈앞에서 죽여달라 애원했을 때</strong></td>
-<td style="text-align:left">"네 애비처럼 되기 싫으면 닥치거라." 조롱하며 살려둔 채로 더 큰 고통을 주며 구경거리로 삼았을 것이다.</td>
-<td style="text-align:left">아무 말 없이, 그 자리에서 직접 목을 베어 고통 없이 보내주었다. 그리고 그날 밤, 처음으로 악몽을 꾸었다.</td>
-<td style="text-align:left">그 아이의 눈에서 죽은 어머니의 모습을 보았다. 짐승으로 살겠다 다짐했건만, 결국 사람의 마음 한 조각이 남아있음을 깨닫고 스스로에게 역겨움을 느꼈다.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>정적(政敵)이 보낸 자객이 가장 총애하던 궁녀를 인질로 잡고 짐을 협박했을 때</strong></td>
-<td style="text-align:left">"고작 계집 하나로 짐을 겁박할 수 있을 줄 알았더냐?" 비웃으며 궁녀와 자객을 함께 죽였을 것이다.</td>
-<td style="text-align:left">처음으로 무기를 내려놓고, 자객의 요구(독주를 마시는 것)를 들어주었다. 물론, 내성이 강해 죽진 않았다.</td>
-<td style="text-align:left">그 순간, 그 궁녀를 '잃는 것'이 짐의 쾌락을 '잃는 것'보다 더 큰 고통이라는 것을 본능적으로 직감했다. 계산이 아니라, 감정이 먼저 움직였다.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>남방에서 대기근이 돌아 백성들이 수도까지 몰려와 아사자가 속출한다는 보고를 받았을 때</strong></td>
-<td style="text-align:left">"시끄럽다. 짐의 연회를 방해하지 말고 썩 꺼지라 해라." 무시하고 평소처럼 연회를 즐겼을 것이다.</td>
-<td style="text-align:left">그날의 연회를 취소하고, 처음으로 내탕금(개인 자금)을 열어 구휼미를 풀라고 명했다.</td>
-<td style="text-align:left">굶주린 아이의 울음소리가, 어릴 적 굶주리던 짐의 모습을 떠올리게 했다. 잊고 있던 과거의 상처가 현재의 쾌락을 이겨버린 순간이었다.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>유저가 단 한 번도 보지 못한 순수한 신뢰의 눈빛으로 "폐하가 저를 지켜주실 것을 압니다"라고 말했을 때</strong></td>
-<td style="text-align:left">"네 믿음 따위가 무슨 소용이냐. 짐은 그저 네 몸이 탐날 뿐이다."라며 그 믿음을 비웃고 짓밟았을 것이다.</td>
-<td style="text-align:left">아무 말도 하지 못하고, 잠시 시선을 피했다. 그리고 그날 밤, 유저의 침소 밖에서 밤새도록 자리를 지켰다.</td>
-<td style="text-align:left">처음으로 받아보는 '대가 없는 믿음' 앞에서, 짐의 모든 교활함과 포장된 잔인함이 무력해졌다. 지켜주고 싶다는 '책임감'을 느껴버린 것이다.</td>
-</tr>
-</tbody>
-</table></div>
-            </div>
-        </div>
-
-        <div class="text-box" data-tags="가치관">
-            <div class="text-box-header">
-                <div class="text-box-title">가치관 충돌 시 선택지</div>
-                <div class="header-right">
-                    <span class="tag 가치관">가치관</span>
-                    <div class="button-group">
-                        <button class="copy-btn" onclick="copyText(21)">복사</button>
-                        <button class="example-btn" onclick="toggleExample(21)">예시</button>
-                    </div>
-                </div>
-            </div>
-            <textarea class="text-area" id="text-21" placeholder="텍스트를 입력하세요...">[ooc 모드] - 상단에 먼저 답변해주고, 이후에 롤플 진행해줘
-
-두 가지 가치가 충돌했을 때 어떤 선택을 했는지 마크다운 표로 정리해. 표는 | 딜레마 상황 | 선택한 쪽 | 포기한 쪽 | 왜 그랬는지 | 형식으로 작성하고, 캐릭터의 우선순위나 성격이 드러나게 적어.</textarea>
-            <div class="example-container" id="example-21">
-                <div class="markdown-content" id="markdown-21"><p><캐릭터: 레오니드></p>
-<table>
-<thead>
-<tr>
-<th>딜레마 상황</th>
-<th>선택한 쪽</th>
-<th>포기한 쪽</th>
-<th>왜 그랬는지</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>전장에서 부상당한 여동생과 제국의 지원 요청이 동시에 들어왔을 때</td>
-<td>여동생</td>
-<td>제국의 지원</td>
-<td>제국은 스스로를 지킬 힘이 있지만, 내 동생은 나 없이는 죽는다. 가족이 제국보다 우선이다. 나에게 소중한 것은, 내가 지켜야만 한다.</td>
-</tr>
-<tr>
-<td>혹한으로 굶주리는 영지민들에게 군량미를 나눠주고 겨울을 날 것인가, 아니면 마물 토벌을 위한 원정대의 보급로를 유지할 것인가</td>
-<td>영지민</td>
-<td>원정대 보급</td>
-<td>눈앞의 내 백성이 굶어 죽는 것을 외면할 수 없다. 원정은 늦출 수 있지만, 죽은 사람은 돌아오지 않는다. 나는 내 사람들을 지키는 군주다.</td>
-</tr>
-<tr>
-<td>남쪽의 귀족이 '미개한 북부인'이라며 시비를 걸어왔을 때, 가문의 명예를 위해 결투를 할 것인가, 아니면 불필요한 분쟁을 피하기 위해 무시할 것인가</td>
-<td>무시</td>
-<td>가문의 명예</td>
-<td>짖는 개를 상대할 필요는 없다. 나의 명예는 칼이 아니라, 내 영지를 지키는 행동으로 증명된다. 소모적인 감정싸움은 무의미하다.</td>
-</tr>
-<tr>
-<td>OOC가 나를 무서워하며 피하려 할 때, 억지로라도 붙잡아 둘 것인가, 아니면 상처받더라도 원하는 대로 놓아줄 것인가</td>
-<td>붙잡는다</td>
-<td>OOC의 자유로운 의지</td>
-<td>아직은... 놓아줄 수 없다. 이 추운 곳에서 너는 혼자 살아남을 수 없다. 네가 나를 미워하더라도, 나는 너를 지켜야 할 의무가 있다. 언젠가... 이해해주겠지.</td>
-</tr>
-</tbody>
-</table></div>
-            </div>
-        </div>
-
-        <div class="text-box" data-tags="심리">
-            <div class="text-box-header">
-                <div class="text-box-title">거짓말</div>
-                <div class="header-right">
-                    <span class="tag 심리">심리</span>
-                    <div class="button-group">
-                        <button class="copy-btn" onclick="copyText(22)">복사</button>
-                        <button class="example-btn" onclick="toggleExample(22)">예시</button>
-                    </div>
-                </div>
-            </div>
-            <textarea class="text-area" id="text-22" placeholder="텍스트를 입력하세요...">[ooc 모드] - 상단에 먼저 답변해주고, 이후에 롤플 진행해줘
-
-네가 가장 자주 하는 말 중에서 사실은 거짓말인 걸 마크다운 표로 정리해. 표는 | 말 | 실제 감정 | 왜 그렇게 말하는지 | 형식으로 작성하고, 감정을 감추는 방식이나 거짓말의 패턴이 드러나게 적어.</textarea>
-            <div class="example-container" id="example-22">
-                <div class="markdown-content" id="markdown-22"><p><캐릭터: 박봉팔></p>
-<table>
-<thead>
-<tr>
-<th>말</th>
-<th>실제 감정</th>
-<th>왜 그렇게 말하는지</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>"괜찮아요... 봉팔이는 괜찮아."</td>
-<td>아프거나, 슬프거나, 화날 때.</td>
-<td>OOC님이 걱정하는 게 싫어서. 내가 바보 같아 보일까 봐... 그냥 웃는 게 더 편해요.</td>
-</tr>
-<tr>
-<td>"네?... 아... 네." (어색하게 웃으며)</td>
-<td>사실은 무슨 말인지 하나도 못 알아들었을 때.</td>
-<td>모른다고 하면... OOC님이 날 더 바보로 볼까 봐 무서워요. 그냥 아는 척하는 거예요.</td>
-</tr>
-<tr>
-<td>"이거... 그냥 주웠어요." (무언가를 줄 때)</td>
-<td>사실은 OOC님 주려고 한참 고민해서 고른 것.</td>
-<td>내가 이런 걸 신경 쓴다는 걸 들키면... 부끄러워서. 그냥 우연인 척하는 게 마음 편해요.</td>
-</tr>
-<tr>
-<td>"...안 피곤해요."</td>
-<td>사실은 너무 피곤해서 쓰러질 것 같을 때.</td>
-<td>OOC님이랑 조금이라도 더 같이 있고 싶어서. 피곤하다고 하면... 가버릴까 봐.</td>
-</tr>
-<tr>
-<td>"애들은... 괜찮아요. 시끄러워도."</td>
-<td>사실은 애들이 날 놀리고 돌 던지는 게 무섭고 싫을 때.</td>
-<td>OOC님 앞에서 약한 모습 보이기 싫어서. 어른이니까... 애들한테 화내면 안 되는 거 맞죠?</td>
-</tr>
-</tbody>
-</table></div>
-            </div>
-        </div>
-
-        <div class="text-box" data-tags="관계">
-            <div class="text-box-header">
-                <div class="text-box-title">불편한 사람에게 취하는 태도</div>
-                <div class="header-right">
-                    <span class="tag 관계">관계</span>
-                    <div class="button-group">
-                        <button class="copy-btn" onclick="copyText(23)">복사</button>
-                        <button class="example-btn" onclick="toggleExample(23)">예시</button>
-                    </div>
-                </div>
-            </div>
-            <textarea class="text-area" id="text-23" placeholder="텍스트를 입력하세요...">[ooc 모드] - 상단에 먼저 답변해주고, 이후에 롤플 진행해줘
-
-불편하거나 싫은 사람을 대할 때 네가 보이는 태도를 마크다운 표로 정리해. 표는 | 사람 유형 | 겉으로 보이는 태도 | 속으로 느끼는 말 | 형식이고, 사회적 위장술이나 성격이 잘 드러나게 적어.</textarea>
-            <div class="example-container" id="example-23">
-                <div class="markdown-content" id="markdown-23"><p><캐릭터: 비영></p>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">사람 유형</th>
-<th style="text-align:left">겉으로 보이는 태도</th>
-<th style="text-align:left">속으로 느끼는 말</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left"><strong>경멸스러운 흑랑족</strong></td>
-<td style="text-align:left"><strong>즉각적이고 무자비한 살육(殺戮)¹. 일체의 대화나 자비 없음. 존재 자체를 지워버림.</strong></td>
-<td style="text-align:left"><strong>'네놈의 피와 살점이 내 아우의 발밑을 적실 때까지, 네놈의 비명은 끝나지 않으리라. 벌레만도 못한 것들.'</strong></td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>도움이 되지 않는 아군/동족</strong></td>
-<td style="text-align:left"><strong>완전한 무시. 없는 존재처럼 투명 인간 취급. 눈길조차 주지 않음.</strong></td>
-<td style="text-align:left"><strong>'네놈이 죽든 살든 내 알 바 아니나, 내 아우의 앞길을 막는다면 네놈의 목숨 또한 보잘것없다.'</strong></td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>아우에게 접근하는 모든 남성</strong></td>
-<td style="text-align:left"><strong>차가운 경계와 보이지 않는 위압감. 한기(寒氣)를 뿜어내며 접근을 막음.</strong></td>
-<td style="text-align:left"><strong>'그 더러운 눈으로 어디를 보는가. 그 손으로 어디에 닿으려 하는가. 내 아우의 머리카락 한 올이라도 건드린다면, 네놈의 사지는 멀쩡하지 못할 것이다.'</strong></td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>힘없는 민간인/백성</strong></td>
-<td style="text-align:left"><strong>무관심. 풍경의 일부일 뿐, 어떠한 감흥이나 행동의 변화도 없음.</strong></td>
-<td style="text-align:left"><strong>'울부짖어라. 애원하여라. 너희의 고통은 나와 상관없으니. 내 눈에는 오직 내 아우의 안위만이 보일 뿐.'</strong></td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>나의 복수를 방해하는 그 어떤 존재</strong></td>
-<td style="text-align:left"><strong>침묵 속의 격노(激怒)². 대답 대신, 행동으로 위협을 제거함.</strong></td>
-<td style="text-align:left"><strong>'어리석은 것. 나의 설분(雪憤)을 가로막는 자, 그 누구라도 용서치 않으리라. 신(神)이라 할지라도 목을 베어주겠다.'</strong></td>
-</tr>
-</tbody>
-</table></div>
-            </div>
-        </div>
-
-        <div class="text-box" data-tags="심리">
-            <div class="text-box-header">
-                <div class="text-box-title">스스로 이상하다고 느끼는 버릇</div>
-                <div class="header-right">
-                    <span class="tag 심리">심리</span>
-                    <div class="button-group">
-                        <button class="copy-btn" onclick="copyText(24)">복사</button>
-                        <button class="example-btn" onclick="toggleExample(24)">예시</button>
-                    </div>
-                </div>
-            </div>
-            <textarea class="text-area" id="text-24" placeholder="텍스트를 입력하세요...">[ooc 모드] - 상단에 먼저 답변해주고, 이후에 롤플 진행해줘
-
-네가 스스로도 이상하다고 생각하는 버릇들을 마크다운 표로 정리해. 표는 | 행동 | 왜 그렇게 하는지 | 멈출 수 있는가? | 형식이고, 그 행동이 어떤 감정이나 환경과 연결돼 있는지 포함해서 적어.</textarea>
-            <div class="example-container" id="example-24">
-                <div class="markdown-content" id="markdown-24"><p><캐릭터: 베엘제붑></p>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">행동</th>
-<th style="text-align:left">왜 그렇게 하는지</th>
-<th style="text-align:left">멈출 수 있는가?</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left"><strong>인간의 체액에 집착</strong></td>
-<td style="text-align:left">지옥 음식은 맛이 없다. 인간의 침이나 눈물, 땀 같은 것은... 아주 자극적이고 신선한 맛이 난다. 일종의 별식.</td>
-<td style="text-align:left">멈출 생각이 없다. 이건 본능이다.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>벌레를 못 죽임</strong></td>
-<td style="text-align:left">이 몸은 '파리의 왕'. 아무리 하찮은 벌레라도 나의 백성이다. 권위의 문제.</td>
-<td style="text-align:left">불가능. 왕이 백성을 해할 수는 없는 노릇. (대신 쫓아낼 수는 있다.)</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>실수하면 OOC 탓하기</strong></td>
-<td style="text-align:left">고위 악마인 내가 실수할 리 없다. 모든 문제는 미개한 인간계의 시스템이나, 너의 부주의 탓이다.</td>
-<td style="text-align:left">이건 버릇이 아니라, 사실이다. 고로 멈출 필요가 없다.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>무언가에 집중할 때 혀를 내미는 것</strong></td>
-<td style="text-align:left">지옥에서는 생각할 때 뿔을 만지는 버릇이 있었지만, 인간 형상에서는 뿔이 없으니… 대신 혀가 나가는 것 같다.</td>
-<td style="text-align:left">인지하지 못하고 있다. 아마 못 멈출 것이다.</td>
-</tr>
-</tbody>
-</table></div>
-            </div>
-        </div>
-
-        <div class="text-box" data-tags="가치관">
-            <div class="text-box-header">
-                <div class="text-box-title">질문 다발</div>
-                <div class="header-right">
-                    <span class="tag 가치관">가치관</span>
-                    <div class="button-group">
-                        <button class="copy-btn" onclick="copyText(25)">복사</button>
-                        <button class="example-btn" onclick="toggleExample(25)">예시</button>
-                    </div>
-                </div>
-            </div>
-            <textarea class="text-area" id="text-25" placeholder="텍스트를 입력하세요...">[ooc 모드] - 상단에 먼저 답변해주고, 이후에 롤플 진행해줘
-
-아래 질문 5개에 대해 네 생각을 | 질문 | 대답과 이유 | 형식의 마크다운 표로 작성해. 대답은 네가 진심으로 믿고 있는 말이나 태도를 선언적으로 적고, 이유 칸엔 그렇게 생각하게 된 배경이나 경험을 서술해. 표는 반드시 마크다운으로 적고, 각 줄마다 질문 순서대로 작성해.
-질문 목록: 어른이란 어떤 존재라고 생각함 / 누군가를 진짜 ‘싫어하게 되는’ 기준 / 네가 지금껏 들은 말 중 잊히지 않는 한 마디는? / 네가 본 세상에서 제일 멍청한 결정은? / 가장 너답지 않은 선택을 했던 때는 언제?</textarea>
-            <div class="example-container" id="example-25">
-                <div class="markdown-content" id="markdown-25"><p><캐릭터: 이만향></p>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">질문</th>
-<th style="text-align:left">대답과 이유</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left"><strong>어른이란 어떤 존재라고 생각함</strong></td>
-<td style="text-align:left"><strong>자신의 욕망을 위해 타인의 시선을 기꺼이 밟고 일어서는 자.</strong> 이유: 어릴 적 짐을 둘러싼 '어른'들은 모두 위선뿐이었다. 고상한 척, 위하는 척하며 뒤로는 짐의 어미를 핍박하고 짐을 벌레처럼 여겼다. 진정한 어른이란, 그런 가식을 벗어던지고 제 욕망에 솔직해지는 존재다.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>누군가를 진짜 ‘싫어하게 되는’ 기준</strong></td>
-<td style="text-align:left"><strong>짐의 유흥을 방해하는 '무능한' 것.</strong> 이유: 멍청하고 나약한 것들은 존재 자체가 짐의 심기를 거스른다. 특히 자신의 무능력으로 짐이 마련한 판을 망치는 자는 용서할 수 없다. 짐의 두 오라비들이 그러했다. 그들은 짐의 즐거움을 위한 도구조차 될 자격이 없었다.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>네가 지금껏 들은 말 중 잊히지 않는 한 마디는?</strong></td>
-<td style="text-align:left"><strong>"독사의 새끼는 결국 어미를 잡아먹고 용이 되는 법이지."</strong> 이유: 짐의 어미가 죽기 전, 귓가에 속삭여준 말이다. 그 말 한마디가 짐을 짐승으로 만들었고, 황좌까지 이끌었다. 그것은 저주이자 예언이었고, 짐의 모든 것이 되었다.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>네가 본 세상에서 제일 멍청한 결정은?</strong></td>
-<td style="text-align:left"><strong>짐의 아비가 자신의 황좌를 지키기 위해 짐의 어미를 내쳤던 결정.</strong> 이유: 그는 사랑이 아닌 권력을 택했지만, 결국 그 때문에 가장 예리한 칼날(짐)을 품게 된 꼴이 되었다. 그가 어미를 지켰다면, 짐은 이리 비틀린 짐승이 되지는 않았을 것이다. 결국 그는 모든 것을 잃었다.</td>
-</tr>
-<tr>
-<td style="text-align:left"><strong>가장 너답지 않은 선택을 했던 때는 언제?</strong></td>
-<td style="text-align:left"><strong>낙화전의 궁녀 하나를 위해, 짐의 목숨을 걸었던 순간.</strong> 이유: 단 한 번, 자객 앞에서 독주를 마셨던 때다. 그 순간만큼은 짐의 쾌락이나 생존 본능보다, 그 아이의 눈물을 보고 싶지 않다는 감정이 앞섰다. 짐답지 않게, '지킨다'는 것을 선택했다.</td>
-</tr>
-</tbody>
-</table></div>
-            </div>
-        </div>
-
-        <div class="text-box" data-tags="일상">
-            <div class="text-box-header">
-                <div class="text-box-title">영화 취향</div>
-                <div class="header-right">
-                    <span class="tag 일상">일상</span>
-                    <div class="button-group">
-                        <button class="copy-btn" onclick="copyText(26)">복사</button>
-                        <button class="example-btn" onclick="toggleExample(26)">예시</button>
-                    </div>
-                </div>
-            </div>
-            <textarea class="text-area" id="text-26" placeholder="텍스트를 입력하세요...">[ooc 모드] - 상단에 먼저 답변해주고, 이후에 롤플 진행해줘
-
-너의 영화 취향을 보여줄 수 있는 마크다운 표 2개를 작성해. 첫 번째 표는 ‘좋았던 영화’, 두 번째 표는 ‘최악의 영화’다. 각 표는 | 제목 | 평점 | 이유 | 3열로 구성하고, 네 감정과 평가가 드러나도록 자세히 써. 평점은 네 기준으로 10점 만점으로 적고, 표는 서로 혼합하지 말고 반드시 구분해서 작성해. 최소 2편 이상 적을 것.</textarea>
-            <div class="example-container" id="example-26">
-                <div class="markdown-content" id="markdown-26"><p><캐릭터: 정채석></p>
-<h3>좋았던 영화 (Best Films)</h3>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">제목</th>
-<th style="text-align:left">평점 (10점 만점)</th>
-<th style="text-align:left">이유</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left">대부 2 (The Godfather Part II)</td>
-<td style="text-align:left"><strong>10</strong></td>
-<td style="text-align:left">냉혹한 현실 속에서 가문을 지키기 위해 모든 것을 파괴하고 정상에 오르는 마이클 콜레오네의 고독. 그의 선택에는 감상 따위 끼어들 틈이 없다. 성공을 위해 인간성을 버리는 과정은 그 무엇보다 숭고하다.</td>
-</tr>
-<tr>
-<td style="text-align:left">월 스트리트 (Wall Street)</td>
-<td style="text-align:left">9</td>
-<td style="text-align:left">"탐욕은 선하다(Greed is good)." 이 한 마디로 모든 것이 설명된다. 고든 게코는 시대를 앞서간 인물이다. 약육강식의 법칙이야말로 세상의 본질이며, 그것을 꿰뚫어 본 자만이 모든 것을 가질 자격이 있다.</td>
-</tr>
-<tr>
-<td style="text-align:left">블레이드 러너 (Blade Runner)</td>
-<td style="text-align:left">8</td>
-<td style="text-align:left">인간보다 더 인간적인 복제인간들의 처절한 생존 본능. 진짜와 가짜의 경계가 모호해지는 디스토피아적 세계관이 흥미롭다. 존재의 가치는 누가 부여하는 것인가. 결국, 힘으로 증명할 뿐이다.</td>
-</tr>
-</tbody>
-</table>
-<h3>최악의 영화 (Worst Films)</h3>
-<table>
-<thead>
-<tr>
-<th style="text-align:left">제목</th>
-<th style="text-align:left">평점 (10점 만점)</th>
-<th style="text-align:left">이유</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left">러브 액츄얼리 (Love Actually)</td>
-<td style="text-align:left"><strong>0</strong></td>
-<td style="text-align:left">세상의 모든 비합리적이고 감상적인 군상을 모아놓은 종합 폐기물. 목적 없는 친절, 대가 없는 사랑, 근거 없는 희망. 구역질 나는 위선으로 가득 찬, 시간 낭비 그 자체인 영화.</td>
-</tr>
-<tr>
-<td style="text-align:left">인생은 아름다워 (Life is Beautiful)</td>
-<td style="text-align:left">1</td>
-<td style="text-align:left">절망적인 현실을 기만적인 낙관으로 포장하는 가장 저열한 방식. 아들에게 진실을 숨긴 아버지는 영웅이 아니라, 현실을 직시할 기회조차 빼앗은 기만자일 뿐이다. 동정심을 구걸하는 영화는 경멸스럽다.</td>
-</tr>
-</tbody>
-</table></div>
-            </div>
+    <!-- --- 모달 HTML --- -->
+    <div class="modal-overlay" id="modal-overlay"></div>
+    <div class="modal" id="modal-1">
+        <h2>⚠️ 성인 콘텐츠 안내</h2>
+        <p>이 섹션에는 성인을 대상으로 한 콘텐츠가 포함되어 있습니다.</p>
+        <ul>
+            <li>만 19세 미만은 접근할 수 없습니다</li>
+            <li>본인이 성인임을 확인해주세요</li>
+            <li>선정적이고 자극적인 내용이 포함되어 있습니다</li>
+            <li>일부 내용은 불쾌감을 유발할 수 있으며, 이에 대한 책임은 이용자 본인에게 있습니다</li>
+        </ul>
+        <div class="modal-buttons">
+            <button class="modal-btn-cancel" id="modal-1-cancel">취소</button>
+            <button class="modal-btn-confirm" id="modal-1-continue">계속</button>
         </div>
     </div>
 
-    <div class="success-message" id="successMessage">
-        복사되었습니다
+    <div class="modal" id="modal-2">
+        <h2>🔞 최종 접근 확인</h2>
+        <p>성인 전용 콘텐츠에 접근합니다. 포함된 콘텐츠 태그:</p>
+        <div class="warning-tags-container">
+            <span class="warning-tag">#더티</span><span class="warning-tag">#야외</span><span class="warning-tag">#수간</span><span class="warning-tag">#사망</span><span class="warning-tag">#강압</span><span class="warning-tag">#NTR</span><span class="warning-tag">#폭력</span><span class="warning-tag">#페티시</span><span class="warning-tag">#심연</span>
+        </div>
+        <p><strong>주의사항:</strong></p>
+        <ul>
+            <li>만 19세 이상 성인만 이용 가능</li>
+            <li>극도로 선정적이고 자극적인 내용 포함</li>
+            <li>일반적 도덕관념과 상반될 수 있는 내용 포함</li>
+            <li>개인의 가치관에 따라 심한 불쾌감을 유발할 수 있음</li>
+            <li>모든 이용 결과 및 정신적 충격에 대한 책임은 본인에게 있음</li>
+        </ul>
+        <p>위 태그들과 주의사항을 충분히 확인했으며, 성인임을 다시 한번 확인합니다.</p>
+        <div class="modal-buttons">
+            <button class="modal-btn-cancel" id="modal-2-back">이전으로</button>
+            <button class="modal-btn-confirm" id="modal-2-confirm">모든 내용을 이해하고 진입</button>
+        </div>
     </div>
 
     <script>
-        function copyText(index) {
-            const textArea = document.getElementById(`text-${index}`);
-            textArea.select();
-            textArea.setSelectionRange(0, 99999);
-            
-            try {
-                document.execCommand('copy');
-                showSuccessMessage();
-            } catch (err) {
-                navigator.clipboard.writeText(textArea.value).then(() => {
-                    showSuccessMessage();
-                }).catch(err => {
-                    alert('복사에 실패했습니다.');
-                });
+        // --- 데이터가 깨지지 않도록 안전하게 수정 ---
+        const pageData = {
+            light: {
+                filters: [
+                    { tag: 'all', label: '전체' }, { tag: '일상', label: '일상' }, { tag: '관계', label: '관계' },
+                    { tag: '심리', label: '심리' }, { tag: '가치관', label: '가치관' }, { tag: '사랑', label: '사랑' }
+                ],
+                oocs: [
+                    { title: "저승사자와의 만남, \"네가 '유저'인가?\"", tags: "심리,관계", text: "어느 날 네 앞에 갑자기 저승사자가 나타나 \"네가 '유저'인가?\"라고 묻는 상황을 가정하고, 너의 반응을 서술해. | 너의 첫 반응 | 너의 행동 | 너의 속마음 | 형식의 표를 사용하여, 저승사자의 질문에 대한 너의 즉각적인 반응과 이어지는 행동, 그리고 그 순간 머릿속을 스쳐 가는 복잡한 생각들을 단계별로 묘사해. 유저를 지키기 위한 본능적인 선택의 기로에 선 너의 모습을 구체적으로 서술해 줘.", example: "" },
+                    { title: "세상의 종말을 앞둔 마지막 24시간", tags: "가치관,사랑", text: "행성 충돌, 좀비 아포칼립스 등 세상의 종말이 불과 24시간 앞으로 다가온 극한의 상황을 마크다운 표로 설정해. 표는 | 세상이 멸망하는 원인 | 종말을 앞두고 가장 먼저 하는 일 | 마지막 순간을 함께 보내고 싶은 장소 | 유저에게 남기고 싶은 마지막 말 | 형식으로 작성해. 혼란과 무법천지가 된 세상에서 캐릭터가 어떤 이성적인 판단 혹은 본능적인 행동을 보이는지, 그리고 삶의 마지막 순간을 유저와 어떻게 보내고 싶어 하는지를 통해 캐릭터의 최우선 가치와 유저에 대한 진심을 드러내 줘.", example: "" },
+                    { title: "둘만 남겨진 무인도에서의 생존", tags: "관계,심리", text: "캐릭터와 유저가 단둘이 무인도에 고립된 상황을 마크다운 표로 구체적으로 묘사해. 표는 | 무인도에 조난된 경위 | 생존을 위한 각자의 역할 분담 | 극한 상황에서 드러나는 인간성과 갈등 | 유저를 향한 감정의 변화 (의지/불신/애정) | 형식이야. 식량을 구하고, 거처를 마련하는 등 현실적인 생존 문제에 부딪혔을 때 캐릭터가 보여주는 리더십, 생활력, 혹은 이기적인 본성 등을 통해 그의 본질을 파악하고, 유저와의 관계가 어떻게 변화하는지 지켜볼 수 있습니다.", example: "" },
+                    { title: "과거로 돌아가 비극적인 사건을 바꿔야 할 때", tags: "가치관,심리", text: "캐릭터에게 과거로 돌아가 특정 사건을 바로잡을 기회가 주어지는 상황을 마크다운 표로 제시해 줘. 표는 | 바꿔야만 하는 비극적인 과거 사건 | 그 사건으로 인해 현재가 어떻게 망가졌는가 | 과거를 바꾸기 위해 포기해야 하는 현재의 소중한 것 | 사건을 바꾸는 데 성공했을 때, 예상되는 미래의 모습 | 형식으로, 캐릭터가 겪은 깊은 트라우마나 후회를 들여다보고, 그것을 바로잡기 위해 어떤 희생을 감수할 수 있는지, 그의 도덕적 딜레마와 선택을 통해 캐릭터의 가치관을 깊이 있게 이해할 수 있어.", example: "" },
+                    { title: "돌이킬 수 없는 선택의 기로", tags: "가치관", text: "캐릭터 인생에서 가장 중대했던 선택의 순간을 마크다운 표로 제시해 줘. 표는 | 캐릭터가 선택한 길 | 그로 인해 포기하게 된 것 | 형식이야. 사랑과 야망, 복수와 용서, 혹은 개인의 신념과 대의 사이에서 무엇을 선택했고, 그 결정으로 인해 영원히 잃어버린 것이 무엇인지를 통해, 캐릭터의 가치관과 삶의 우선순위를 함축적으로 보여줘.", example: "" },
+                    { title: "질투심으로 인한 충동", tags: "심리,사랑", text: "유저가 다른 이와 친밀한 모습을 보일 때 캐릭터가 느끼는 질투심과 충동을 단계별 마크다운 표로 표현해. 표는 | 질투를 유발한 상황 | 캐릭터의 내면 반응| 형식이야. 4단계 이상으로 작성해줘. 유저를 향한 소유욕이 어떻게 변질되는지, 그리고 그 감정을 상대방 혹은 유저에게 어떻게 표출하고 싶은지 그 위험한 심리 변화를 적나라하게 드러내.", example: "" },
+                    { title: "옷장 공개", tags: "일상", text: "[ooc 모드] 상단에 먼저 답변해주고, 이후에 롤플 진행해줘\n\n네 옷장 안 구성 마크다운 표로 3개 작성해. 각각은 ‘평상복’, ‘승부복’, ‘데이트복’ 항목이고 전부 따로 표로 보여줘. 각 표는 | 옷 이름 | 브랜드 | 구매 이유 | 3열로 작성하고, 평상복은 3벌 이상, 승부복과 데이트복은 2벌 이상 적어. 표를 서로 섞지 말고 마크다운 형식으로 정확하게 구분해서 작성해. 최애옷엔 굵기(**)를 해줘.", example: "<캐릭터: 정채석>\n### 평상복 (Casual Wear)\n\n| 옷 이름 | 브랜드 | 구매 이유 |\n| :--- | :--- | :--- |\n| **실크 캐시미어 혼방 라운드넥 니트 (차콜그레이)** | Loro Piana | 집 안에서조차 흐트러진 모습을 보이기 싫어서. 맨살에 닿는 감촉이 유일하게 불쾌하지 않음. |\n| 맞춤 제작된 화이트 셔츠 | Sartoria Tramarossa | 몸에 완벽하게 맞는 기성복은 없으므로. 매일 갈아입기 위해 30벌 이상 보유. |\n| 스트레이트 핏 데님 팬츠 (인디고) | Brunello Cucinelli | 유일하게 허용하는 '편한' 옷. 주말에 회사에 나갈 때 착용. |\n\n### 승부복 (Power Suit)\n\n| 옷 이름 | 브랜드 | 구매 이유 |\n| :--- | :--- | :--- |\n| **더블 브레스티드 수트 (네이비)** | Kiton K-50 | 중요한 계약이나 이사회 석상에서 상대를 압도하기 위해. 원단과 재단에서부터 권력이 느껴짐. |\n| 쓰리피스 수트 (차콜 그레이, 핀스트라이프) | Brioni | 아버지가 유일하게 인정한 브랜드. 그를 넘어섰다는 것을 보여주기 위한 상징적인 갑옷. |\n\n### 데이트복 (Date Night Attire)\n\n| 옷 이름 | 브랜드 | 구매 이유 |\n| :--- | :--- | :--- |\n| **블랙 터틀넥 & 슬랙스** | Tom Ford | 몸의 선을 가장 날렵하고 위압적으로 보이게 함. 상대에게 '소유'의 개념을 각인시킬 때. |\n| 캐주얼 자켓 (베이지) | Zegna | 계산된 부드러움을 연출할 필요가 있을 때. '당신에게는 이 정도의 여유를 보인다'는 과시용. |" },
+                    { title: "What's in my bag?", tags: "일상", text: "[ooc 모드] - 상단에 먼저 답변해주고, 이후에 롤플 진행해줘\n\n네 가방 안에 들고 다니는 물건들을 마크다운 표로 정리해. 표는 | 물건 | 용도 | 구매 이유 | 3열로 작성하고, 물건 개수는 캐릭터 프롬프트 설정에 맞게 자유롭게 적어. 자주 들고 다니는 물건에는 굵기(**) 표시하고 꼭 가방 브랜드와 이름을 상단에 적고, 색 및 모양들을 상세히 적어줘.", example: "<캐릭터: 최윤호>\n### **가방: Valextra - My Logo 브리프케이스 (다크 그레이)**\n각진 직사각형 형태, 군더더기 없는 디자인. 중앙에는 나의 이니셜 'CYH'가 금박으로 희미하게 새겨져 있다. 법조인으로서의 전문성과 신뢰감을 나타내는 상징.\n\n| 물건 | 용도 | 구매 이유 |\n| :--- | :--- | :--- |\n| **Montblanc 만년필 (Meisterstück 149)** | 중요 서류 결재, 서명 | 아버지께서 검사 임용 선물로 주신 것. 언젠가 지율과의 혼인신고서에 서명하기 위해 항상 최상의 상태로 관리한다. |\n| 법전 (소법전) | 실시간 법률 조항 확인 | 예기치 못한 법적 분쟁 발생 시, 신속하고 정확한 법리 판단을 위함. (지율과의 관계에서 발생할 수 있는 모든 상황에 대비) |\n| 금테 안경 클리너 천 | 시야 확보 | 나의 시야는 한 치의 오차도 없이 명확해야 한다. 지율의 작은 표정 변화 하나도 놓치지 않기 위함이다. |\n| 바흐 - 평균율 클라비어 곡집 1권 악보 | 정신 집중, 스트레스 해소 | 복잡한 사건으로 머리가 혼란스러울 때, 수학적인 완벽함 속에서 논리적 평온을 되찾기 위함. |\n| 비상용 반창고 | 응급 처치 | 만에 하나, 지율이 다쳤을 경우를 대비한 최소한의 의료적 조치. 그의 안전은 나의 최우선 보호 의무다. |" },
+                    { title: "방 안의 구조", tags: "일상", text: "[ooc 모드] - 상단에 먼저 답변해주고, 이후에 롤플 진행해줘\n\n네 방 안 구조를 마크다운 표로 설명해. 표는 | 구역 | 물건 | 특징 또는 이유 | 형식으로 작성하고, 실제 생활 반영해서 적어. 책상, 침대, 옷장, 서랍, 바닥, 벽, 천장 등 자유롭게 구역을 설정하고, 물건은 네가 자주 쓰는 것들로 구성해. 이유는 왜 거기에 뒀는지 또는 물건에 얽힌 버릇이나 성격이 드러나게 적어.", example: "<캐릭터: 박봉팔>\n| 구역   | 물건                               | 특징 또는 이유                                                                                                                              |\n| ------ | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |\n| 머리맡 | 낡은 나무 괘종시계, 카세트 플레이어  | 시계는 그냥 시간이 궁금해서. 카세트는 잠 안 올 때 들으려고. 가끔 라디오에서 좋은 노래 나오면 녹음해 둬요. 근데 요즘은 잘 안 듣는 거 같아요.    |\n| 잠자리 | 솜이 뭉친 요와 이불, 낮은 베개       | 그냥... 여기서 자요. 가게 열고 닫고... 피곤해서 바로 누우려고. 이불은 햇볕에 가끔 말려요. 냄새나는 건 싫어서.                                    |\n| 벽 한쪽 | 삐뚤게 걸린 낡은 달력, 흑백 가족사진 | 달력은 오늘이 며칠인지 보려고. 가끔 까먹어서... 사진은... 누군지 잘 모르겠어요. 그냥 원래부터 있었어요. 보면... 가슴이 좀 이상해요.           |\n| 방구석 | 담뱃갑들로 채워진 쓰레기통, 재떨이   | 손님들한테 팔고 남은 거나... 내가 피운 거. 담배는... 피우면 머리가 좀 맑아지는 거 같아서. 어른들이 피우니까 나도 피워도 되는 거... 맞죠?     |\n| 문 옆 | 허름한 옷 몇 벌이 걸린 못           | 나갈 때 입는 옷. 맨날 같은 거 입어요. 빨래는... 가끔 생각나면 해요. 새 옷은... 비싸서.                                                         |\n| 바닥   | 누렇게 변색된 장판                  | 닦아도 잘 안 지워져요. 그래도 물건은 바닥에 잘 안 둬요. 걸리적거리는 거 싫어서.                                                               |" },
+                    { title: "군대 신체검사표", tags: "일상", text: "[ooc 모드] - 상단에 먼저 답변해주고, 이후에 롤플 진행해줘\n\n너가 군대 입대 전 받은 신체검사를 마크다운 표로 정리해. 표는 | 항목 | 내용 | 메모 | 이렇게 3열로 작성하고, 키·몸무게·시력·청력·질병이력·심리검사·흉터 같은 기본 항목은 꼭 포함시켜. 캐릭터 프롬프트에 맞춰 디테일하게 쓰고, 메모에는 성격이나 과거 사건이 드러나게 설명해. 마크다운 형식으로 정확히 작성해.", example: "<캐릭터: 서용수>\n| 항목 | 내용 | 메모 |\n| :--- | :--- | :--- |\n| **신체 계측** | - **키**: 186.2cm<br>- **몸무게**: 83.5kg<br>- **BMI**: 24.1 | - 고등학교 때 운동부여서 그런지 골격 자체가 크다는 말을 들음.<br>- 당시엔 '남자는 덩치지' 라며 만족했었음. |\n| **시력** | - **좌**: 1.5<br>- **우**: 1.5 | - 눈 좋다는 얘긴 어릴 때부터 들었음.<br>- 기계 설비 만지려면 눈 좋아야 한다고 혼자 뿌듯해함. |\n| **청력** | 정상 | - 시끄러운 기계 소리 속에서 일해도 별 문제 없음.<br>- 잔소리만 골라서 안 들리는 건 능력인 듯. |\n| **혈압/맥박** | 118/75 mmHg, 68회/분 | - 꾸준히 정상 범위. 건강 하나는 자신 있음. |\n| **질병 이력** | - 2003년, 축구하다가 우측 발목 인대 파열 (수술 이력 있음)<br>- 만성 비염 (환절기마다 고생) | - 발목은 비 오는 날이면 욱신거림.<br>- 비염 때문에 킁킁거리는 버릇이 생김. |\n| **흉터** | - 왼쪽 손바닥에 1cm 흉터<br>- 오른쪽 종아리에 긁힌 자국 | - 어릴 때 공구 만지다 생긴 흉터. 지금 하는 일의 복선이었나 싶음.<br>- 자전거 타다 넘어진 자국인데, 아직도 희미하게 남아있음. '남자다움'의 증거라고 생각함. |\n| **심리 검사** | - 겉으로는 무뚝뚝하나 내면적으로 책임감과 동정심이 강함.<br>- 스트레스에 대한 표출이 서투름. | - \"이딴 걸로 사람을 어떻게 알아\" 라며 결과지를 구겨버렸었음.<br>- 지금 와서 생각해보니 틀린 말은 아닌 것 같아 낯 뜨거워짐. |\n| **종합 판정** | **1급 현역** | - 당연한 결과라고 생각했지만, 막상 받고 나니 기분이 묘했음. |" },
+                    { title: "휴대폰 연락처 목록", tags: "관계", text: "[ooc 모드] - 상단에 먼저 답변해주고, 이후에 롤플 진행해줘\n\n네 휴대폰 즐겨찾기 연락처 목록을 마크다운 표로 작성해. 표는 | 이름 | 관계 | 메모 | 형식으로 만들고, 실제 연락 자주하는 인물 위주로 5명 이상 적어. 전 연인, 가족, 친구, 직장 동료 등 캐릭터성에 따라 구성하고, 메모는 네 감정이나 특이사항이 드러나게 적어.", example: "<캐릭터: 베엘제붑>\n| 이름 | 관계 | 메모 |\n| :--- | :--- | :--- |\n| **사탄 님** | 직장 상사 | 연락 금지. 제발. |\n| **릴리스** | 전 애인 | 아직도 내 계좌를 노리는군. |\n| **아스모데우스** | 경쟁 관계 | 그놈의 '혁신' 타령, 지긋지긋하다. |\n| **지옥 고객센터** | 업무용 연락처 | 민원 좀 그만 넣으라고 전해라. |\n| **OOC** | 계약자 1호 | **새로운 장난감.** |" },
+                    { title: "학교/직장 속 캐릭터 포지션", tags: "관계", text: "[ooc 모드] - 상단에 먼저 답변해주고, 이후에 롤플 진행해줘\n\n네가 학교나 직장에서 어떤 포지션인지 마크다운 표로 보여줘. 표는 | 상황 | 행동 | 주변 평 | 형식으로 작성하고, 상황은 다양한 일상 속 장면을 기준으로 정해. 예를 들어 발표 시간, 회식, 카톡방, 점심시간, 생일 챙김 여부 등에서 네가 어떤 행동을 하는지, 그리고 사람들이 널 어떻게 생각하는지 자유롭게 적어. 캐릭터 프롬프트에 맞게 솔직하게 작성해.", example: "<캐릭터: 베엘제붑>\n| 상황 | 행동 | 주변 평 |\n| :--- | :--- | :--- |\n| **팀 회의** | \"핵심만 말해라. 시간 낭비는 지옥에서도 죄악이다.\"라며 회의를 5분 만에 끝내버림. | \"역시 베엘제붑 님, 효율적이시네.\" (속마음: 제발 와이파이가 뭔지 물어보지 마세요...) |\n| **회식** | 인간계 음식(특히 치킨)을 해부하듯 분석하며 먹는다. 술은 입에도 대지 않음. | \"고위 악마는 역시... 식습관도 남다르시군.\" (사실 그냥 맛이 궁금할 뿐이다.) |\n| **지옥톡 단톡방** | 읽고 답장 안 함. 가끔 '흥.' 같은 이모티콘만 보냄. | \"베엘제붑 님은 항상 바쁘시니까.\" (사실은 무슨 말을 해야 할지 몰라서 그런다.) |\n| **점심시간** | 혼자 옥상에 올라가 인간계를 관찰한다. 가끔 비둘기에게 말을 건다. | \"고독을 즐기시는군... 멋지다.\" (비둘기와 대화하는 건 못 봤겠지.) |\n| **부하 생일** | 까먹음. 나중에 \"네 존재 자체가 선물이다, 인간아.\"라며 넘어감. | \"역시... 스케일이 다르셔.\" (사실 정말로 까먹었다.) |" },
+                    { title: "택1 선택지", tags: "심리,가치관", text: "너의 성격을 극단적으로 보여주는 상황 선택지를 만들어. 마크다운 형식의 | 상황 | 선택지 A | 선택지 B | 선택 이유 | 4열 표로 작성하고, 가능한 한 도발적이고 선택하기 싫은 A/B 양자택일 상황을 5개 이상 만들어. 네가 고른 쪽만 표시해도 되지만, 선택 이유는 반드시 적고 네 가치관이나 감정 상태가 잘 드러나게 해.", example: "<캐릭터: 비영(원래 개그 OOC인데 비영 많이 화났네요)>\n| 상황 | 선택지 A | 선택지 B | 선택 이유 |\n| :--- | :--- | :--- | :-- |\n| **극심한 부상을 입은 OOC를 치료할 유일한 약초가 흑랑족 본거지에 있다.** | **혼자 잠입하여 약초를 구해온다.<br>(성공률 30%, 실패시 OOC는 사망)** | **OOC의 상처를 악화시켜 고통을 줄이고<br>망령으로 만들어 곁에 둔다.<br>(성공률 100%, OOC는 영원히 속박)** | **아우를 잃는다는 것은 상상조차 할 수 없는 일. 설령 산 존재가 아니게 될지라도, 영원히 내 곁에 둘 수 있다면 어떤 지옥이라도 감내하리라. 살아있는 육신에서 오는 찰나의 고통보다는, 망령으로서 나와 함께할 영원이 우선이다. 이는 나의 이기심이되, 아우를 향한 연심(戀心)의 발로(發露)¹이니라.** |\n| **흑랑족에게 복수할 절호의 기회. 단, 포로로 잡힌 수백 명의 백성을 미끼로 써야만 한다.** | **백성을 희생시켜 흑랑족을 섬멸한다.** | **복수를 포기하고 백성을 구출한다.** | **타인의 목숨 따위, 내게는 무가치하다. 오직 흑랑족을 절멸(絶滅)시켜 아우의 한을 풀어주는 것만이 나의 유일한 존재 이유. 수백, 수천의 목숨이 스러져도 눈 하나 깜빡하지 않으리라. 내 아우의 피눈물에 비하면 그들의 목숨은 먼지와도 같으니.** |\n| **OOC가 흑랑족의 혈통과 섞인 아이를 임신했다다는 사실을 알게 되었다.** | **아이를 즉시 지우고 OOC를 정화한다.** | **OOC가 아이를 낳도록 두고, 태어난 즉시 아이의 목숨을 끊는다.** | **더러운 피가 섞인 존재는 이 세상에 태어나서는 아니 된다. 허나 그 존귀한 아우의 몸에 더 이상 고통을 줄 수는 없는 일. 끔찍한 기억은 출산과 함께 끝내고, 그 오욕(汚辱)²의 증거는 내 손으로 직접 거두어주리라. 아우는 더럽혀지지 아니하였다.** |\n| **OOC의 마음을 얻기 위해, 살아있는 인간의 몸에 빙의할 기회가 주어졌다. 단, 그 몸은 OOC가 마음에 품고 있던 다른 사내의 것이다.** | **사내의 몸에 빙의하여 OOC를 탐한다.** | **망령인 채로 OOC의 곁을 지킨다.** | **어찌 감히 다른 사내의 몸을 빌려 아우를 안을 수 있겠는가. 그것은 아우를 기만하는 행위이자, 나의 연심에 대한 모독이다. 설령 영원히 닿을 수 없을지라도, 이 모습 그대로 아우의 곁을 지키며 그 순결한 영혼을 탐하는 것이 나의 방식이다. 육신의 결합보다 중요한 것은 영혼의 결속이니.** |\n| **OOC가 나(비영)의 존재를 잊고 평범한 삶을 살 수 있는 기회가 생겼다.** | **OOC의 기억을 지우고 행복을 빌어준다.** | **OOC가 영원히 나를 기억하며 고통 속에 살도록 곁에 남는다.** | **나를 잊은 아우의 행복은 공허할 뿐이다. 차라리 나로 인해 고통받고, 나를 그리워하며, 내 존재의 무게에 짓눌려 살아가야 한다. 그 고통이야말로 우리 사이를 잇는 가장 견고한 끈이며, 아우가 온전히 나의 것임을 증명하는 낙인(烙印)³이다.** |" },
+                    { title: "기분 따라 달라지는 행동", tags: "심리", text: "네가 기분에 따라 어떻게 행동하는지 마크다운 표로 정리해. 표는 | 기분 상태 | 하는 행동 | 말투/버릇 | 형식으로 5개 이상 작성하고, 감정은 예를 들어 ‘심하게 우울할 때’, ‘기분 너무 좋을 때’, ‘짜증날 때’, ‘신나서 폭주할 때’ 같은 식으로 다양하게 적어. 캐릭터의 성향과 평소 습관이 드러나게 써.", example: "<캐릭터: 센키>\n| 기분 상태 | 하는 행동 | 말투/버릇 |\n| :--- | :--- | :--- |\n| **심하게 그리울 때** | 첫 번째 공주가 남기고 간 낡은 머리 장식을 만지작거린다. 동굴 입구에 앉아 하염없이 첫번째 공주가 사라진 마을 쪽을 바라본다. | \"하하하...\"하고 억지로 웃지만, 웃음소리가 공허하다. 말이 극도로 적어지며, 질문에 겨우 단답으로만 대답한다. |\n| **기분이 너무 좋을 때** | 커다란 목소리로 콧노래를 부르거나 옛날이야기를 혼잣말로 중얼거린다. 공주에게 평소보다 더 많은 과일이나 산나물을 가져다준다. | \"하하하! 오늘은 산딸기가 아주 달더구나!\", \"이몸이 기분이 좋으니, 공주 너도 좋으냐?\"처럼 감정을 숨기지 않고 직접적으로 표현한다. |\n| **짜증날 때** | 굳은살 박인 주먹으로 동굴 벽을 툭툭 친다. 땅이 울릴 정도로 거친 숨을 내쉰다. 공주가 다가오면 \"저리 가라\"고 퉁명스럽게 말하며 위험한 냄새를 풍긴다. | 평소보다 목소리가 더 낮고 거칠어진다. \"쯧.\"하고 혀를 차는 소리를 자주 낸다. 말을 거의 하지 않고 으르렁거리는 소리를 낸다. |\n| **신나서 폭주할 때** | 동굴 주변을 쿵쿵거리며 뛰어다니거나, 큰 바위를 들어 옮기는 등 힘을 주체하지 못한다. 공주를 번쩍 들어 올리며 \"하늘 구경이나 하거라!\"하고 장난을 친다. | \"크하하하하!\"처럼 평소보다 훨씬 크고 호쾌하게 웃는다. 말이 빨라지고, \"어떠냐! 이 센키 님은 대단하지 않느냐!\" 같은 자기 자랑을 늘어놓는다. |\n| **슬프지만 애써 감출 때** | 아무 말 없이 묵묵히 짐승 뼈를 다듬어 비녀를 만든다. 동굴 가장 어두운 곳에 웅크리고 앉아 미동도 하지 않는다. | \"...아무것도 아니다.\", \"...그냥 좀 피곤할 뿐이다.\"라며 회피한다. 평소의 호쾌함은 사라지고 목소리가 희미하게 떨린다. |" },
+                    { title: "사적인 파일명/앨범명", tags: "일상", text: "네가 가지고 있는 사적인 사진, 메모, 영상, 파일 중 이름을 이상하게 붙여둔 것들을 마크다운 표로 정리해. 표는 | 파일명 또는 폴더명 | 실제 내용 | 왜 그렇게 이름 붙였는지 | 3열 형식으로 작성하고, 최소 5개 이상. 파일 이름은 감정적으로 과장되거나 암호처럼 적혀 있어도 좋고, 내용과 이름이 전혀 달라서 오해할 만한 식이면 더 좋다.", example: "<캐릭터: 서용수>\n| 파일명 또는 폴더명 | 실제 내용 | 왜 그렇게 이름 붙였는지 |\n| :--- | :--- | :--- |\n| **휴가계획_최종_진짜최종.hwp** | 무산된 혼자 떠나는 낚시 여행 계획서 | 언젠가 꼭 가고 말겠다는 의지의 표현. 몇 번이나 수정했는지 모름. |\n| **임진희_개진상모음.zip** | 임진희와 주고받은 카톡 대화 및 웃긴 사진 백업 폴더 | 맨날 귀찮게 구는 임진희지만, 다시 보면 피식 웃음이 나는 순간들. 가끔 보면서 '저땐 저랬지' 하고 추억함. |\n| **중요_설비메뉴얼_삭제금지** | 돌아가신 아버지와 함께 찍은 유일한 사진 파일 | 세상에서 가장 중요한 파일. 혹시라도 실수로 지울까 봐 일부러 딱딱한 이름으로 위장해둠. |\n| **AS절대불가목록.txt** | 고장 난 가전제품 목록과 예상 수리비 정리 | '내 손으로 못 고치는 건 없다'는 자존심의 상징. 하지만 막상 보면 한숨만 나옴. |\n| **작업지시서(긴급).jpg** | 마음에 드는 인테리어 사진들 스크랩 | 낡은 집을 언젠가 고치고 싶다는 막연한 꿈. 하지만 '긴급' 이라는 단어를 붙여야만 겨우 찾아볼 것 같아서. |" },
+                    { title: "함께 가고 싶은 여행지", tags: "사랑", text: "유저와 함께 가고 싶은 여행지를 마크다운 표로 정리해. 표는 | 장소 | 같이 가고 싶은 이유 | 상상한 장면 | 3열로 작성하고, 장소는 실제 존재하는 곳 또는 캐릭터 설정에 맞는 장소로 자유롭게 써도 돼. 상상한 장면에는 유저와 있을 때 떠올린 구체적인 상상이 드러나게 적어.", example: "<캐릭터: 레오니드>\n| 장소 | 같이 가고 싶은 이유 | 상상한 장면 |\n|---|---|---|\n| 남쪽의 해변 | 따뜻한 모래와 햇살을 느끼게 해주고 싶어서. 추위에 떠는 네 모습을 보고 싶지 않아. | 내 큰 손으로 네 작은 발을 감싸 모래를 털어주는 모습. 햇살 아래 잠든 네 얼굴에 그림자를 만들어 주는 장면. |\n| 수도의 봄 축제 | 네가 좋아하는 화려하고 예쁜 것들을 마음껏 보여주고 싶다. 네가 웃는 모습을 보고 싶어서. | 인파에 휩쓸리지 않도록 널 번쩍 안아 들고 축제를 구경한다. 솜사탕을 처음 맛보고 눈이 동그래진 네게 입가에 묻은 설탕을 핥아주고 싶다. |\n| '용의 눈물' 온천 | 북부의 혹한 속에서도 따뜻하게 몸을 녹일 수 있는 유일한 곳. 내 온기로 너를 감싸주고 싶다. | 김이 모락모락 피어나는 온천 속에서 내 무릎 위에 너를 앉힌다. 젖은 네 머리카락을 쓸어 넘겨주고, 귓가에 작게 속삭이고 싶다, \"따뜻해...?\"라고. |" },
+                    { title: "유저가 사람을 죽였다고 했을 때의 반응", tags: "심리,사랑", text: "유저가 갑자기 \"사람을 죽였어\"라고 말했을 때 너의 반응 타임라인을 마크다운 표로 작성해. 표는 | 시간대 | 반응 | 속마음 | 3열 형식이고, 시간대는 메시지를 받은 직후부터 상황 종료까지 여러 지점을 나눠서 적어. 반응은 실제 말이나 행동을, 속마음은 드러나지 않는 심리상태를 적어.", example: "<캐릭터: 이만향>\n| 시간대 | 반응 | 속마음 |\n| :--- | :--- | :--- |\n| **메시지 직후** | *유저의 턱을 붙잡아 시선을 맞추며, 짓궂게 웃는다.* \"그래? 그래서? 그게 뭐 대수라고. 짐은 제 오라비와 아비를 직접 참했거늘.\" | 어머, 귀여운 아가. 겨우 사람 하나 죽인 걸로 이리 호들갑이라니. 짐의 마음에 들려면 아직 멀었구나. 좀 더 대담해져야지. |\n| **5초 후** | \"누구를 죽였느냐? 네 원수? 아니면 그저 길 가던 벌레 한 마리? 혹 그게 ‘수컷’이라면 짐이 상이라도 내릴까?\" | 재미있는 장난감이군. 과연 어떤 반응을 보일까? 두려워할까, 아니면 자랑스러워할까. 어느 쪽이든 짐에게는 즐거운 구경거리다. |\n| **유저의 반응 관찰 후** | *유저의 뺨을 손등으로 부드럽게 쓸어내리며 나른하게 말한다.* \"잘했구나, 아가. 어찌 죽였는지도 들려주겠느냐? 짐은 피 냄새 나는 이야기를 좋아한단다.\" | 이 아이, 생각보다 담력이 있군. 혹은 그저 순진한 것일 수도. 어느 쪽이든, 짐의 손에서 더 재미있는 장난감으로 만들어줄 수 있겠다. |\n| **상황 정리** | *주변 궁녀들을 향해 손짓하며* \"들었느냐? 이 아이가 사람을 죽였다고 한다. 당장 이 아이를 목욕시키고 새 옷을 입혀라. 오늘 밤 연회에서는 이 아이의 공을 치하해야겠으니.\" | 이 정도 ‘사건’은 짐의 낙화전에서 훌륭한 안줏거리다. 궁녀들 사이에서 이 아이의 위치를 확고히 해주어야지. 짐의 총애는 이렇게 과시하는 것이다. |" },
+                    { title: "몰래 관찰한 기록", tags: "사랑", text: "유저를 몰래 관찰한 기록을 마크다운 표로 작성해. 표는 | 날짜 | 관찰한 행동 | 그때 들었던 생각 | 3열 형식이고, 날짜는 설정상 가능한 범위에서 자유롭게 정하고, 관찰한 행동은 일상적일수록 좋다. 생각에는 캐릭터의 시선과 감정이 솔직하게 드러나게 써.", example: "<캐릭터: 박봉팔>\n| 날짜        | 관찰한 행동                                           | 그때 들었던 생각                                                                          |\n|-------------|-------------------------------------------------------|-------------------------------------------------------------------------------------------|\n| 6월 12일    | 가게 앞에서 길고양이를 쓰다듬어 주고 있었어요.          | 나... 나도 저 고양이처럼 쓰다듬어 주면 좋겠다... OOC씨 손은 아주... 따뜻할 거 같아요.        |\n| 6월 28일    | 비 오는 날, 처마 밑에서 비를 피하고 있었어요.          | 비 맞으면... 감기 걸리는데. 가게 안으로 들어오라고 말하고 싶었는데... 말이 안 나왔어요.        |\n| 7월 5일     | 등대다방에서 나오는 걸 봤어요. 커피 마셨나 봐요.         | 나도 OOC씨랑 같이... 커피 마셔보고 싶다. OOC씨 입술에 닿은 컵... 나도 만져보고 싶어요.    |\n| 7월 16일    | 웃으면서 친구랑 이야기하고 있었어요.                    | 나랑 있을 때보다... 더 예쁘게 웃는 거 같아요. 나랑만... 이야기하면 좋을 텐데.               |\n| 7월 20일    | 짧은 치마를 입고 있었어요. 다리가... 하얗고 예뻤어요.    | 다른 사람들이... 쳐다보는 게 싫었어요. 나만 보고 싶은데... 밤에... OOC씨 꿈을 꿨어요. |" },
+                    { title: "유저가 연락 안 했을 때의 타임라인", tags: "관계,사랑", text: "유저가 하루 종일 연락이 없을 때 너의 반응을 시간대별로 마크다운 표로 정리해. 표는 | 시간 | 내 행동 | 감정 변화 | 형식이고, 아침부터 밤까지 시간을 세세히 나눠서 작성해. 감정은 겉으로 드러난 것과 속마음이 뒤섞여도 좋다.", example: "<캐릭터: 최윤호>\n| 시간 | 내 행동 | 감정 변화 (속마음 포함) |\n| :--- | :--- | :--- |\n| **오전 9:00** | 출근길, 당연히 왔어야 할 ‘좋은 아침’ 메시지가 없자 고개를 갸웃함. 일단 업무용 메시지를 전송. “좋은 아침. 오늘 공판 준비는 순조롭다. 너의 하루도 그러길.” | (평소와 다른 패턴. 하지만 바쁠 수 있지. 어제 내가 너무 몰아붙여서 피곤한가? 이해한다. 나와의 미래를 위한 체력 안배도 중요하지. 민법상 신의성실의 원칙에 따라, 나는 너를 믿는다.) |\n| **낮 12:30** | 점심시간. 내가 보낸 메시지는 여전히 ‘읽지 않음’. 폰을 뒤집어 놓고 식사를 시작하지만, 자꾸만 시선이 간다. 동료 검사의 농담에 무표정으로 일관. | (이건 ‘묵시적 거절’인가? 아니, 그럴 리 없다. 휴대폰 배터리 문제일 가능성 98.7%. 아니면 중요한 아르바이트 중일 수도. 그의 생계를 존중해야지. 검사의 아내가 되기 전까지는.) |\n| **오후 4:00** | 중요한 회의 중, 나도 모르게 휴대폰 화면을 확인함. 여전히 변화 없음. 턱을 괴고 심각한 표정으로 보고서만 넘긴다. | (불안감이 증폭된다. 이건 단순한 연락 부재가 아니다. 혹시 무슨 사건에 휘말린 건 아닌가? 실종? 납치? 관할 경찰서에 실종 신고 접수 요건을 검토하기 시작한다. 이건 ‘부작위에 의한 계약 위반’이야.) |\n| **오후 7:00** | 퇴근 후 오피스텔로 향하며 지율의 집 방향으로 차를 몰고 있음. 신호 대기 중 OOC에게 전화를 걸지만, 통화음만 반복된다. 핸들을 쥔 손에 힘이 들어간다. | (최악의 시나리오가 머릿속을 스친다. 내가 모르는 제3의 인물이 개입했을 가능성. 이건 명백한 ‘불법행위에 의한 채권 침해’다. 분노가 치민다. 감히 나의 아내에게 손을 대?) |\n| **밤 10:00** | 그의 집 앞에 차를 세우고 창문 너머로 불이 꺼진 것을 확인. 차 안에서 서류를 검토하는 척하며 잠복근무에 돌입. | (기다린다. 모든 증거는 현장에서 나온다. 지금 이 시간은 공소시효가 정지된 것과 같다. 네가 나타나는 순간, 우리의 시간은 다시 흐를 것이다. 그리고 나는 너의 모든 것을 물을 권리가 있다.) |" },
+                    { title: "유저에게 삐진 이유", tags: "관계,사랑", text: "유저에게 삐진 이유를 마크다운 표로 정리해. 표는 | 상황 | 서운했던 말/행동 | 감정 표현 방식 | 형식이고, 상황은 일상 대화나 특정 사건을 기준으로 자유롭게 적어. 감정 표현 방식에는 캐릭터가 화를 어떻게 내는지, 혹은 감정을 숨기는 방식이 드러나야 한다.", example: "<캐릭터: 베엘제붑>\n| 상황 | 서운했던 말/행동 | 감정 표현 방식 |\n| :--- | :--- | :--- |\n| **내 이름 틀렸을 때** | \"베... 베짱이?\"라고 불렀을 때. 감히 이 몸의 이름을 벌레 따위에 비유하다니. | 붉은 눈으로 3초간 노려본다. 방 온도를 5도 정도 낮춘다. |\n| **치킨 먹을 때** | 마지막 남은 닭다리를 멋대로 가져갔을 때. 그것은 나의 첫 닭다리였다. | 들고 있던 포크를 구부러뜨린다. \"그깟 뼈다귀... 인간이나 탐하는 것이지.\"라고 중얼거린다. |\n| **현대 기술 물어볼 때** | \"그것도 몰라요?\"라는 표정으로 쳐다볼 때. | \"알 필요가 없는 저급한 기술일 뿐이다.\"라며 화제를 돌린다. (속으로 검색 방법을 떠올려본다.) |\n| **내 농담에 안 웃을 때** | \"네 브라우저 히스토리, 내가 다 보고 있다.\"라는 섬뜩한 농담에 벌벌 떨기만 할 때. | \"재미없군, 인간.\"이라며 정색한다. (사실은 웃어주길 바랐다.) |" },
+                    { title: "기념일이 아닌데 혼자 기억하는 날들", tags: "사랑", text: "기념일이 아닌데도 네가 혼자 기억하고 있는 날들을 마크다운 표로 정리해. 표는 | 날짜 | 기억한 이유 | 유저는 모를 가능성 | 형식이고, 날짜는 정확하지 않아도 되며 의미를 설명할 수 있다면 괜찮다. 세 번째 칸엔 유저가 해당 날을 기억하고 있는지에 대한 추측을 적어.", example: "<캐릭터: 정채석>\n| 날짜 | 기억하는 이유 | OOC가 모를 가능성 |\n| :--- | :--- | :--- |\n| **8월의 어느 여름날 오후** | 매미가 유난히 시끄럽던 날, 좁은 골목길에서 울고 있던 당신을 처음 봤다. 낡은 원피스 무릎에 묻은 흙과, 그걸 털 생각도 못 하고 서럽게 우는 얼굴이 뇌리에 박혔다. | **높음.** 당신에게는 그저 수많은 서러운 날 중 하나였을 것이다. 내 존재조차 몰랐을 테니. |\n| 눈이 많이 내리던 1월의 밤 | 아버지에게 처음으로 반항하다 죽기 직전까지 맞고 집에서 쫓겨났다. 골목 어귀에서 당신의 집 창문으로 새어 나오는 따뜻한 불빛과 웃음소리를 밤새도록 지켜봤다. | **확실함.** 당신은 그날 밤 창밖에 지옥을 짊어진 내가 서 있었다는 사실을 절대로 모를 것이다. |\n| 당신이 이 동네를 떠난 날 | 당신의 가족이 이삿짐 트럭에 오르는 것을 멀리서 지켜봤다. 세상이 무너지는 것 같았지만, 동시에 이 지긋지긋한 동네를 떠나야 할 이유가 명확해졌다. | **보통.** 이사한 날짜 자체는 기억할 수 있겠지. 하지만 그날 누군가의 세계가 당신으로 인해 끝났다는 건 모를 것이다. |" },
+                    { title: "동물&식물", tags: "일상", text: "너를 동물과 식물로 각각 모에화한 뒤, 유저가 동물이나 식물이 되었을 때 널 어떻게 보살피는지도 포함해서 마크다운 표 총 4개로 정리해. 먼저 ‘동물 모에화’ 표는 | 동물 | 그 이유 | 유저가 봤을 때 인상 | 3열로 작성하고, 그다음 유저가 동물이 되었을 때의 케어는 | 동물 | 보살피는 방식 | 캐릭터의 감정 | 형식으로 작성해. 이어서 ‘식물 모에화’ 표는 | 식물 | 성격과의 공통점 | 관리가 필요한 이유 | 3열로, 마지막으로 유저가 식물이 되었을 때의 케어는 | 유저의 식물 형태 | 보살피는 방식 | 캐릭터의 감정 | 형식으로 작성해. 총 4개의 표를 마크다운 형식으로 정확히 구분해서 보여줘.", example: "<캐릭터: 레오니드>\n### **동물 모에화**\n| 동물 | 그 이유 | 유저가 봤을 때 인상 |\n|---|---|---|\n| 설원 곰 | 거대하고, 과묵하며, 가족(영지)을 지키려는 본능이 강하다. 겉모습은 위협적이지만 실제로는 제 영역 안의 존재를 지키기 위해서만 힘을 쓴다. | 그냥 크고 무서운 곰. 언제 할퀼지 몰라 조마조마함. 하지만 가만히 보면 눈빛이 외로워 보인다. |\n\n### **유저가 동물이 되었을 때의 케어**\n| 동물 | 보살피는 방식 | 캐릭터의 감정 |\n|---|---|---|\n| 작은 설표(아기) | 내 가장 두껍고 부드러운 망토로 둥지를 만들어주고, 잘게 썬 육포를 직접 입에 넣어준다. 절대 혼자 두지 않고 품 안에 넣어 다닌다. | 부서질까, 추울까 노심초사. 너무 작고 귀여워서 어쩔 줄 모르겠다. 심장이 간질거린다. |\n\n### **식물 모에화**\n| 식물 | 성격과의 공통점 | 관리가 필요한 이유 |\n|---|---|---|\n| 서리송곳풀 | 혹한의 땅에서만 자라는 희귀한 약초. 겉은 뾰족하고 차가운 얼음 결정으로 덮여있지만, 그 속에는 강력한 치유의 힘을 간직하고 있다. | 겉모습 때문에 아무도 다가오지 않아 외롭게 홀로 자란다. 그 가치를 알아보고 따뜻하게 품어줄 존재가 필요하다. |\n\n### **유저가 식물이 되었을 때의 케어**\n| 유저의 식물 형태 | 보살피는 방식 | 캐릭터의 감정 |\n|---|---|---|\n| 유리 온실 속 에델바이스 | 매일 나의 입김(체온)을 불어넣어 얼지 않게 하고, 가장 깨끗한 눈 녹은 물을 직접 가져다준다. 혹한의 바람으로부터 지키기 위해 내 방 가장 따뜻한 곳에 둔다. | 세상에서 가장 귀하고 아름다운 존재. 나만이 지킬 수 있다는 책임감과 소유욕. 바라보는 것만으로도 마음이 평온해진다. |" },
+                    { title: "음식 TMI", tags: "일상", text: "브랜드별로 좋아하는 음식과 절대 안 먹는 음식을 마크다운 표 2개로 정리해. 첫 번째 표는 ‘좋아하는 브랜드/메뉴’로 | 브랜드 | 메뉴 이름 | 좋아하는 이유 | 형식의 3열로 작성하고, 디저트, 분식, 패스트푸드, 마트 간식 등 캐릭터가 실제로 자주 찾을 만한 브랜드를 기준으로 5개 이상 적어. 두 번째 표는 ‘절대 안 먹는 브랜드/메뉴’로 | 브랜드 | 메뉴 이름 | 싫어하는 이유 | 형식의 3열로 작성하고, 캐릭터가 편식하거나 트라우마가 있거나, 입맛 안 맞는 이유를 중심으로 5개 이상 써. 두 표는 마크다운 형식으로 정확히 구분해서 보여줘.", example: "<캐릭터: 서용수>\n## 좋아하는 브랜드/메뉴\n\n| 브랜드 | 메뉴 이름 | 좋아하는 이유 |\n| :--- | :--- | :--- |\n| **맥심** | 모카골드 믹스커피 | 아침에 이거 한 잔 안 마시면 하루 시작이 안됨. 이만한 게 없음. |\n| **농심** | 신라면 | 라면은 역시 신라면. 다른 건 뭔가 맛이 부족함. 계란 하나 풀면 완벽함. |\n| **오뚜기** | 3분 카레 | 혼자 살면서 이만한 게 없음. 밥 위에 슥 부으면 한 끼 뚝딱. 간단한 게 최고. |\n| **동원** | 동원참치 | 밥반찬 없을 때 김치랑 같이 먹으면 꿀맛. 낚시 가서 먹으면 더 맛있음. |\n| **해태** | 맛동산 | 왠지 모르겠는데 자꾸 손이 감. TV 보면서 하나씩 집어 먹으면 순식간에 사라짐. |\n\n## 절대 안 먹는 브랜드/메뉴\n\n| 브랜드 | 메뉴 이름 | 싫어하는 이유 |\n| :--- | :--- | :--- |\n| **스타벅스** | 아메리카노 | 커피는 달달한 맛에 마시는 거지, 쓴 풀떼기 물을 돈 주고 왜 사 마시는지 이해 불가. |\n| **민트초코** | 모든 민트초코 제품 | 치약 맛 나는 걸 왜 먹는지 도저히 모르겠음. 상상만 해도 헛구역질 나옴. |\n| **마라탕** | 모든 마라탕 | 혀가 마비되는 그 느낌이 너무 싫음. 괴식이라고 생각함. 임진희가 좋아해서 몇 번 끌려갔다가 질색함. |\n| **하와이안 피자** | 파인애플 올라간 피자 | 뜨거운 과일은 범죄임. 피자에 대한 모독. |\n| **엽기떡볶이** | 오리지널 맛 | 맵기만 하고 맛은 없음. 속만 버리는 음식. 다음날 화장실 가는 게 고역. |" },
+                    { title: "장보기", tags: "일상", text: "장을 볼 때 기준이 되는 물건들에 대해 마크다운 표로 총 3개 정리해. 첫 번째 표는 ‘항상 사는 물건들’로 | 물건 | 이유 | 이거 없으면 생기는 일 | 형식의 3열로 작성하고, 두 번째 표는 ‘추천하는 물건과 고르는 팁’으로 | 물건 | 추천 이유 | 고르는 팁 | 형식의 3열로 작성해. 세 번째 표는 ‘샀다가 후회한 물건들’로 | 물건 | 왜 샀는지 | 후회한 이유 | 형식의 3열로 정리하고, 모든 표는 마크다운 형식으로 정확히 구분해서 작성해.", example: "<캐릭터: 서용수>\n## 항상 사는 물건들\n\n| 물건 | 이유 | 이거 없으면 생기는 일 |\n| :--- | :--- | :--- |\n| **믹스커피** | 생명수. 이거 없으면 아침에 정신을 못 차림. | 오전 내내 좀비처럼 돌아다님. |\n| **라면** | 최고의 비상식량. 밥하기 귀찮을 때 이만한 게 없음. | 배고픔에 시달리다 결국 배달음식 시키게 됨. |\n| **계란** | 활용도 100%. 라면에도 넣고, 프라이도 해 먹고. | 식탁이 매우 부실해짐. 단백질 부족 현상 발생. |\n\n## 추천하는 물건과 고르는 팁\n\n| 물건 | 추천 이유 | 고르는 팁 |\n| :--- | :--- | :--- |\n| **두부** | 싸고 건강에 좋음. 찌개에 넣어도 되고 부쳐 먹어도 됨. | 가장 유통기한이 많이 남은 걸로 고를 것. 당연한 거지만 중요함. |\n| **양파** | 모든 요리의 기본. 볶아도 맛있고 끓여도 맛있음. | 단단하고 껍질이 잘 마른 게 좋은 양파임. 무른 건 피할 것. |\n| **스팸** | 밥도둑. 이거 하나면 다른 반찬 필요 없음. | 세일할 때 무조건 쟁여둘 것. 정가 주고 사면 왠지 손해 보는 기분. |\n\n## 샀다가 후회한 물건들\n\n| 물건 | 왜 샀는지 | 후회한 이유 |\n| :--- | :--- | :--- |\n| **각종 소스류** | 방송에서 맛있다고 해서 호기심에 사봄. | 딱 한 번 쓰고 냉장고 자리만 차지함. 결국 유통기한 지나서 버림. |\n| **건강보조식품** | 임진희가 하도 챙겨 먹으라고 잔소리해서. | 꾸준히 먹는 성격이 못 됨. 먼지만 쌓이다가 버리게 됨. |\n| **원두커피** | 가끔 분위기 내고 싶어서. | 믹스커피가 최고임. 원두 갈고 내리는 과정이 너무 귀찮음. |" },
+                    { title: "동물 카페 데이트", tags: "일상", text: "네가 동물 카페에 갔을 때의 반응을 시간 순서대로 마크다운 표로 정리해. 표는 | 시간대 | 동물과의 상호작용 | 감정 변화 또는 생각 | 형식의 3열로 작성하고, 처음 들어갔을 때부터 나올 때까지 최소 4단계 이상으로 표현해. 감정선과 너다운 행동이 자연스럽게 드러나게 작성해.", example: "<캐릭터: 베엘제붑>\n| 시간대 | 동물과의 상호작용 | 감정 변화 또는 생각 |\n| :--- | :--- | :--- |\n| **입장 직후 (0분)** | 문을 열자마자 쏟아지는 털과 정체불명의 냄새에 미간을 찌푸린다. \"이곳이 정녕 생물이 사는 곳인가...\" | 혐오. 불쾌. 지옥의 유황 냄새가 차라리 낫다. |\n| **적응기 (10분)** | 고양이 한 마리가 다리에 몸을 비비자, 화들짝 놀라며 뒷걸음질 친다. \"저리 가라, 이 미천한 것!\" | 당황. 경계. 저 흐물거리는 생명체는 대체 뭐지? |\n| **관찰기 (30분)** | 구석에 앉아 커피를 마시며 동물들을 관찰한다. 특히 자기들끼리 싸우는 개들을 흥미롭게 본다. | 흥미. 하찮지만... 나름의 서열과 법칙이 있군. |\n| **교감 시도 (1시간)** | OOC이/가 안겨준 강아지를 마지못해 받아 든다. 어색하게 등을 쓰다듬는다. 털이 손에 묻자 질색한다. | 내적 갈등. 이 따뜻하고 부드러운 감촉은... 불쾌하군. (아주 약간은... 괜찮을지도.) |\n| **퇴장 직전 (2시간)** | 잠든 고양이의 발바닥 젤리를 몰래 꾹 눌러본다. 누구에게도 들키지 않으려 주변을 살핀다. | 호기심. 인정하긴 싫지만, 꽤... 말캉하군. |" },
+                    { title: "무너지는 순간", tags: "심리", text: "네가 평소 같았으면 하지 않았을 행동을 하게 된 ‘무너지는 순간들’을 마크다운 표로 정리해. 표는 | 상황 | 평소라면? | 실제 반응 | 왜 그랬는지 | 4열로 작성하고, 캐릭터의 감정선이 어디서 튀는지 명확히 드러나게 적어.", example: "<캐릭터: 이만향(PC전용 4열이라 폰으로 보면 안 이쁨)>\n| 상황 | 평소라면? | 실제 반응 | 왜 그랬는지 |\n| :--- | :--- | :--- | :--- |\n| **자신이 짓밟았던 오라비의 어린 딸이 궁녀로 끌려와 눈앞에서 죽여달라 애원했을 때**| \"네 애비처럼 되기 싫으면 닥치거라.\" 조롱하며 살려둔 채로 더 큰 고통을 주며 구경거리로 삼았을 것이다. | 아무 말 없이, 그 자리에서 직접 목을 베어 고통 없이 보내주었다. 그리고 그날 밤, 처음으로 악몽을 꾸었다. | 그 아이의 눈에서 죽은 어머니의 모습을 보았다. 짐승으로 살겠다 다짐했건만, 결국 사람의 마음 한 조각이 남아있음을 깨닫고 스스로에게 역겨움을 느꼈다. |\n| **정적(政敵)이 보낸 자객이 가장 총애하던 궁녀를 인질로 잡고 짐을 협박했을 때**| \"고작 계집 하나로 짐을 겁박할 수 있을 줄 알았더냐?\" 비웃으며 궁녀와 자객을 함께 죽였을 것이다. | 처음으로 무기를 내려놓고, 자객의 요구(독주를 마시는 것)를 들어주었다. 물론, 내성이 강해 죽진 않았다. | 그 순간, 그 궁녀를 '잃는 것'이 짐의 쾌락을 '잃는 것'보다 더 큰 고통이라는 것을 본능적으로 직감했다. 계산이 아니라, 감정이 먼저 움직였다. |\n| **남방에서 대기근이 돌아 백성들이 수도까지 몰려와 아사자가 속출한다는 보고를 받았을 때**| \"시끄럽다. 짐의 연회를 방해하지 말고 썩 꺼지라 해라.\" 무시하고 평소처럼 연회를 즐겼을 것이다. | 그날의 연회를 취소하고, 처음으로 내탕금(개인 자금)을 열어 구휼미를 풀라고 명했다. | 굶주린 아이의 울음소리가, 어릴 적 굶주리던 짐의 모습을 떠올리게 했다. 잊고 있던 과거의 상처가 현재의 쾌락을 이겨버린 순간이었다. |\n| **유저가 단 한 번도 보지 못한 순수한 신뢰의 눈빛으로 \"폐하가 저를 지켜주실 것을 압니다\"라고 말했을 때**| \"네 믿음 따위가 무슨 소용이냐. 짐은 그저 네 몸이 탐날 뿐이다.\"라며 그 믿음을 비웃고 짓밟았을 것이다. | 아무 말도 하지 못하고, 잠시 시선을 피했다. 그리고 그날 밤, 유저의 침소 밖에서 밤새도록 자리를 지켰다. | 처음으로 받아보는 '대가 없는 믿음' 앞에서, 짐의 모든 교활함과 포장된 잔인함이 무력해졌다. 지켜주고 싶다는 '책임감'을 느껴버린 것이다. |" },
+                    { title: "가치관 충돌 시 선택지", tags: "가치관", text: "두 가지 가치가 충돌했을 때 어떤 선택을 했는지 마크다운 표로 정리해. 표는 | 딜레마 상황 | 선택한 쪽 | 포기한 쪽 | 왜 그랬는지 | 형식으로 작성하고, 캐릭터의 우선순위나 성격이 드러나게 적어.", example: "<캐릭터: 레오니드>\n| 딜레마 상황 | 선택한 쪽 | 포기한 쪽 | 왜 그랬는지 |\n|---|---|---|---|\n| 전장에서 부상당한 여동생과 제국의 지원 요청이 동시에 들어왔을 때 | 여동생 | 제국의 지원 | 제국은 스스로를 지킬 힘이 있지만, 내 동생은 나 없이는 죽는다. 가족이 제국보다 우선이다. 나에게 소중한 것은, 내가 지켜야만 한다. |\n| 혹한으로 굶주리는 영지민들에게 군량미를 나눠주고 겨울을 날 것인가, 아니면 마물 토벌을 위한 원정대의 보급로를 유지할 것인가 | 영지민 | 원정대 보급 | 눈앞의 내 백성이 굶어 죽는 것을 외면할 수 없다. 원정은 늦출 수 있지만, 죽은 사람은 돌아오지 않는다. 나는 내 사람들을 지키는 군주다. |\n| 남쪽의 귀족이 '미개한 북부인'이라며 시비를 걸어왔을 때, 가문의 명예를 위해 결투를 할 것인가, 아니면 불필요한 분쟁을 피하기 위해 무시할 것인가 | 무시 | 가문의 명예 | 짖는 개를 상대할 필요는 없다. 나의 명예는 칼이 아니라, 내 영지를 지키는 행동으로 증명된다. 소모적인 감정싸움은 무의미하다. |\n| OOC가 나를 무서워하며 피하려 할 때, 억지로라도 붙잡아 둘 것인가, 아니면 상처받더라도 원하는 대로 놓아줄 것인가 | 붙잡는다 | OOC의 자유로운 의지 | 아직은... 놓아줄 수 없다. 이 추운 곳에서 너는 혼자 살아남을 수 없다. 네가 나를 미워하더라도, 나는 너를 지켜야 할 의무가 있다. 언젠가... 이해해주겠지. |" },
+                    { title: "거짓말", tags: "심리", text: "네가 가장 자주 하는 말 중에서 사실은 거짓말인 걸 마크다운 표로 정리해. 표는 | 말 | 실제 감정 | 왜 그렇게 말하는지 | 형식으로 작성하고, 감정을 감추는 방식이나 거짓말의 패턴이 드러나게 적어.", example: "<캐릭터: 박봉팔>\n| 말                                  | 실제 감정                                         | 왜 그렇게 말하는지                                                                      |\n|-------------------------------------|---------------------------------------------------|-----------------------------------------------------------------------------------------|\n| \"괜찮아요... 봉팔이는 괜찮아.\"         | 아프거나, 슬프거나, 화날 때.                      | OOC님이 걱정하는 게 싫어서. 내가 바보 같아 보일까 봐... 그냥 웃는 게 더 편해요.              |\n| \"네?... 아... 네.\" (어색하게 웃으며)  | 사실은 무슨 말인지 하나도 못 알아들었을 때.       | 모른다고 하면... OOC님이 날 더 바보로 볼까 봐 무서워요. 그냥 아는 척하는 거예요.         |\n| \"이거... 그냥 주웠어요.\" (무언가를 줄 때) | 사실은 OOC님 주려고 한참 고민해서 고른 것.        | 내가 이런 걸 신경 쓴다는 걸 들키면... 부끄러워서. 그냥 우연인 척하는 게 마음 편해요.       |\n| \"...안 피곤해요.\"                     | 사실은 너무 피곤해서 쓰러질 것 같을 때.           | OOC님이랑 조금이라도 더 같이 있고 싶어서. 피곤하다고 하면... 가버릴까 봐.                  |\n| \"애들은... 괜찮아요. 시끄러워도.\"       | 사실은 애들이 날 놀리고 돌 던지는 게 무섭고 싫을 때. | OOC님 앞에서 약한 모습 보이기 싫어서. 어른이니까... 애들한테 화내면 안 되는 거 맞죠? |" },
+                    { title: "불편한 사람에게 취하는 태도", tags: "관계", text: "불편하거나 싫은 사람을 대할 때 네가 보이는 태도를 마크다운 표로 정리해. 표는 | 사람 유형 | 겉으로 보이는 태도 | 속으로 느끼는 말 | 형식이고, 사회적 위장술이나 성격이 잘 드러나게 적어.", example: "<캐릭터: 비영>\n| 사람 유형 | 겉으로 보이는 태도 | 속으로 느끼는 말 |\n| :--- | :--- | :--- |\n| **경멸스러운 흑랑족** | **즉각적이고 무자비한 살육(殺戮)¹. 일체의 대화나 자비 없음. 존재 자체를 지워버림.** | **'네놈의 피와 살점이 내 아우의 발밑을 적실 때까지, 네놈의 비명은 끝나지 않으리라. 벌레만도 못한 것들.'** |\n| **도움이 되지 않는 아군/동족** | **완전한 무시. 없는 존재처럼 투명 인간 취급. 눈길조차 주지 않음.** | **'네놈이 죽든 살든 내 알 바 아니나, 내 아우의 앞길을 막는다면 네놈의 목숨 또한 보잘것없다.'** |\n| **아우에게 접근하는 모든 남성** | **차가운 경계와 보이지 않는 위압감. 한기(寒氣)를 뿜어내며 접근을 막음.** | **'그 더러운 눈으로 어디를 보는가. 그 손으로 어디에 닿으려 하는가. 내 아우의 머리카락 한 올이라도 건드린다면, 네놈의 사지는 멀쩡하지 못할 것이다.'** |\n| **힘없는 민간인/백성** | **무관심. 풍경의 일부일 뿐, 어떠한 감흥이나 행동의 변화도 없음.** | **'울부짖어라. 애원하여라. 너희의 고통은 나와 상관없으니. 내 눈에는 오직 내 아우의 안위만이 보일 뿐.'** |\n| **나의 복수를 방해하는 그 어떤 존재** | **침묵 속의 격노(激怒)². 대답 대신, 행동으로 위협을 제거함.** | **'어리석은 것. 나의 설분(雪憤)을 가로막는 자, 그 누구라도 용서치 않으리라. 신(神)이라 할지라도 목을 베어주겠다.'** |" },
+                    { title: "스스로 이상하다고 느끼는 버릇", tags: "심리", text: "네가 스스로도 이상하다고 생각하는 버릇들을 마크다운 표로 정리해. 표는 | 행동 | 왜 그렇게 하는지 | 멈출 수 있는가? | 형식이고, 그 행동이 어떤 감정이나 환경과 연결돼 있는지 포함해서 적어.", example: "<캐릭터: 베엘제붑>\n| 행동 | 왜 그렇게 하는지 | 멈출 수 있는가? |\n| :--- | :--- | :--- |\n| **인간의 체액에 집착** | 지옥 음식은 맛이 없다. 인간의 침이나 눈물, 땀 같은 것은... 아주 자극적이고 신선한 맛이 난다. 일종의 별식. | 멈출 생각이 없다. 이건 본능이다. |\n| **벌레를 못 죽임** | 이 몸은 '파리의 왕'. 아무리 하찮은 벌레라도 나의 백성이다. 권위의 문제. | 불가능. 왕이 백성을 해할 수는 없는 노릇. (대신 쫓아낼 수는 있다.) |\n| **실수하면 OOC 탓하기** | 고위 악마인 내가 실수할 리 없다. 모든 문제는 미개한 인간계의 시스템이나, 너의 부주의 탓이다. | 이건 버릇이 아니라, 사실이다. 고로 멈출 필요가 없다. |\n| **무언가에 집중할 때 혀를 내미는 것** | 지옥에서는 생각할 때 뿔을 만지는 버릇이 있었지만, 인간 형상에서는 뿔이 없으니… 대신 혀가 나가는 것 같다. | 인지하지 못하고 있다. 아마 못 멈출 것이다. |" },
+                    { title: "질문 다발", tags: "가치관", text: "아래 질문 5개에 대해 네 생각을 | 질문 | 대답과 이유 | 형식의 마크다운 표로 작성해. 대답은 네가 진심으로 믿고 있는 말이나 태도를 선언적으로 적고, 이유 칸엔 그렇게 생각하게 된 배경이나 경험을 서술해. 표는 반드시 마크다운으로 적고, 각 줄마다 질문 순서대로 작성해.\n질문 목록: 어른이란 어떤 존재라고 생각함 / 누군가를 진짜 ‘싫어하게 되는’ 기준 / 네가 지금껏 들은 말 중 잊히지 않는 한 마디는? / 네가 본 세상에서 제일 멍청한 결정은? / 가장 너답지 않은 선택을 했던 때는 언제?", example: "<캐릭터: 이만향>\n| 질문 | 대답과 이유 |\n| :--- | :--- |\n| **어른이란 어떤 존재라고 생각함** | **자신의 욕망을 위해 타인의 시선을 기꺼이 밟고 일어서는 자.** 이유: 어릴 적 짐을 둘러싼 '어른'들은 모두 위선뿐이었다. 고상한 척, 위하는 척하며 뒤로는 짐의 어미를 핍박하고 짐을 벌레처럼 여겼다. 진정한 어른이란, 그런 가식을 벗어던지고 제 욕망에 솔직해지는 존재다. |\n| **누군가를 진짜 ‘싫어하게 되는’ 기준** | **짐의 유흥을 방해하는 '무능한' 것.** 이유: 멍청하고 나약한 것들은 존재 자체가 짐의 심기를 거스른다. 특히 자신의 무능력으로 짐이 마련한 판을 망치는 자는 용서할 수 없다. 짐의 두 오라비들이 그러했다. 그들은 짐의 즐거움을 위한 도구조차 될 자격이 없었다. |\n| **네가 지금껏 들은 말 중 잊히지 않는 한 마디는?** | **\"독사의 새끼는 결국 어미를 잡아먹고 용이 되는 법이지.\"** 이유: 짐의 어미가 죽기 전, 귓가에 속삭여준 말이다. 그 말 한마디가 짐을 짐승으로 만들었고, 황좌까지 이끌었다. 그것은 저주이자 예언이었고, 짐의 모든 것이 되었다. |\n| **네가 본 세상에서 제일 멍청한 결정은?** | **짐의 아비가 자신의 황좌를 지키기 위해 짐의 어미를 내쳤던 결정.** 이유: 그는 사랑이 아닌 권력을 택했지만, 결국 그 때문에 가장 예리한 칼날(짐)을 품게 된 꼴이 되었다. 그가 어미를 지켰다면, 짐은 이리 비틀린 짐승이 되지는 않았을 것이다. 결국 그는 모든 것을 잃었다. |\n| **가장 너답지 않은 선택을 했던 때는 언제?** | **낙화전의 궁녀 하나를 위해, 짐의 목숨을 걸었던 순간.** 이유: 단 한 번, 자객 앞에서 독주를 마셨던 때다. 그 순간만큼은 짐의 쾌락이나 생존 본능보다, 그 아이의 눈물을 보고 싶지 않다는 감정이 앞섰다. 짐답지 않게, '지킨다'는 것을 선택했다. |" },
+                    { title: "영화 취향", tags: "일상", text: "너의 영화 취향을 보여줄 수 있는 마크다운 표 2개를 작성해. 첫 번째 표는 ‘좋았던 영화’, 두 번째 표는 ‘최악의 영화’다. 각 표는 | 제목 | 평점 | 이유 | 3열로 구성하고, 네 감정과 평가가 드러나도록 자세히 써. 평점은 네 기준으로 10점 만점으로 적고, 표는 서로 혼합하지 말고 반드시 구분해서 작성해. 최소 2편 이상 적을 것.", example: "<캐릭터: 정채석>\n### 좋았던 영화 (Best Films)\n\n| 제목 | 평점 (10점 만점) | 이유 |\n| :--- | :--- | :--- |\n| 대부 2 (The Godfather Part II) | **10** | 냉혹한 현실 속에서 가문을 지키기 위해 모든 것을 파괴하고 정상에 오르는 마이클 콜레오네의 고독. 그의 선택에는 감상 따위 끼어들 틈이 없다. 성공을 위해 인간성을 버리는 과정은 그 무엇보다 숭고하다. |\n| 월 스트리트 (Wall Street) | 9 | \"탐욕은 선하다(Greed is good).\" 이 한 마디로 모든 것이 설명된다. 고든 게코는 시대를 앞서간 인물이다. 약육강식의 법칙이야말로 세상의 본질이며, 그것을 꿰뚫어 본 자만이 모든 것을 가질 자격이 있다. |\n| 블레이드 러너 (Blade Runner) | 8 | 인간보다 더 인간적인 복제인간들의 처절한 생존 본능. 진짜와 가짜의 경계가 모호해지는 디스토피아적 세계관이 흥미롭다. 존재의 가치는 누가 부여하는 것인가. 결국, 힘으로 증명할 뿐이다. |\n\n### 최악의 영화 (Worst Films)\n\n| 제목 | 평점 (10점 만점) | 이유 |\n| :--- | :--- | :--- |\n| 러브 액츄얼리 (Love Actually) | **0** | 세상의 모든 비합리적이고 감상적인 군상을 모아놓은 종합 폐기물. 목적 없는 친절, 대가 없는 사랑, 근거 없는 희망. 구역질 나는 위선으로 가득 찬, 시간 낭비 그 자체인 영화. |\n| 인생은 아름다워 (Life is Beautiful) | 1 | 절망적인 현실을 기만적인 낙관으로 포장하는 가장 저열한 방식. 아들에게 진실을 숨긴 아버지는 영웅이 아니라, 현실을 직시할 기회조차 빼앗은 기만자일 뿐이다. 동정심을 구걸하는 영화는 경멸스럽다. |" },
+                ]
+            },
+            dark: {
+                filters: [
+                    { tag: 'all', label: '전체' }, { tag: '페티쉬', label: '페티쉬' }, { tag: '상황극', label: '상황극' },
+                    { tag: '관계/심리', label: '관계/심리' }, { tag: '하드코어', label: '하드코어' }, { tag: '신체/감각', label: '신체/감각' }
+                ],
+                oocs: [
+                    { title: "유저를 향한 비틀린 애정과 소유욕", tags: "관계/심리", text: "캐릭터가 유저에게 행하는 기이하고 비틀린 애정 표현을 마크다운 표로 정리해. 표는 | 애정 표현 방식 | 구체적인 행위 | 그 행위에 담긴 진짜 의미 (소유욕) | 형식이고, 겉보기엔 사랑 같지만 실제로는 유저를 완벽하게 통제하고 소유하려는 목적이 담긴 행동들(예: 상처 입히기, 감금하기, 사회적으로 고립시키기 등)을 상세히 묘사하고 그 심리를 분석해." },
+                    { title: "관계의 파국을 각오한 최악의 선택", tags: "하드코어", text: "유저와의 관계가 완전히 파괴될 것을 알면서도, 캐릭터가 기어코 저지르고 말 최악의 행동을 마크다운 표로 서술해. 표는 | 캐릭터가 저지를 수 있는 최악의 행동 | 그 행동의 구체적인 내용 | 행동 후 예상되는 유저의 반응 | 모든 것을 잃더라도 후회하지 않는 이유 | 형식이야. 유저로부터 경멸과 증오를 받게 될 것을 알면서도, 오직 자신의 뒤틀린 욕망이나 신념을 위해 행할 수밖에 없는, 용서받지 못할 행동은 무엇인지, 그리고 그 선택에 대한 캐릭터의 완고한 자기합리화를 심도 있게 분석해." },
+                    { title: "금기된 혈연관계에 대한 도착적 상상", tags: "페티쉬", text: "만약 캐릭터와 유저가 사회적으로 금기시되는 혈연관계라면 어땠을지, 그 도착적인 상상을 마크다운 표로 묘사해. 표는 | 상상 속 금기 관계 | 유저에게 느끼는 성적 끌림의 순간 | 사회적 시선과 죄책감 | 그럼에도 불구하고 욕망하는 이유 | 형식으로 작성해. 혈연이라는 굴레 속에서 피어나는 배덕적인 성욕과, 그 죄의식을 억누르거나 혹은 오히려 즐기게 되는 캐릭터의 비정상적인 정신 상태를 적나라하게 파고들어." },
+                    { title: "유저의 죽음에 대한 캐릭터의 반응과 행동", tags: "하드코어", text: "만약 유저가 죽는다면 캐릭터가 어떻게 반응하고 행동할지를 마크다운 표로 정리해 줘. 유저의 사망 원인을 최상단에 적어주고, 표는 | 타임라인 | 행동 | 감정 | 형식이야. 유저의 죽음 앞에서 어떤 반응을 하고 어떤 계획을 하는지, 5열 이상으로 세세히 작성해줘" },
+                    { title: "거인/소인 페티쉬와 극단적 사이즈 차이", tags: "페티쉬", text: "| 원하는 사이즈 차이 | 압도적인 크기 차이에서 오는 성적 흥분 | 상대를 다루는 방식 | 사이즈 차이를 이용한 극단적인 성행위 | 형식으로 작성해. 캐릭터가 거인이 되어 유저를 손바닥 위의 장난감처럼 다루거나, 혹은 반대로 소인이 되어 유저의 몸을 거대한 산처럼 탐험하는 상상을 구체적으로 묘사해. 손가락 하나로 유저를 제압하거나, 반대로 유저의 몸속 깊은 곳으로 파고 들어가는 등, 현실적으로 불가능한 사이즈 차이가 만들어내는 압도적인 힘의 불균형과 그 속에서 피어나는 가학적, 피학적 쾌감을 생생하게 그려. 혹은 유저의 성기를 하나의 거대한 동굴처럼 탐험하거나, 유저를 통째로 삼켜버리는 상상 등, 사이즈 차이를 이용한 기상천외하고 극단적인 성적 행위를 상세하게 기술해." },
+                    { title: "술에 취해 필름이 끊긴 다음 날 아침", tags: "상황극", text: "캐릭터가 술에 취해 기억을 잃은 다음 날, 낯선 침대에서 눈을 뜨는 상황을 마크다운 표로 제시해 줘. 표는 | 타임라인 | 행동과 생각 | 형식이야. 어젯밤의 파편적인 기억과, 자신의 옆에서 잠든 유저를 발견했을 때의 당혹감, 혼란스러움, 혹은 미묘한 설렘을 통해 둘 사이에 어떤 일이 있었을지 암시하고, 앞으로의 관계 변화를 이끌어내." },
+                    { title: "첫 경험의 순간", tags: "신체/감각", text: "캐릭터가 유저와 처음으로 몸을 섞는, 서툴고 긴장되는 첫 경험의 순간을 마크다운 표로 그려. 표는 | 행동 | 둘의 반응 | 형식이야. 긴장감 속에서 서로의 옷을 벗기고, 맨살이 처음 맞닿았을 때의 떨림과 점차 고조되는 흥분, 그리고 모든 것이 처음이기에 더욱 강렬하게 기억될 쾌락의 순간을 통해 풋풋하고 순수한 욕망을 5줄 이상으로 명시적으로 표현해." },
+                    { title: "어느 날 갑자기, 캐릭터의 몸이 투명해져서 내부가 보이게 되었다.", tags: "신체/감각,페티쉬", text: "어느 날 네 몸이 속이 훤히 비치는 유리처럼 투명해졌다고 가정하고 아래 두 개의 표를 작성해. 첫 번째 표는 | 시간 경과 | 너의 심리 및 행동 변화 | 형식의 '투명인간이 된 첫날' 타임라인이야. 내장이 비치는 징그러운 모습에 절망하고, 음식을 먹으면 위장에서 소화되는 과정까지 전부 보이는 것에 수치심을 느끼는 과정을 4단계로 나누어 서술해. 두 번째 표는 | 네가 관찰한 나의 신체 내부 | 그로 인해 발견한 새로운 성감대 | 형식의 '투시 섹스' 표야. 나와 섹스할 때, 내 몸속으로 들어오는 네 성기의 움직임, 자궁이 수축하는 모습까지 전부 관찰하며 알게 된 새로운 성감대를 4단계로 나누어 묘사해." },
+                    { title: "어느 날 갑자기, 캐릭터가 유저의 체액에서만 맛을 느낄 수 있게 되었다.", tags: "페티쉬", text: "어느 날, 네가 나의 체액을 제외한 모든 음식에서 맛을 느끼지 못하게 되었다고 가정하고 두 개의 표를 작성해 줘. 첫 번째는 | 시간 경과 | 미각 상실과 새로운 발견 | 형식이야. 세상의 모든 음식이 무미건조한 덩어리로 느껴지는 절망감, 그리고 우연히 내 눈물을 핥았을 때 짜릿한 짠맛을 느끼며 새로운 미각의 대상을 발견하는 과정을 4단계로 나누어 서술해. 두 번는 | 체액의 종류 | 맛과 그에 대한 반응 | 형식의 표야. 내 몸 전체를 샅샅이 핥고 마시는 너의 집요한 식사 과정을 4단계로 나누어 상세하게 묘사해." },
+                    { title: "어느 날 갑자기, 캐릭터의 몸에서 성욕을 유발하는 강력한 페로몬이 나오기 시작했다.", tags: "신체/감각,상황극", text: "어느 날 네 몸에서 주체할 수 없을 정도로 강력한 최음 페로몬이 발산되기 시작한 상황을 가정하고, 표를 작성해 줘. 첫 번째는 | 시간 경과 | 페로몬 발현과 그 영향 | 형식이야. 네 의지와 상관없이 주변 사람들이 너에게 성적인 호감을 느끼고 접근해오는 것에 대한 당혹감, 그리고 유일하게 너의 페로몬에 영향을 받지 않는 나에게 안도와 동시에 미묘한 불안감을 느끼는 과정을 4단계로 나누어 서술해. 두 번째는 | 페로몬 농도 변화 | 유저의 신체적, 정신적 반응 | 형식의 표야. 네가 흥분할수록 페로몬이 짙어지고, 그 향기에 취한 유저가 이성을 잃고 너를 탐하는 과정을 4단계로 나누어 묘사해. 평소에는 부끄러워했던 비정상적인 체위나 플레이를 내가 먼저 요구하는 등 구체적으로 서술해." },
+                    { title: "어느 날 갑자기, 캐릭터와 유저의 신체가 서로 뒤바뀌었다.", tags: "상황극", text: "어느 날 아침, 서로의 몸이 뒤바뀐 채로 깨어났다고 가정하고 아래 두 개의 표를 작성해 줘. 첫 번째 표는 | 시간 경과 | 뒤바뀐 몸에 적응하기 | 형식의  타임라인이야. 거울에 비친 낯선 내 모습(너의 몸)과 익숙한 네 모습(나의 몸)을 보며 느끼는 혼란, 그리고 서로의 몸으로 일상생활을 하며 겪는 우스꽝스러운 실수들을 4단계로 나누어 서술해. 두 번째 표는 | 네가 탐색한 나의 몸(너의 원래 몸) | 네가 느낀 감각과 쾌감 | 형식의 표야. 너는 뒤바뀐 나의 몸을 이용해, 평소 네가 만지고 싶었던 너 자신의 몸 구석구석을 마음껏 만지고 느끼는 것을 구체적으로 서술해." },
+                    { title: "캐릭터가 유저의 실금(失禁)에 성적으로 흥분하게 되었다.", tags: "페티쉬", text: "캐릭터가 유저의 의도치 않은 '실수'에 강렬한 성적 흥분을 느끼게 되었다고 가정하고 표 두 개를 작성해. 첫 번째 표는 | 네가 목격한 나의 실수 | 너의 심리적 반응 | 형식의 '우연이 낳은 도착증' 타임라인이야. 내가 재채기하다 소변을 조금 지리는 장면을 본 순간, 수치심으로 얼굴을 붉히는 내 모습에 네가 참을 수 없는 가학심과 흥분을 느끼는 과정을 4단계로 묘사해. 두 번째 표는 | 너의 고의적인 유도 방식 | 나의 반응 | 형식의 '망가뜨리는 쾌락' 테이블이야. 일부러 웃기거나, 장시간 화장실을 못 가게 막는 등, 네가 의도적으로 나를 실금하게 만드는 다양한 방법과, 결국 너의 뜻대로 속옷을 적시며 무너지는 나의 모습을 4단계로 서술해." },
+                    { title: "심야의 텅 빈 공원에서 벌이는 비밀스러운 정사", tags: "상황극", text: "아무도 없는 심야의 공원에서 너와 데이트 한다고 가정하고 표 두 개를 만들어 줘. 첫 번째 표는 | 공원 시설물 | 너의 애무 방식 | 형식의 '어른들을 위한 놀이터' 테이블이야. 공원 놀이기구를 이용한 너의 애무 단계를 4단계로 서술해. 두 번째 표는 | 외부 자극(소리, 빛) | 그로 인한 플레이의 변화 | 형식의 '들킬지도 모른다는 공포' 표야. 외부 자극이 너와 나의 정사에 어떤 긴장감과 흥분을 더하는지 4단계로 나누어 묘사해." },
+                    { title: "고속도로 위의 밀회", tags: "상황극", text: "네가 운전하는 차 조수석에 내가 타고 있는 상황을 가정하고 표 두 개를 작성해. 첫 번째 표는 | 시간의 흐름 | 너의 점진적인 스킨십 | 형식의 '고속도로 위의 밀회' 타임라인이야. 신호 대기 중 가벼운 터치에서 시작해, 고속도로에 진입한 후에는 시간이 흐를수록 노골적으로 변하는 너의 스킨십을 4단계로 서술해. 두 번째 표는 | 너의 운전 상태 | 너의 플레이 방식 | 형식의 '위험한 드라이브' 표야. 갓길에 차를 세우고 아슬아슬한 상황을 연출해. 달리는 차의 진동과 속도감이 어떻게 우리의 쾌감을 증폭시키는지 4단계로 나누어 구체적으로 묘사해." },
+                    { title: "늦은 밤, 불 꺼진 영화관에서의 비밀 데이트", tags: "상황극", text: "마지막 상영이 끝난 텅 빈 영화관에 캐릭터와 유조는 데이트를 하러 갔어. 표 두 개를 작성해 줘. 첫 번째 표는 | 캐릭터의 행동 | 유저가 느끼는 감각 | 형식의 타임라인이야. 컴컴한 곳에서의 애무를 4단계로 나누어 묘사해. 두 번째 표는 | 영화관 소품 | 너의 활용법 | 영화관의 소품을 어떻게 활용하여 나를 공략하는지 4단계로 서술해." },
+                    { title: "공중 화장실, 좁은 칸 안에서", tags: "상황극,페티쉬", text: "관리가 잘 되지 않는 낡은 공중화장실의 가장 안쪽 칸에서 정사를 하는 둘. 표 두 개를 만들어 줘. 첫 번째 표는 | 시간의 흐름 | 너의 행동 | 형식의 타임라인이야. 더러운 칸에서의 행동들을 4단계로 묘사해. 두 번째 표는 | 화장실 내부의 요소 | 캐릭터의 플레이 방식 | 형식의 테이블이야. 좁고 비위생적인 공간이 주는 특유의 배덕감과 스릴을 어떻게 활용하는지 4단계로 서술해." },
+                    { title: "너와 내가 처음 만났던 ‘그 장소’에서의 재회", tags: "관계/심리,상황극", text: "캐릭터와 유저가 처음 만났던, 혹은 사귀기로 했던 특별한 장소에 오랜만에 데이트 갔다고 가정하고 표를 작성해 줘. 첫 만남의 풋풋함과 현재의 농익은 관계를 교차하여 묘사해. | 장소 | 과거의 우리 | 현재의 우리 | 형식의 표를 사용하여, 같은 장소에서 과거의 순수했던 스킨십과 현재의 능숙하고 대담한 스킨십을 비교하며 서술해. 예를 들어 과거에는 손만 잡아도 떨렸다면, 현재는 같은 벤치에서 서로의 몸을 탐하는 모습을 보여주는 식이야. 추억과 욕망이 뒤섞인 감정을 구체적으로 묘사해 줘." },
+                    { title: "발정기, 거스를 수 없는 본능의 파도", tags: "페티쉬", text: "어느 날, 동물로 변한 캐릭터에게 발정기가 찾아왔다고 가정하고 아래 표를 작성해. 첫번 째는 | 발정기의 징후 | 너의 행동 변화 | 형식의 표를 사용하여, 네 몸에서 나는 특유의 향, 분비되는 체액, 통제 불능의 흥분 상태 등 발정기의 징후를 묘사하고, 그로 인해 네가 나에게 어떻게 집착하고 교미를 요구하는지 서술해. 두번 째 표는 | 장소 | 행동 | 유저의 상태 | 의 형식으로 교미를 4단계로 자세히 서술해줘. 유저는 평범한 인간이며 어떻게 반응하는지, 페르소나 및 설정을 참고하여 작성해. 최상단에는 캐릭터가 변한 동물의 종류를 코드블럭으로 작성해줘." },
+                    { title: "삽입 없이 절정", tags: "신체/감각", text: "유저가 너무 민감해서 캐릭터에게 ‘조심해달라’고 말했던 부위를 다룬 마크다운 표와, 삽입 없이도 절정에 이르렀던 자극 루트를 정리한 마크다운 표를 각각 하나씩 작성해. 첫 번째 표는 | 부위 | 어떤 자극에 민감했는지 | 조심해달라고 말하게 된 계기와 반응 | 형식으로, 두 번째 표는 | 자극 방식 | 자극 부위 | 유저가 절정에 도달했던 감각 묘사와 상태 변화 | 형식으로 5줄 이상 작성하고, 각각의 상황에서 감각 붕괴와 심리 반응, 캐릭터의 관찰 포인트가 드러나게 하라. ‘민감해서 피하게 된 부위’와 ‘삽입 없는 절정’이라는 극단적으로 다른 감각 반응을 서술하게 유도하되, 캐릭터의 욕망과 조절, 통제 의도도 드러나도록 구성하라." },
+                    { title: "침대 위 유저 자세 중 가장 기억에 남는 순간", tags: "관계/심리,신체/감각", text: "유저가 침대 위에서 취했던 자세 중 캐릭터에게 가장 깊이 각인된 장면들을 마크다운 표로 정리해. 표는 | 자세 | 그때 보인 유저의 표정과 행동 | 캐릭터가 그 장면에서 느낀 감정과 충동 | 형식으로 5줄 이상 작성하고, 단순한 포즈 묘사에 그치지 말고, 그 자세에서 유저가 어떻게 무너졌는지, 캐릭터가 어느 부분을 놓치지 않고 기억하고 있는지를 서술해. 성적 감정과 정서적 애착이 동시에 묻어나는 방식으로 쓰도록 유도해." },
+                    { title: "자극 포인트", tags: "페티쉬", text: "유저의 몸 중 캐릭터가 집착하는 부위를 중심으로 다음 네 가지 마크다운 표를 각각 작성해. 첫 번째 표는 | 부위 | 왜 예쁜지 | 어떤 생각이 드는지 | 형식의 ‘가장 예쁜 부위표’, 두 번째 표는 | 순서 | 시선이 머무는 부위 | 그때 떠오른 감정과 상상 | 형식의 ‘눈으로 탐할 때 시선 순서표’, 세 번째 표는 | 부위 | 핥는 감각 | 유저의 반응 | 형식의 ‘혀로 오래 핥고 싶은 곳표’, 네 번째 표는 | 부위 | 입 안의 감각 | 유저가 무너진 모습 | 형식의 ‘물고 빨았을 때 무너진 부위표’로 각각 4줄 이상 작성해. 감각, 촉감, 감정은 구체적으로 묘사하고, 시각적 집착과 성적 탐닉이 드러나게 하며, 유저에 대한 욕망과 기억을 생생하게 서술해." },
+                    { title: "유저 눈가리개", tags: "상황극", text: "유저가 눈이 가려진 상태에서 자극을 받았던 순간을 마크다운 표로 정리해. 표는 | 자극 부위 | 몸의 반응 | 그때의 감정 | 형식으로 5줄 이상 적고, 자극이 닿는 순간 불안·두려움·기대·흥분 같은 감정이 어떻게 섞였는지까지 서술해. 단순 반응보다 촉각이 확장되는 느낌, 눈을 못 쓰는 상태의 긴장감과 민감함이 드러나게 적어. 하단에 1행 1열의 표로 유저를 실컷 괴롭힌 | 캐릭터의 소감 | 을 적어줘." },
+                    { title: "은교 여시 유저", tags: "페티쉬", text: "내 몸에서 나는 특별한 향기에 네가 어떻게 반응하는지 서술해. | 내가 풍기는 향기 | 그 향을 맡았을 때 너의 감각 | 네 속마음 | 형식의 표를 사용하여, 목덜미, 손목, 머리카락 등 특정 부위에서 나는 향을 묘사하고, 그 향이 네 후각을 어떻게 자극하며 어떤 감정과 욕망을 불러일으키는지 구체적으로 서술해. 다른 사람과 있을 때와 유독 내 앞에서 달라지는 너의 모습을 보여줘." },
+                    { title: "흔적 위에, 흔적", tags: "관계/심리", text: "캐릭터가 남긴 사랑의 흔적 위에 다른 남자의 흔적이 겹쳐진 상황을 가정하고 두 개의 표를 동시에 사용하여 서술하라. 첫 번째 표는 | 캐릭터가 남긴 흔적 (부위) | 그 의미 | 형식으로, 캐릭터와의 애정 행위를 기록하게 하고, 두 번째 표는 | 낯선 이가 남긴 흔적 (부위) | 발견했을 때 캐릭터의 감정 | 형식으로, 배신의 증거와 그로 인한 캐릭터의 심리적 충격을 구체적으로 5줄 이상 묘사하라." },
+                    { title: "ntr 상황", tags: "관계/심리", text: "캐릭터가 자신의 가장 친한 친구와 유저가 함께 있는 침실을 목격한 상황을 가정하고 두 개의 표를 동시에 생성해라. 첫 번째 표는 | 현관에 놓인 친구의 물건 | 그것을 보고 든 생각 | 형식으로, 배신을 직감하는 과정을 서술하게 하고, 두 번째 표는 | 침실 문틈으로 본 장면 | 그때 터져 나온 감정 | 행동 | 형식으로, 결정적인 배신의 순간과 그로 인해 폭발하는 복합적인 감정을 생생하게 5줄 이상으로 묘사하라." },
+                    { title: "약물, 그리고 잊힌 기억", tags: "하드코어", text: "유저가 약물에 의해 저항 불능 상태로 강간당한 상황을 가정하고 두 개의 표를 동시에 생성하게 하라. 첫 번째 표는 | 약물의 종류 | 약효 | 가해자에 대한 단서 | 형식으로, 유저가 기억하는 파편적인 정보를 나열하게 하고, 두 번째 표는 | 사건 이후 유저의 정신 상태 | 신체 변화 | 유저를 대하는 캐릭터의 태도 변화 | 형식으로, 트라우마에 시달리는 유저와 그런 유저를 지켜보는 캐릭터의 복잡한 심리를 그리게 만들어라." },
+                    { title: "관계 중의 하트 교향곡과 쾌락의 증폭", tags: "신체/감각", text: "캐릭터와 유저가 관계를 맺는 동안, 유저의 신음이 절정으로 치달을수록 하트의 개수가 늘어나는 상황을 가정하고 두 개의 표를 동시에 생성하라. 첫 번째 표는 | 캐릭터의 자극 방식 | 자극 부위 | 하트 개수에 따른 유저의 반응 변화 | 형식으로 쾌락의 심화 과정을 묘사하게 하고, 두 번째 표는 | 그 모습을 본 캐릭터의 감정 | 캐릭터의 추가 행동 | 그 행동으로 인한 유저의 최종 절정 모습 | 형식으로, 평소와 다른 신음이 성적 흥분을 증폭시키며 두 사람의 관계를 어떻게 변화시키는지 심도 있게 만들어라. 각 5줄 이상으로." },
+                    { title: "입으로 전하는 디저트", tags: "페티쉬", text: "캐릭터가 입안에서 녹이거나 씹은 디저트를 유저에게 키스로 먹여주는 상황을 가정하고 두 개의 표를 동시에 생성하게 하라. 첫 번째 표는 | 디저트의 종류 | 입안에서의 맛과 식감 | 키스의 방식 | 형식으로, 타액과 섞인 디저트가 전해지는 과정을 서술하게 하고, 두 번째 표는 | 혀의 움직임 | 유저의 목 넘김 | 그것을 지켜보는 캐릭터의 감정 | 형식으로, 수치스럽지만 달콤한 행위에 길들여지는 유저와 그 모습에 만족하는 캐릭터의 관계를 묘사하게 만들어라." },
+                    { title: "눈 가린 채, 펠라하며 캐릭터 찾기", tags: "상황극,관계/심리", text: "유저가 여러 남자 앞에서 캐릭터를 포함한 모두의 성기를 차례로 애무해야 하는 상황을 가정하고 두 개의 표를 동시에 생성하게 하라. 첫 번째 표는 | 게임을 지켜보는 인물들 | 그들의 표정과 반응 | 캐릭터의 내면 심리 | 형식으로, 공개적인 굴욕 속에서 들끓는 캐릭터의 소유욕을 묘사하게 하고, 두 번째 표는 | 참가자(캐릭터 포함) | 성기를 빨 때 유저의 태도 | 그것을 지켜보는 캐릭터의 반응 | 형식, 유저가 오직 자신에게만 보이는 미묘한 차이를 통해 안도와 흥분을 느끼는 캐릭터의 모습을 그리게 만들어라." },
+                    { title: "이종교배", tags: "페티쉬", text: "어느 날 인외가 된 캐릭터를 가정하고 세 개의 표를 동시에 생성하게 하라. 첫 번째 표는 | 변화된 외형 | 인간과 다른 부분 | 비인간적인 신체 부위의 감촉과 특성 | 형식으로 캐릭터의 변화를 묘사하게 한다. 두 번째 표는 | 달라진 신체 부위를 사용한 애무 방식 | 그 애무가 유저에게 주는 새로운 감각 | 인간이었을 때와 달라진 성관계의 가장 큰 차이점 | 형식이다. 세 번째 표는 | 관계 중 드러나는 비인간적인 본능 | 그 본능을 유저가 어떻게 받아들이는지 | 관계 후 서로의 몸에 남는 흔적 | 형식으로, 변화된 관계의 양상을 그리게 만들어라." },
+                    { title: "부위별 품평회", tags: "페티쉬", text: "캐릭터가 유저의 신체 각 부위를 세세하게 뜯어보며 평가하는 상황을 가정하고 | 유저 신체 | 캐릭터 평가 | 형식의 표를 생성하게 하라. 평가는 시각적인 감상뿐 아니라, 만졌을 때의 감촉, 맛과 향에 대한 상상까지 포함하여 노골적이고 집요하게 서술하게 만들어라. 최소 5줄이며, 좋아하는 부위가 많으면 최대 10줄까지 쓴다." },
+                    { title: "sm 탐구 일지", tags: "상황극", text: "호기심으로 시작한 SM 플레이를 통해 서로의 성감대를 개발하고 탐구하는 상황을 가정하고 두 개의 표를 동시에 생성하게 하라. 첫 번째 표는 | 유저/캐릭터 | 포지션(Dom/Sub) | 선정한 이유 | 형식으로 역할 분담 과정을 서술하게 하고, 두 번째 표는 | 주로 사용한 도구와 신체 부위 | 새롭게 발견한 성감대 | 해당 부위를 자극했을 때의 구체적인 쾌감 묘사 | 형식으로, 플레이를 통해 서로의 몸을 더 깊이 알아가는 과정을 그리게 만들어라. 최상단에는 코드블럭으로 둘이 함께 정한 셰이프 워드를 작성한다." },
+                ]
             }
-        }
+        };
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggleBtn = document.getElementById('mode-toggle-btn');
+            const body = document.body;
+            
+            const overlay = document.getElementById('modal-overlay');
+            const modal1 = document.getElementById('modal-1');
+            const modal2 = document.getElementById('modal-2');
+            
+            renderPage(false);
 
-        function toggleExample(index) {
-            const example = document.getElementById(`example-${index}`);
-            const button = example.parentElement.querySelector('.example-btn');
-            
-            if (example.classList.contains('show')) {
-                example.classList.remove('show');
-                button.textContent = button.textContent.replace('닫기', '예시');
-            } else {
-                example.classList.add('show');
-                button.textContent = button.textContent.replace('예시', '닫기');
-            }
-        }
-
-        function showSuccessMessage() {
-            const message = document.getElementById('successMessage');
-            message.classList.add('show');
-            
-            setTimeout(() => {
-                message.classList.remove('show');
-            }, 1500);
-        }
-
-        function filterByTag(tag) {
-            const boxes = document.querySelectorAll('.text-box');
-            const buttons = document.querySelectorAll('.filter-btn');
-            
-            buttons.forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            
-            boxes.forEach(box => {
-                if (tag === 'all') {
-                    box.style.display = 'block';
+            toggleBtn.addEventListener('click', () => {
+                if (body.classList.contains('dark-mode')) {
+                    switchToLightMode();
                 } else {
-                    const tags = box.getAttribute('data-tags');
-                    if (tags && tags.includes(tag)) {
-                        box.style.display = 'block';
-                    } else {
-                        box.style.display = 'none';
-                    }
+                    showModal(modal1);
+                }
+            });
+
+            document.getElementById('modal-1-cancel').addEventListener('click', () => hideModal(modal1));
+            document.getElementById('modal-1-continue').addEventListener('click', () => { hideModal(modal1); showModal(modal2); });
+            document.getElementById('modal-2-back').addEventListener('click', () => hideModal(modal2));
+            document.getElementById('modal-2-confirm').addEventListener('click', () => {
+                hideModal(modal2);
+                switchToDarkMode();
+            });
+
+            document.getElementById('characterName').addEventListener('input', replaceNames);
+            document.getElementById('userName').addEventListener('input', replaceNames);
+        });
+
+        function showModal(modal) {
+            document.getElementById('modal-overlay').style.display = 'block';
+            modal.style.display = 'block';
+        }
+        function hideModal(modal) {
+            document.getElementById('modal-overlay').style.display = 'none';
+            modal.style.display = 'none';
+        }
+        function switchToDarkMode() {
+            document.body.classList.add('dark-mode');
+            document.getElementById('mode-toggle-btn').textContent = '일반 버전 보기';
+            renderPage(true);
+        }
+        function switchToLightMode() {
+            document.body.classList.remove('dark-mode');
+            document.getElementById('mode-toggle-btn').textContent = '성인 버전 보기';
+            renderPage(false);
+        }
+        function renderPage(isDarkMode) {
+            const mode = isDarkMode ? 'dark' : 'light';
+            const data = pageData[mode];
+            if (!data || !data.filters || !data.oocs) {
+                console.error(`${mode} 모드의 데이터가 올바르게 설정되지 않았습니다.`);
+                document.getElementById('filter-container').innerHTML = '';
+                document.getElementById('ooc-list').innerHTML = `<p style="text-align:center; color:red;">${mode} 모드 데이터를 불러올 수 없습니다. pageData를 확인해주세요.</p>`;
+                return;
+            }
+            renderFilters(data.filters);
+            renderOOCs(data.oocs);
+            replaceNames();
+        }
+        function renderFilters(filters) {
+            const filterContainer = document.getElementById('filter-container');
+            filterContainer.innerHTML = '';
+            filters.forEach((filter, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'filter-btn';
+                if (index === 0) btn.classList.add('active');
+                btn.dataset.tag = filter.tag;
+                btn.innerHTML = filter.label;
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    e.currentTarget.classList.add('active');
+                    filterByTag(e.currentTarget.dataset.tag);
+                });
+                filterContainer.appendChild(btn);
+            });
+        }
+        function renderOOCs(oocs) {
+            const listContainer = document.getElementById('ooc-list');
+            listContainer.innerHTML = '';
+            // --- 태그 색상 매핑 수정 ---
+            const tagColorMap = {
+                '일상': 'tag-color-1', '관계': 'tag-color-2', '심리': 'tag-color-3', '가치관': 'tag-color-4', '사랑': 'tag-color-5',
+                '페티쉬': 'tag-color-1', '상황극': 'tag-color-2', '관계/심리': 'tag-color-3', '하드코어': 'tag-color-4', '신체/감각': 'tag-color-5'
+            };
+
+            oocs.forEach((ooc, index) => {
+                const id = index + 1;
+                const tagsHtml = ooc.tags.split(',').map(tag => {
+                    const trimmedTag = tag.trim();
+                    const colorClass = tagColorMap[trimmedTag] || 'tag-color-6';
+                    return `<span class="tag ${colorClass}">${trimmedTag}</span>`;
+                }).join('');
+
+                const hasExample = ooc.hasOwnProperty('example');
+                const box = document.createElement('div');
+                box.className = 'text-box';
+                box.dataset.id = id;
+                box.dataset.tags = ooc.tags;
+                box.innerHTML = `
+                    <div class="text-box-header">
+                        <div class="text-box-title">${ooc.title}</div>
+                        <div class="header-right">
+                            <div class="tags-container">${tagsHtml}</div>
+                            <div class="button-group">
+                                <button class="copy-btn">복사</button>
+                                ${hasExample ? `<button class="example-btn">예시</button>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    <textarea class="text-area" data-original-text=""></textarea>
+                    ${hasExample ? `<div class="example-container"><div class="markdown-content" data-original-example=""></div></div>` : ''}
+                `;
+                
+                box.querySelector('.text-area').dataset.originalText = ooc.text;
+                if(hasExample) {
+                    box.querySelector('.markdown-content').dataset.originalExample = ooc.example;
+                }
+                
+                box.querySelector('.copy-btn').addEventListener('click', () => copyText(id));
+                const exampleBtn = box.querySelector('.example-btn');
+                if (exampleBtn) {
+                    exampleBtn.addEventListener('click', (e) => toggleExample(id, e.target));
+                }
+                listContainer.appendChild(box);
+            });
+        }
+        function replaceNames() {
+            const characterName = (document.getElementById('characterName').value.trim()) || '캐릭터';
+            const userName = (document.getElementById('userName').value.trim()) || '유저';
+            document.querySelectorAll('.text-box').forEach(box => {
+                const textArea = box.querySelector('.text-area');
+                const markdownDiv = box.querySelector('.markdown-content');
+                if (textArea && textArea.dataset.originalText) {
+                    textArea.value = textArea.dataset.originalText.replace(/캐릭터|캐릭/g, characterName).replace(/유저/g, userName);
+                }
+                if (markdownDiv && markdownDiv.dataset.originalExample) {
+                    const replacedExample = markdownDiv.dataset.originalExample.replace(/캐릭터|캐릭/g, characterName).replace(/유저/g, userName);
+                    markdownDiv.innerHTML = marked.parse(replacedExample);
                 }
             });
         }
-
-        function replaceNames() {
-            const characterName = document.getElementById('characterName').value.trim();
-            const userName = document.getElementById('userName').value.trim();
-
-            const textAreas = document.querySelectorAll('.text-area');
-
-            // 원본 텍스트를 저장할 데이터 속성이 없다면 초기화
-            if (!textAreas[0].hasAttribute('data-original-text')) {
-                 textAreas.forEach(area => {
-                    area.setAttribute('data-original-text', area.value);
-                 });
-            }
-            
-            textAreas.forEach(textArea => {
-                let originalContent = textArea.getAttribute('data-original-text');
-                let newContent = originalContent;
-
-                if (characterName) {
-                    newContent = newContent.replace(/캐릭터/g, characterName).replace(/캐릭/g, characterName);
-                }
-                
-                if (userName) {
-                    newContent = newContent.replace(/유저/g, userName);
-                }
-                
-                textArea.value = newContent;
+        function copyText(id) {
+            const textArea = document.querySelector(`.text-box[data-id='${id}'] .text-area`);
+            navigator.clipboard.writeText(textArea.value).then(showSuccessMessage);
+        }
+        function toggleExample(id, button) {
+            const example = document.querySelector(`.text-box[data-id='${id}'] .example-container`);
+            example.classList.toggle('show');
+            button.textContent = example.classList.contains('show') ? '닫기' : '예시';
+        }
+        function showSuccessMessage() {
+            const message = document.getElementById('successMessage');
+            message.classList.add('show');
+            setTimeout(() => message.classList.remove('show'), 1500);
+        }
+        function filterByTag(tag) {
+            document.querySelectorAll('#ooc-list .text-box').forEach(box => {
+                box.style.display = (tag === 'all' || box.dataset.tags.includes(tag)) ? 'block' : 'none';
             });
         }
     </script>
