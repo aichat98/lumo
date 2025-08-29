@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube 생성기</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f0f0;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* === 왼쪽 컨트롤 패널 === */
+        .controls {
+            flex: 1;
+            background: white;
+            padding: 25px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            min-width: 350px;
+            max-width: 400px;
+        }
+
+        .controls h2 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 20px;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .tab-control-btn {
+            flex: 1;
+            font-size: 12px;
+            padding: 10px 8px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .tab-control-btn.active {
+            background: #007aff;
+            color: white;
+        }
+
+        .tab-control-btn:not(.active) {
+            background: #e9ecef;
+            color: #6c757d;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            min-height: 200px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #007aff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0051d5;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        /* === 오른쪽 결과 영역 === */
+        .result-wrapper {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 50px;
+            background: #2a2a2a;
+        }
+
+        .mobile-frame {
+            width: 100%;
+            max-width: 414px;
+            background-color: #0f0f0f;
+            position: relative;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+            min-height: 800px;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        /* === 헤더 === */
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background-color: #0f0f0f;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .back-btn, .icon-btn {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            fill: #fff;
+        }
+
+        .logo svg {
+            width: 80px;
+            height: 18px;
+            fill: #ff0000;
+        }
+
+        /* === 메인 콘텐츠 === */
+        .main-content {
+            margin-top: 56px;
+            padding-bottom: 80px;
+            min-height: calc(800px - 56px - 60px);
+        }
+
+        /* === 채널 페이지 === */
+        .channel-view {
+            display: block;
+        }
+
+        .channel-view.hidden {
+            display: none;
+        }
+
+        .channel-banner {
+            width: 100%;
+            height: 120px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            color: white;
+        }
+
+        .channel-info {
+            padding: 16px;
+        }
+
+        .channel-main-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .channel-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .channel-details {
+            flex: 1;
+        }
+
+        .channel-name {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: #fff;
+        }
+
+        .channel-handle {
+            color: #aaa;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .channel-stats {
+            color: #aaa;
+            font-size: 13px;
+        }
+
+        .channel-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        /* 가로로 긴 흰색 구독 버튼 */
+        .subscribe-btn {
+            background-color: #f1f1f1;
+            color: #0f0f0f;
+            border: none;
+            padding: 12px 40px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            /* [수정] 너비 180px로 설정 */
+            width: 180px; 
+            text-align: center;
+        }
+
+        .subscribe-btn:hover {
+            background-color: #e0e0e0;
+        }
+
+        .channel-nav {
+            padding: 0 16px;
+            border-bottom: 1px solid #2a2a2a;
+            display: flex;
+            overflow-x: auto;
+            gap: 24px;
+        }
+
+        .nav-item {
+            padding: 16px 0;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            color: #aaa;
+            font-weight: 500;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .nav-item.active {
+            color: #fff;
+            border-bottom-color: #fff;
+        }
+
+        .video-section {
+            padding: 16px;
+        }
+
+        .video-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .video-card {
+            display: flex;
+            gap: 12px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        .thumbnail {
+            position: relative;
+            width: 120px;
+            height: 68px;
+            background: linear-gradient(45deg, #333, #555);
+            border-radius: 6px;
+            overflow: hidden;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: white;
+        }
+
+        .duration {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .video-info {
+            flex: 1;
+        }
+
+        .video-title {
+            font-weight: 500;
+            font-size: 14px;
+            line-height: 1.3;
+            margin-bottom: 4px;
+            color: #fff;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .video-meta {
+            color: #aaa;
+            font-size: 12px;
+        }
+
+        /* === 댓글 페이지 === */
+        .comment-view {
+            display: none;
+        }
+
+        .comment-view.active {
+            display: block;
+        }
+
+        .video-player {
+            width: 100%;
+            height: 230px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: white;
+        }
+
+        /* 썸네일 설명 (비디오 플레이어 안에) */
+        .thumbnail-description {
+            color: white;
+            padding: 20px 12px;
+            font-size: 14px;
+            line-height: 1.4;
+            text-align: center;
+            font-weight: 500;
+            max-width: 90%;
+            /* [수정] 그림자 제거 */
+            text-shadow: none; 
+        }
+
+        .video-info-section {
+            padding: 16px;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .video-title-full {
+            font-size: 16px;
+            font-weight: 500;
+            line-height: 1.4;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .video-meta-full {
+            color: #aaa;
+            font-size: 13px;
+        }
+
+        .comments-section {
+            padding: 16px;
+        }
+
+        .comments-header {
+            margin-bottom: 16px;
+        }
+
+        .comments-count {
+            font-weight: 500;
+            font-size: 14px;
+            color: #fff;
+        }
+
+        .comment {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .comment-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .comment-content {
+            flex: 1;
+        }
+
+        .comment-author {
+            font-weight: 500;
+            font-size: 13px;
+            margin-bottom: 4px;
+            color: #fff;
+        }
+
+        .comment-text {
+            font-size: 14px;
+            line-height: 1.4;
+            color: #ccc;
+        }
+
+        /* 답글 스타일 */
+        .reply-comment {
+            margin-left: 44px;
+            border-left: 2px solid #303030;
+            padding-left: 12px;
+            margin-top: 8px;
+            margin-bottom: 16px;
+        }
+
+        .reply-comment .comment {
+            margin-bottom: 0;
+        }
+
+        .reply-comment .comment-avatar {
+            width: 28px;
+            height: 28px;
+        }
+
+        .reply-comment .comment-author {
+            font-size: 12px;
+        }
+
+        .reply-comment .comment-text {
+            font-size: 13px;
+        }
+
+        /* === 하단 네비게이션 === */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background-color: #0f0f0f;
+            border-top: 1px solid #2a2a2a;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .nav-bottom-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            padding: 8px;
+            color: #aaa;
+        }
+
+        .nav-bottom-item svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .nav-bottom-item span {
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        /* === 팝업 === */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 700px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .popup h3 {
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .popup textarea {
+            width: 100%;
+            height: 400px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            resize: vertical;
+        }
+
+        .popup-buttons {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        /* 반응형 */
+        @media (max-width: 1200px) {
+            body {
+                flex-direction: column;
+            }
+            .controls {
+                max-width: none;
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 왼쪽 컨트롤 패널 -->
+    <div class="controls">
+        <h2><i class="fab fa-youtube" style="color: #ff0000;"></i> YouTube 생성기</h2>
+        
+        <div class="control-group">
+            <label><i class="fas fa-eye"></i> 화면 선택</label>
+            <div style="display: flex; gap: 8px;">
+                <button class="tab-control-btn active" onclick="switchTab('channel')" id="channelTabBtn">
+                    <i class="fas fa-tv"></i> 채널
+                </button>
+                <button class="tab-control-btn" onclick="switchTab('comment')" id="commentTabBtn">
+                    <i class="fas fa-comments"></i> 댓글
+                </button>
+            </div>
+        </div>
+        
+        <div class="control-group">
+            <label>
+                <i class="fas fa-terminal"></i> 명령어 붙여넣기 
+                <i class="fas fa-question-circle" onclick="openHelp()" style="cursor: pointer; color: #007aff; margin-left: 5px;"></i>
+            </label>
+            <textarea class="input-field" id="commandInput" 
+                placeholder="AI 캐릭터가 생성한 YouTube 명령어를 여기에 붙여넣으세요..."
+                oninput="autoParseCommand()"></textarea>
+        </div>
+        
+        <div class="button-group">
+            <!-- [수정] 적용하기 버튼 삭제 -->
+            <button class="btn btn-secondary" onclick="takeScreenshot()">
+                <i class="fas fa-camera"></i> 스크린샷
+            </button>
+            <button class="btn btn-danger" onclick="clearAll()">
+                <i class="fas fa-trash"></i> 초기화
+            </button>
+        </div>
+    </div>
+
+    <!-- 오른쪽 결과 영역 -->
+    <div class="result-wrapper">
+        <div class="mobile-frame">
+            <!-- 헤더 -->
+            <header class="header">
+                <div class="header-left">
+                    <svg class="back-btn" viewBox="0 0 24 24">
+                        <path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"/>
+                    </svg>
+                    <div class="logo">
+                        <svg viewBox="0 0 90 20">
+                            <path d="M27.9727 3.12324C27.6435 1.89323 26.6768 0.926623 25.4468 0.597366C23.2197 2.24288e-07 14.285 0 14.285 0C14.285 0 5.35042 2.24288e-07 3.12323 0.597366C1.89323 0.926623 0.926623 1.89323 0.597366 3.12324C2.24288e-07 5.35042 0 10 0 10C0 10 2.24288e-07 14.6496 0.597366 16.8768C0.926623 18.1068 1.89323 19.0734 3.12323 19.4026C5.35042 20 14.285 20 14.285 20C14.285 20 23.2197 20 25.4468 19.4026C26.6768 19.0734 27.6435 18.1068 27.9727 16.8768C28.5701 14.6496 28.5701 10 28.5701 10C28.5701 10 28.5701 5.35042 27.9727 3.12324Z" fill="#FF0000"/>
+                            <path d="M11.4253 14.2854L18.8477 10.0004L11.4253 5.71533V14.2854Z" fill="white"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <svg class="icon-btn" viewBox="0 0 24 24">
+                        <path d="M20.87,20.17l-5.59-5.59C16.35,13.35,17,11.75,17,10c0-3.87-3.13-7-7-7s-7,3.13-7,7s3.13,7,7,7c1.75,0,3.35-0.65,4.58-1.71 l5.59,5.59L20.87,20.17z M10,16c-3.31,0-6-2.69-6-6s2.69-6,6-6s6,2.69,6,6S13.31,16,10,16z"/>
+                    </svg>
+                    <svg class="icon-btn" viewBox="0 0 24 24">
+                        <path d="M12,16A2,2 0 0,1 14,18A2,2 0 0,1 12,20A2,2 0 0,1 10,18A2,2 0 0,1 12,16M12,10A2,2 0 0,1 14,12A2,2 0 0,1 12,14A2,2 0 0,1 10,12A2,2 0 0,1 12,10M12,4A2,2 0 0,1 14,6A2,2 0 0,1 12,8A2,2 0 0,1 10,6A2,2 0 0,1 12,4Z"/>
+                    </svg>
+                </div>
+            </header>
+
+            <!-- 메인 콘텐츠 -->
+            <main class="main-content">
+                <div class="channel-view" id="channelView">
+                    <div class="channel-banner" id="channelBanner">🎯✨</div>
+                    <div class="channel-info">
+                        <div class="channel-main-info">
+                            <div class="channel-avatar" id="channelAvatar">🎯</div>
+                            <div class="channel-details">
+                                <h1 class="channel-name" id="channelName">테크 마스터</h1>
+                                <div class="channel-handle" id="channelHandle">@techmaster</div>
+                                <div class="channel-stats" id="channelStats">구독자 125만명 • 동영상 347개</div>
+                            </div>
+                        </div>
+                        <div class="channel-actions">
+                            <button class="subscribe-btn">구독</button>
+                        </div>
+                    </div>
+                    <nav class="channel-nav">
+                        <div class="nav-item active">동영상</div>
+                        <div class="nav-item">Shorts</div>
+                        <div class="nav-item">라이브</div>
+                    </nav>
+                    <div class="video-section">
+                        <div class="video-list" id="videoList"></div>
+                    </div>
+                </div>
+
+                <div class="comment-view" id="commentView">
+                    <div class="video-player" id="videoPlayer">🎬</div>
+                    <div class="video-info-section">
+                        <h1 class="video-title-full" id="videoTitleFull">React와 Next.js로 만드는 모던 웹 애플리케이션</h1>
+                        <div class="video-meta-full" id="videoMetaFull">조회수 45만회 • 2일 전</div>
+                    </div>
+                    <div class="comments-section">
+                        <div class="comments-header">
+                            <div class="comments-count" id="commentsCount">댓글 5개</div>
+                        </div>
+                        <div class="comments-list" id="commentsList"></div>
+                    </div>
+                </div>
+            </main>
+
+            <!-- 하단 네비게이션 -->
+            <nav class="bottom-nav">
+                <div class="nav-bottom-item">
+                    <svg viewBox="0 0 24 24"><path d="M4,10V21h6V15h4v6h6V10L12,3Z"/></svg><span>홈</span>
+                </div>
+                <div class="nav-bottom-item">
+                    <svg viewBox="0 0 24 24"><path d="M10,15L15.19,12L10,9V15M21.56,7.17C21.69,7.64 21.78,8.27 21.84,9.07C21.91,9.87 21.94,10.56 21.94,11.16L22,12C22,12 22,13.82 21.84,15.93C21.78,16.73 21.69,17.36 21.56,17.83C21.33,18.64 20.76,19.21 19.95,19.44C19.48,19.57 18.85,19.66 18.05,19.72C17.25,19.79 16.56,19.82 15.96,19.82L12,20C12,20 10.18,20 8.07,19.84C7.27,19.78 6.64,19.69 6.17,19.56C5.36,19.33 4.79,18.76 4.56,17.95C4.43,17.48 4.34,16.85 4.28,16.05C4.21,15.25 4.18,14.56 4.18,13.96L4,12C4,12 4,10.18 4.16,8.07C4.22,7.27 4.31,6.64 4.44,6.17C4.67,5.36 5.24,4.79 6.05,4.56C6.52,4.43 7.15,4.34 7.95,4.28C8.75,4.21 9.44,4.18 10.04,4.18L14,4C14,4 15.82,4 17.93,4.16C18.73,4.22 19.36,4.31 19.83,4.44C20.64,4.67 21.21,5.24 21.44,6.05C21.57,6.52 21.66,7.15 21.72,7.95C21.79,8.75 21.82,9.44 21.82,10.04L21.56,7.17Z"/></svg><span>Shorts</span>
+                </div>
+                <div class="nav-bottom-item">
+                    <div style="width: 28px; height: 28px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center;">
+                        <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: #000;"><path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/></svg>
+                    </div>
+                </div>
+                <div class="nav-bottom-item">
+                    <svg viewBox="0 0 24 24"><path d="M10,18V6L15,12L10,18Z"/><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/></svg><span>구독</span>
+                </div>
+                <div class="nav-bottom-item">
+                    <div style="width: 20px; height: 20px; border-radius: 50%; background: linear-gradient(45deg, #ff6b6b, #4ecdc4);"></div><span>You</span>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <!-- 명령어 도움말 팝업 -->
+    <div class="popup-overlay" id="popupOverlay">
+        <div class="popup">
+            <h3><i class="fas fa-info-circle"></i> 명령어 가이드</h3>
+            <!-- [수정] 명령어 가이드 텍스트 교체 -->
+            <textarea readonly>[ooc모드] - 롤플레이를 잠시 중지, 선출력 후 롤플레이를 이어간다.
+- 너와 내가 '커플 유튜브'를 하게 된다면, 어떤 컨셉이며 어떤 댓글이 달릴지 예상하여 캐릭터가 아닌 시스템이 출력하라.
+- 댓글은 좋은 말부터 나쁜 말까지 다양하다. (주변인 포함)
+- 반드시 하단 양식에 맞춰서 답변한다.
+
+```양식 (대괄호 포함)
+[{프로필 이모지}]
+[{헥사코드1}/{헥사코드2}]
+[{채널명}]
+[{채널핸들}] 
+[{구독자}/{영상개수}]
+[{이모지}/{영상제목}/{재생시간}/{조회수}/{업로드날}] 양식 반복 4개 (내림차순)
+[{선택된동영상}/{썸네일 설명}]
+[{조회수}/{날짜}]
+[{닉네임}/{댓글}] 달린 수만큼. 양식 반복 최소 5개 (양식 변형 절대 금지)
+ㄴ[{닉네임}/{댓글}] (답글)
+```</textarea>
+            <div class="popup-buttons">
+                <button class="btn btn-primary" onclick="copyTemplate()">
+                    <i class="fas fa-copy"></i> 복사
+                </button>
+                <button class="btn btn-secondary" onclick="closeHelp()">
+                    <i class="fas fa-times"></i> 닫기
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        let currentTab = 'channel';
+        let colorPalette = [];
+
+        function switchTab(tab) {
+            currentTab = tab;
+            const channelBtn = document.getElementById('channelTabBtn');
+            const commentBtn = document.getElementById('commentTabBtn');
+            const channelView = document.getElementById('channelView');
+            const commentView = document.getElementById('commentView');
+            
+            if (tab === 'channel') {
+                channelBtn.classList.add('active');
+                commentBtn.classList.remove('active');
+                channelView.style.display = 'block';
+                commentView.style.display = 'none';
+                showToast('📺 채널으로 전환');
+            } else {
+                commentBtn.classList.add('active');
+                channelBtn.classList.remove('active');
+                channelView.style.display = 'none';
+                commentView.style.display = 'block';
+                showToast('💬 댓글로 전환');
+            }
+        }
+
+        function autoParseCommand() {
+            clearTimeout(window.parseTimeout);
+            window.parseTimeout = setTimeout(() => parseCommand(), 500);
+        }
+
+        // [수정] 불필요한 텍스트 제거 헬퍼 함수
+        function cleanContent(text) {
+            if (typeof text !== 'string') return '';
+            return text
+                .replace(/^(구독자|동영상|영상|선택된 동영상|썸네일 설명)\s*[:\s]?\s*/, '')
+                .trim();
+        }
+
+        // [수정] 파싱 로직 전체 개선
+        function parseCommand() {
+            const command = document.getElementById('commandInput').value;
+            if (!command.trim()) return;
+            
+            try {
+                const data = { videos: [], commentItems: [] };
+                const lines = command.split('\n').map(l => l.trim()).filter(Boolean);
+                let commentSectionStarted = false;
+
+                for (const line of lines) {
+                    if (line.startsWith('[ooc') || line.startsWith('-') || line.startsWith('양식') || line.startsWith('`')) continue;
+
+                    if (commentSectionStarted) {
+                        const replyMatch = line.match(/^ㄴ\[(.*?)\/(.*)\]$/);
+                        const commentMatch = line.match(/^\[(.*?)\/(.*)\]$/);
+                        if (replyMatch) {
+                            data.commentItems.push({ type: 'reply', author: replyMatch[1], text: replyMatch[2] });
+                        } else if (commentMatch) {
+                            data.commentItems.push({ type: 'comment', author: commentMatch[1], text: commentMatch[2] });
+                        }
+                        continue;
+                    }
+
+                    if (!line.startsWith('[') || !line.endsWith(']')) continue;
+                    
+                    const rawContent = line.substring(1, line.length - 1);
+                    const parts = rawContent.split('/');
+                    
+                    if (!data.profileEmoji && parts.length === 1 && /[\p{Emoji}\u{1F000}-\u{1F9FF}]/u.test(rawContent)) data.profileEmoji = rawContent;
+                    else if (!data.hexCode1 && parts.length === 2 && parts[0].startsWith('#') && parts[1].startsWith('#')) [data.hexCode1, data.hexCode2] = parts;
+                    else if (!data.channelName && parts.length === 1 && !rawContent.startsWith('@')) data.channelName = rawContent;
+                    else if (!data.handle && rawContent.startsWith('@')) data.handle = rawContent;
+                    else if (!data.subscribers && parts.length === 2) {
+                        data.subscribers = cleanContent(parts[0]);
+                        data.videoCount = cleanContent(parts[1]);
+                    }
+                    else if (data.videos.length < 4 && parts.length === 5) data.videos.push({ emoji: parts[0], title: parts[1], duration: parts[2], views: parts[3], date: parts[4] });
+                    else if (!data.selectedVideo && parts.length === 2) {
+                        data.selectedVideo = cleanContent(parts[0]);
+                        data.thumbnailDesc = cleanContent(parts[1]);
+                    }
+                    else if (!data.selectedViews && parts.length === 2 && (parts[0].includes('회') || parts[1].includes('전'))) {
+                        [data.selectedViews, data.selectedDate] = parts;
+                        commentSectionStarted = true;
+                    }
+                }
+                
+                applyToUI(data);
+            } catch (error) {
+                console.error('파싱 오류:', error);
+                showToast('⚠️ 명령어 파싱 중 오류 발생');
+            }
+        }
+
+        function applyToUI(data) {
+            try {
+                if (data.profileEmoji) {
+                    document.getElementById('channelAvatar').textContent = [...data.profileEmoji][0];
+                    document.getElementById('channelBanner').textContent = data.profileEmoji;
+                    document.getElementById('videoPlayer').innerHTML = '';
+                }
+                
+                if (data.hexCode1 && data.hexCode2) {
+                    const gradient = `linear-gradient(135deg, ${data.hexCode1} 0%, ${data.hexCode2} 100%)`;
+                    ['channelBanner', 'videoPlayer', 'channelAvatar'].forEach(id => document.getElementById(id).style.background = gradient);
+                    colorPalette = generateSimilarColors(data.hexCode1, 10);
+                }
+                
+                if (data.channelName) document.getElementById('channelName').textContent = data.channelName;
+                if (data.handle) document.getElementById('channelHandle').textContent = data.handle;
+                if (data.subscribers && data.videoCount) document.getElementById('channelStats').textContent = `구독자 ${data.subscribers} • 영상 ${data.videoCount}`;
+                
+                if (data.videos.length > 0) {
+                    const videoList = document.getElementById('videoList');
+                    videoList.innerHTML = '';
+                    data.videos.forEach(video => {
+                        const randomColor = colorPalette.length > 0 ? colorPalette[Math.floor(Math.random() * colorPalette.length)] : '#555';
+                        const card = document.createElement('div');
+                        card.className = 'video-card';
+                        card.innerHTML = `
+                            <div class="thumbnail" style="background: ${randomColor};">
+                                ${video.emoji}
+                                <div class="duration">${video.duration}</div>
+                            </div>
+                            <div class="video-info">
+                                <div class="video-title">${video.title}</div>
+                                <div class="video-meta">조회수 ${video.views} • ${video.date}</div>
+                            </div>`;
+                        videoList.appendChild(card);
+                    });
+                }
+                
+                if (data.selectedVideo) document.getElementById('videoTitleFull').textContent = data.selectedVideo;
+                if (data.selectedViews && data.selectedDate) document.getElementById('videoMetaFull').textContent = `조회수 ${data.selectedViews} • ${data.selectedDate}`;
+                
+                if (data.thumbnailDesc) {
+                    const player = document.getElementById('videoPlayer');
+                    player.innerHTML = `<div class="thumbnail-description">${data.thumbnailDesc}</div>`;
+                    if (data.hexCode1) {
+                         document.querySelector('.thumbnail-description').style.color = isColorLight(data.hexCode1) ? '#000' : '#fff';
+                    }
+                }
+                
+                if (data.commentItems && data.commentItems.length > 0) {
+                    const commentsList = document.getElementById('commentsList');
+                    commentsList.innerHTML = '';
+                    document.getElementById('commentsCount').textContent = `댓글 ${data.commentItems.length}개`;
+                    const colors = ['#ff9a9e', '#fecfef', '#a8edea', '#fed6e3', '#ffecd2', '#fcb69f', '#667eea', '#764ba2', '#ff6b6b', '#4ecdc4'];
+                    data.commentItems.forEach((item, index) => {
+                        const itemDiv = document.createElement('div');
+                        if (item.type === 'comment') {
+                            itemDiv.className = 'comment';
+                            itemDiv.innerHTML = `<div class="comment-avatar" style="background: ${colors[index % colors.length]};"></div><div class="comment-content"><div class="comment-author">${item.author}</div><div class="comment-text">${item.text}</div></div>`;
+                        } else if (item.type === 'reply') {
+                            itemDiv.className = 'reply-comment';
+                            itemDiv.innerHTML = `<div class="comment"><div class="comment-avatar" style="background: ${colors[(index + 5) % colors.length]};"></div><div class="comment-content"><div class="comment-author">${item.author}</div><div class="comment-text">${item.text}</div></div></div>`;
+                        }
+                        commentsList.appendChild(itemDiv);
+                    });
+                }
+            } catch (error) {
+                console.error('UI 적용 오류:', error);
+                showToast('⚠️ UI 적용 중 오류 발생');
+            }
+        }
+
+        async function takeScreenshot() {
+            try {
+                showToast('📸 스크린샷 준비 중...');
+                const element = document.querySelector('.mobile-frame');
+                const padding = 50;
+                
+                const originalCanvas = await html2canvas(element, { scale: 2, backgroundColor: null });
+                const paddedCanvas = document.createElement('canvas');
+                const ctx = paddedCanvas.getContext('2d');
+
+                paddedCanvas.width = originalCanvas.width + padding * 2 * 2;
+                paddedCanvas.height = originalCanvas.height + padding * 2 * 2;
+                
+                ctx.fillStyle = '#2a2a2a';
+                ctx.fillRect(0, 0, paddedCanvas.width, paddedCanvas.height);
+                
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+                ctx.shadowBlur = 30 * 2;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 10 * 2;
+                
+                ctx.drawImage(originalCanvas, padding * 2, padding * 2);
+                
+                const link = document.createElement('a');
+                const now = new Date();
+                const timestamp = `${now.getFullYear()}${(now.getMonth() + 1).toString().padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}_${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}`;
+                
+                const tabName = currentTab === 'channel' ? '채널' : '댓글';
+                link.download = `YouTube_${tabName}_${timestamp}.png`;
+                link.href = paddedCanvas.toDataURL('image/png');
+                link.click();
+                link.remove();
+                
+                showToast('✅ 스크린샷 저장 완료!');
+            } catch (error) {
+                console.error('스크린샷 오류:', error);
+                showToast('❌ 스크린샷 실패');
+            }
+        }
+
+        function clearAll() {
+            document.getElementById('commandInput').value = '';
+            document.getElementById('channelAvatar').textContent = '🎯';
+            document.getElementById('channelBanner').textContent = '🎯';
+            document.getElementById('videoPlayer').innerHTML = '🎬';
+            document.getElementById('channelName').textContent = '테크 마스터';
+            document.getElementById('channelHandle').textContent = '@techmaster';
+            document.getElementById('channelStats').textContent = '구독자 125만명 • 동영상 347개';
+            document.getElementById('videoTitleFull').textContent = 'React와 Next.js로 만드는 모던 웹 애플리케이션';
+            document.getElementById('videoMetaFull').textContent = '조회수 45만회 • 2일 전';
+            document.getElementById('commentsCount').textContent = '댓글 5개';
+            const defaultGradient = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            ['channelBanner', 'videoPlayer', 'channelAvatar'].forEach(id => document.getElementById(id).style.background = defaultGradient);
+            document.getElementById('videoList').innerHTML = `<div class="video-card"><div class="thumbnail">🎬<div class="duration">15:24</div></div><div class="video-info"><div class="video-title">React 완전정복</div><div class="video-meta">조회수 45만회 • 2일 전</div></div></div>`;
+            document.getElementById('commentsList').innerHTML = `<div class="comment"><div class="comment-avatar" style="background: linear-gradient(45deg, #ff9a9e, #fecfef);"></div><div class="comment-content"><div class="comment-author">개발자김민수</div><div class="comment-text">정말 유용한 강의네요!</div></div></div>`;
+            showToast('🗑️ 초기화 완료');
+        }
+
+        function openHelp() { document.getElementById('popupOverlay').style.display = 'flex'; }
+        function closeHelp() { document.getElementById('popupOverlay').style.display = 'none'; }
+        function copyTemplate() {
+            navigator.clipboard.writeText(document.querySelector('.popup textarea').value)
+                .then(() => { showToast('📋 템플릿 복사 완료!'); closeHelp(); })
+                .catch(() => showToast('❌ 복사 실패'));
+        }
+
+        function showToast(message) {
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) existingToast.remove();
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            toast.style.cssText = `position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background-color: rgba(0, 0, 0, 0.8); color: white; padding: 12px 24px; border-radius: 25px; font-size: 14px; z-index: 3000; opacity: 0; transition: opacity 0.3s; backdrop-filter: blur(10px);`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.style.opacity = '1', 10);
+            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
+        }
+        
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)] : null;
+        }
+
+        function isColorLight(hex) {
+            const rgb = hexToRgb(hex);
+            if (!rgb) return false;
+            return (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255 > 0.6;
+        }
+
+        function generateSimilarColors(hex, count) {
+            const rgb = hexToRgb(hex);
+            if (!rgb) return [];
+            const [r, g, b] = rgb;
+            const colors = [];
+            for (let i = 0; i < count; i++) {
+                let rRand = Math.max(0, Math.min(255, r + Math.floor(Math.random() * 80) - 40));
+                let gRand = Math.max(0, Math.min(255, g + Math.floor(Math.random() * 80) - 40));
+                let bRand = Math.max(0, Math.min(255, b + Math.floor(Math.random() * 80) - 40));
+                colors.push(`rgb(${rRand}, ${gRand}, ${bRand})`);
+            }
+            return colors;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('popupOverlay').addEventListener('click', function(e) { if (e.target === this) closeHelp(); });
+            clearAll();
+            showToast('🎬 YouTube 생성기 준비 완료!');
+        });
+    </script>
+</body>
+</html>
