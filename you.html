@@ -2,6 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <!-- [수정] 표준 반응형 뷰포트로 복구 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YouTube 생성기</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -17,6 +18,7 @@
             background: #f0f0f0;
             min-height: 100vh;
             display: flex;
+            /* [수정] 최소 너비 제거하여 반응형이 동작하도록 함 */
         }
 
         /* === 왼쪽 컨트롤 패널 === */
@@ -569,7 +571,7 @@
             justify-content: flex-end;
         }
 
-        /* 반응형 */
+        /* [수정] 반응형 코드 추가 */
         @media (max-width: 1200px) {
             body {
                 flex-direction: column;
@@ -578,7 +580,11 @@
                 max-width: none;
                 min-width: auto;
             }
+            .result-wrapper {
+                padding: 25px;
+            }
         }
+
     </style>
 </head>
 <body>
@@ -773,7 +779,6 @@
             window.parseTimeout = setTimeout(() => parseCommand(), 500);
         }
 
-        // [수정] 조회수 단어까지 제거하도록 헬퍼 함수 강화
         function cleanContent(text) {
             if (typeof text !== 'string') return '';
             return text
@@ -781,7 +786,6 @@
                 .trim();
         }
 
-        // 파싱 로직
         function parseCommand() {
             const command = document.getElementById('commandInput').value;
             if (!command.trim()) return;
