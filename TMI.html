@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>캐릭터 프로필 생성기</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #3b82f6;
+            --primary-color-dark: #2563eb;
+            --primary-light: #dbeafe;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --bg-white: #ffffff;
+            --bg-gray-50: #f9fafb;
+            --bg-gray-100: #f3f4f6;
+            --border-gray: #e5e7eb;
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--primary-color); color: var(--text-primary); line-height: 1.6; padding: 20px; transition: background-color 0.3s ease; }
+        .generator-container { max-width: 600px; margin: 40px auto; background: var(--bg-white); border-radius: 16px; box-shadow: var(--shadow-lg); overflow: hidden; }
+        .progress-nav { display: flex; justify-content: center; padding: 20px; background: var(--bg-gray-50); border-bottom: 1px solid var(--border-gray); gap: 10px; flex-wrap: wrap; }
+        .nav-step { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; cursor: pointer; border: 2px solid var(--border-gray); background: var(--bg-white); color: var(--text-secondary); }
+        .nav-step.completed, .nav-step.current { background: var(--primary-color); border-color: var(--primary-color); color: white; }
+        .progress-bar { width: 100%; height: 4px; background: var(--bg-gray-100); margin-bottom: 20px; }
+        .progress-fill { height: 100%; background: var(--primary-color); transition: width 0.3s ease; }
+        .step-container { padding: 40px; min-height: 400px; }
+        .step-title { font-size: 24px; font-weight: bold; color: var(--text-primary); margin-bottom: 10px; text-align: center; }
+        .step-description { font-size: 14px; color: var(--text-secondary); text-align: center; margin-bottom: 30px; }
+        .form-group { margin-bottom: 25px; }
+        .form-label { display: block; font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; }
+        .form-input { width: 100%; padding: 12px; border: 1px solid var(--border-gray); border-radius: 8px; font-size: 14px; background: var(--bg-white); }
+        .color-input-wrapper { display: flex; align-items: center; gap: 10px; }
+        .color-input { -webkit-appearance: none; -moz-appearance: none; appearance: none; width: 50px; height: 50px; background-color: transparent; border: none; cursor: pointer; }
+        .color-input::-webkit-color-swatch, .color-input::-moz-color-swatch { border-radius: 8px; border: 1px solid var(--border-gray); }
+        .color-hex-value { font-family: 'Courier New', Courier, monospace; font-size: 16px; padding: 8px 12px; border: 1px solid var(--border-gray); border-radius: 8px; }
+        .image-upload { border: 2px dashed var(--border-gray); border-radius: 8px; padding: 40px 20px; text-align: center; cursor: pointer; background: var(--bg-gray-50); }
+        .image-upload:hover { border-color: var(--primary-color); background: var(--primary-light); }
+        .image-preview { width: 150px; height: 150px; object-fit: cover; border-radius: 8px; margin: 10px auto; display: block; }
+        .form-textarea { width: 100%; padding: 12px; border: 1px solid var(--border-gray); border-radius: 8px; font-size: 14px; background: var(--bg-white); resize: vertical; min-height: 80px; }
+        .ranking-container { display: flex; flex-direction: column; gap: 20px; }
+        .ranking-category { background: var(--bg-gray-50); padding: 15px; border-radius: 8px; }
+        .ranking-title { font-size: 14px; font-weight: 600; margin-bottom: 10px; text-align: center; }
+        .available-items { display: flex; flex-wrap: wrap; gap: 8px; }
+        .available-item { padding: 6px 12px; background: var(--primary-light); border: 1px solid var(--primary-color); border-radius: 4px; font-size: 12px; cursor: pointer; color: var(--primary-color); }
+        .available-item:hover, .available-item.selected { background: var(--primary-color); color: white; }
+        .navigation-buttons { display: flex; justify-content: space-between; padding: 20px 40px; border-top: 1px solid var(--border-gray); }
+        .btn { padding: 12px 24px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .btn-secondary { background: var(--bg-gray-100); color: var(--text-secondary); }
+        .btn-secondary:hover { background: var(--bg-gray-100); }
+        .btn-primary { background: var(--primary-color); color: white; }
+        .btn-primary:hover { background: var(--primary-color-dark); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .profile-result { display: none; text-align: center; padding: 20px; }
+        #profileContainerWrapper { overflow-x: auto; }
+        .profile-container { width: 800px; margin: 40px auto; background: var(--bg-white); border-radius: 16px; box-shadow: var(--shadow-lg); overflow: hidden; }
+        .download-btn { padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; margin: 5px; transition: all 0.2s ease; }
+        
+        .btn-primary-outline { background-color: var(--bg-white); color: var(--primary-color); border: 1px solid var(--primary-color); }
+        .btn-primary-outline:hover { background-color: var(--primary-color-dark); border-color: var(--primary-color-dark); color: white; }
+        .btn-secondary-action { background: var(--text-secondary); color: white; border: none; }
+        .btn-secondary-action:hover { background: #52525b; }
+
+        .profile-header { display: grid; grid-template-columns: 200px 1fr; gap: 30px; padding: 30px; border-bottom: 1px solid var(--border-gray); }
+        .profile-image-section { display: flex; flex-direction: column; align-items: center; }
+        .profile-image { width: 160px; height: 160px; border-radius: 12px; background: var(--bg-gray-100); display: flex; align-items: center; justify-content: center; font-size: 48px; color: var(--text-secondary); margin-bottom: 15px; position: relative; overflow: hidden; }
+        .image-bg-div { width: 100%; height: 100%; background-size: cover; background-position: center; }
+        .character-name { font-size: 18px; font-weight: 700; text-align: center; padding: 8px 16px; background: var(--primary-light); border-radius: 20px; margin-top: 10px; }
+        .basic-info { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+        .info-group { background: var(--bg-gray-50); padding: 20px; border-radius: 12px; }
+        .info-group h3 { font-size: 14px; font-weight: 600; color: var(--primary-color); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 15px; text-align: left; }
+        .info-item { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; text-align: left; }
+        .info-label { color: var(--text-secondary); font-weight: 500; }
+        .info-value { color: var(--text-primary); font-weight: 600; word-break: break-all; text-align: right; }
+        .profile-content-top { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; border-bottom: 1px solid var(--border-gray); }
+        .content-section { padding: 30px; border-right: 1px solid var(--border-gray); }
+        .content-section:last-child { border-right: none; }
+        .preferences-section { padding: 30px; border-bottom: 1px solid var(--border-gray); }
+        .profile-content-middle { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-bottom: 1px solid var(--border-gray); }
+        .backstory-section { padding: 30px; border-bottom: 1px solid var(--border-gray); }
+        .profile-bottom { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; }
+        .bottom-section { padding: 30px; border-right: 1px solid var(--border-gray); }
+        .bottom-section:last-child { border-right: none; }
+        .section-title { font-size: 16px; font-weight: 700; color: var(--primary-color); margin-bottom: 20px; text-align: center; position: relative; padding-bottom: 10px; }
+        .section-title::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 40px; height: 2px; background: var(--primary-color); border-radius: 1px; }
+        .content-item, .tmi-item { text-align: left; }
+        .content-item { margin-bottom: 15px; padding-bottom: 12px; border-bottom: 1px solid var(--border-gray); }
+        .content-item:last-child { border-bottom: none; margin-bottom: 0; }
+        .item-label { font-size: 12px; color: var(--text-secondary); font-weight: 800; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 5px; }
+        .item-value { font-size: 14px; color: var(--text-primary); font-weight: 300; line-height: 1.4; text-align: left; }
+        .tmi-item { background: var(--bg-gray-50); padding: 12px; border-radius: 8px; margin-bottom: 10px; }
+        .tmi-item:last-child { margin-bottom: 0; }
+        .backstory-text { font-size: 14px; line-height: 1.8; color: var(--text-primary); text-align: left; padding: 20px; background: var(--bg-gray-50); border-radius: 8px; }
+        .preferences-container { display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; }
+        .preference-category { background: var(--bg-gray-50); padding: 15px; border-radius: 8px; }
+        .preference-title { font-size: 12px; font-weight: 600; color: var(--text-primary); margin-bottom: 12px; text-align: center; }
+        .preference-list { display: flex; flex-direction: column; gap: 6px; }
+        .preference-item { padding: 6px 8px; background: white; border-radius: 4px; font-size: 11px; font-weight: 500; display: flex; align-items: center; gap: 6px; }
+        .preference-item::before { content: attr(data-rank); width: 14px; height: 14px; background: var(--text-secondary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: bold; flex-shrink: 0; }
+        .preference-list .preference-item:first-child { background-color: var(--primary-color); color: white; }
+        .preference-list .preference-item:first-child::before { background-color: white; color: var(--primary-color); }
+        .music-player, .mood-board { background: linear-gradient(135deg, var(--bg-gray-100) 0%, var(--bg-gray-50) 100%); border-radius: 12px; padding: 15px; border: 1px solid var(--border-gray); height: 200px; }
+        .music-player { text-align: center; display: flex; flex-direction: column; justify-content: center; }
+        .album-cover { width: 80px; height: 80px; background: var(--bg-gray-100); border-radius: 8px; margin: 0 auto 15px; border: 1px solid var(--border-gray); overflow: hidden; }
+        .song-info { text-align: center; }
+        .song-title { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 5px; }
+        .artist-name { font-size: 12px; color: var(--text-secondary); }
+        .mood-board { display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .result-actions { margin-bottom: 30px; display: flex; justify-content: center; flex-wrap: wrap; }
+        @media (max-width: 768px) { .generator-container { margin: 10px; width: calc(100% - 20px); } .step-container, .navigation-buttons { padding: 20px; } 
+        /* 모바일 미리보기 강제 데스크탑 레이아웃 */
+        .profile-result .profile-container { width: 800px; max-width: none; }
+        .profile-result .profile-header { grid-template-columns: 200px 1fr; text-align: left; }
+        .profile-result .basic-info { grid-template-columns: 1fr 1fr 1fr; }
+        .profile-result .profile-content-top { grid-template-columns: 1fr 1fr 1fr; }
+        .profile-result .profile-content-middle { grid-template-columns: 1fr 1fr; }
+        .profile-result .profile-bottom { grid-template-columns: 1fr 1fr 1fr; }
+        .profile-result .preferences-container { grid-template-columns: repeat(6, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="generator-container" id="generator"><div class="progress-nav" id="progressNav"></div><div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div><div class="step-container" id="stepContainer"></div><div class="navigation-buttons"><button class="btn btn-secondary" id="prevBtn" onclick="prevStep()">이전</button><button class="btn btn-primary" id="nextBtn" onclick="nextStep()">다음</button></div></div>
+    <div class="profile-result" id="profileResult"><div class="result-actions"><button class="download-btn btn-primary-outline" onclick="downloadProfile('profilePart1', '상단')">상단 다운로드</button><button class="download-btn btn-primary-outline" onclick="downloadProfile('profilePart2', '하단')">하단 다운로드</button><button class="download-btn btn-secondary-action" onclick="editProfile()">수정</button><button class="download-btn btn-secondary-action" onclick="restartGenerator()">다시 만들기</button></div><div id="profileContainerWrapper"></div></div>
+
+    <script>
+        let currentStep = 0; let profileData = {};
+        const steps = [
+            { title: "기본 설정", description: "캐릭터의 기본 정보를 설정해주세요.", fields: [ { type: 'text', key: 'characterName', label: '캐릭터 이름' }, { type: 'color', key: 'primaryColor', label: '대표 컬러', defaultValue: '#3b82f6' }, { type: 'image', key: 'profileImage', label: '프로필 이미지' } ] },
+            { title: "외형 정보", description: "캐릭터의 외형적 특징을 설정해주세요.", fields: [ { type: 'text', key: 'animalMoe', label: '동물 모에화' }, { type: 'color', key: 'hairColor', label: '머리색', defaultValue: '#1f2937' }, { type: 'color', key: 'eyeColor', label: '눈색', defaultValue: '#a16207' }, { type: 'color', key: 'skinColor', label: '피부색', defaultValue: '#fff0db' }, { type: 'text', key: 'style', label: '스타일' } ] },
+            { title: "기본 정보", description: "캐릭터의 기본 정보를 입력해주세요.", fields: [ { type: 'text', key: 'age', label: '나이' }, { type: 'text', key: 'birthdate', label: '생일' }, { type: 'text', key: 'bloodType', label: '혈액형' }, { type: 'text', key: 'mbti', label: 'MBTI' }, { type: 'text', key: 'job', label: '직업' } ] },
+            { title: "신체 정보", description: "캐릭터의 신체 정보를 입력해주세요.", fields: [ { type: 'text', key: 'height', label: '키' }, { type: 'text', key: 'weight', label: '몸무게' }, { type: 'text', key: 'vision', label: '시력' }, { type: 'text', key: 'footSize', label: '발 사이즈' }, { type: 'text', key: 'chestSize', label: '가슴 사이즈' } ] },
+            { title: "좋아하는 것들", description: "캐릭터가 좋아하는 것들을 입력해주세요.", fields: [ { type: 'text', key: 'favoriteColor', label: '색깔' }, { type: 'text', key: 'favoriteSeason', label: '계절' }, { type: 'text', key: 'favoriteFood', label: '음식' }, { type: 'text', key: 'favoriteMusic', label: '음악' }, { type: 'text', key: 'favoriteHobby', label: '취미' } ] },
+            { title: "싫어하는 것들", description: "캐릭터가 싫어하는 것들을 입력해주세요.", fields: [ { type: 'text', key: 'dislikeFood', label: '음식' }, { type: 'text', key: 'dislikeSituation', label: '상황' }, { type: 'text', key: 'dislikeWeather', label: '날씨' }, { type: 'text', key: 'dislikePeople', label: '사람 타입' }, { type: 'text', key: 'dislikeEtc', label: '기타' } ] },
+            { title: "인생 Best", description: "캐릭터의 인생 베스트를 입력해주세요.", fields: [ { type: 'text', key: 'bestMovie', label: '영화' }, { type: 'text', key: 'bestFood', label: '음식' }, { type: 'text', key: 'bestBook', label: '책' }, { type: 'text', key: 'bestMoment', label: '기억에 남는 순간' }, { type: 'text', key: 'dream', label: '꿈' } ] },
+            { title: "선호도 순위", description: "각 카테고리별 선호도 순위를 정해주세요.", fields: [ { type: 'ranking', key: 'preferences', categories: [ { key: 'values', title: '가치관', items: ['사랑', '건강', '자유', '명예', '돈'] }, { key: 'residence', title: '거주 환경', items: ['바닷가', '도시', '산골', '시골', '해외'] }, { key: 'bookGenre', title: '도서 장르', items: ['로맨스', '에세이', '자기계발', '판타지', '추리'] }, { key: 'vacation', title: '휴가 스타일', items: ['여행', '친구모임', '게임', '새취미', '혼자시간'] }, { key: 'weather', title: '날씨', items: ['맑음', '흐림', '비', '눈', '바람'] }, { key: 'fashion', title: '옷 스타일', items: ['캐주얼', '페미닌', '스트릿', '빈티지', '정장'] } ] } ] },
+            { title: "과거 이야기", description: "캐릭터의 과거 이야기를 입력해주세요.", fields: [ { type: 'text', key: 'childhoodDream', label: '어린 시절 꿈' }, { type: 'text', key: 'firstLove', label: '첫사랑' }, { type: 'text', key: 'schoolStory', label: '학창시절 일화' }, { type: 'text', key: 'turningPoint', label: '인생 터닝포인트' } ] },
+            { title: "TMI", description: "캐릭터의 TMI를 입력해주세요.", fields: [ { type: 'text', key: 'habit', label: '특이한 습관' }, { type: 'text', key: 'embarrassing', label: '창피했던 경험' }, { type: 'text', key: 'secret', label: '숨기고 싶은 과거' }, { type: 'text', key: 'unknown', label: '남들이 모르는 사실' } ] },
+            { title: "백스토리", description: "캐릭터의 백스토리를 입력해주세요.", fields: [ { type: 'textarea', key: 'backstory', label: '백스토리' } ] },
+            { title: "뮤직플레이어", description: "캐릭터의 대표곡을 설정해주세요.", fields: [ { type: 'text', key: 'songTitle', label: '곡 제목' }, { type: 'text', key: 'artistName', label: '아티스트' }, { type: 'image', key: 'albumCoverImage', label: '앨범 커버' } ] },
+            { title: "무드보드", description: "캐릭터의 무드보드 이미지를 업로드해주세요.", fields: [ { type: 'image', key: 'motiveCharacter', label: 'Motive Character' }, { type: 'image', key: 'moodImages', label: 'Mood Images' } ] }
+        ];
+
+        function darkenColor(hex, percent) { let [r, g, b] = hex.match(/\w\w/g).map(x => parseInt(x, 16)); const amount = Math.floor(255 * (percent / 100)); r = Math.max(0, r - amount); g = Math.max(0, g - amount); b = Math.max(0, b - amount); return "#" + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join(''); }
+        function initializeGenerator() { profileData.primaryColor = steps[0].fields.find(f => f.key === 'primaryColor').defaultValue; steps[1].fields.forEach(field => { if (field.type === 'color') profileData[field.key] = field.defaultValue; }); updateCSSVariables(); renderProgressNav(); renderStep(); updateButtons(); }
+        function renderProgressNav() { const nav = document.getElementById('progressNav'); nav.innerHTML = ''; steps.forEach((step, index) => { const navStep = document.createElement('div'); navStep.className = 'nav-step'; if (index < currentStep) navStep.classList.add('completed'); if (index === currentStep) navStep.classList.add('current'); navStep.textContent = index + 1; navStep.onclick = () => goToStep(index); nav.appendChild(navStep); }); }
+        function renderStep() { const container = document.getElementById('stepContainer'); const step = steps[currentStep]; container.innerHTML = `<div class="step-title">${step.title}</div><div class="step-description">${step.description || ''}</div><div class="step-form">${renderFields(step.fields)}</div>`; updateProgressBar(); }
+        function renderFields(fields) { return fields.map(field => { const label = field.label || field.key; const value = profileData[field.key] || ''; switch(field.type) { case 'text': return `<div class="form-group"><label class="form-label">${label}</label><input type="text" class="form-input" value="${value}" onchange="updateProfileData('${field.key}', this.value)"></div>`; case 'textarea': return `<div class="form-group"><label class="form-label">${label}</label><textarea class="form-textarea" onchange="updateProfileData('${field.key}', this.value)">${value}</textarea></div>`; case 'color': const colorValue = profileData[field.key] || field.defaultValue; return `<div class="form-group"><label class="form-label">${label}</label><div class="color-input-wrapper"><input type="color" class="color-input" value="${colorValue}" onchange="updateColorData('${field.key}', this.value)"><div class="color-hex-value">${colorValue}</div></div></div>`; case 'image': return `<div class="form-group"><label class="form-label">${label}</label><div class="image-upload" onclick="document.getElementById('${field.key}Input').click()">${profileData[field.key] ? `<img src="${profileData[field.key]}" class="image-preview">` : '<div>클릭해서 이미지를 업로드하세요</div>'}<input type="file" id="${field.key}Input" accept="image/*" style="display: none" onchange="handleImageUpload(event, '${field.key}')"></div></div>`; case 'ranking': return `<div class="ranking-container">${field.categories.map(cat => { const order = (profileData.preferences && profileData.preferences[cat.key]) || []; return `<div class="ranking-category"><div class="ranking-title">${cat.title}</div><div style="font-size: 12px; color: #6b7280; margin-bottom: 10px;">순서대로 클릭하세요 (${order.length}/5)</div><div class="available-items">${cat.items.map(item => { const i = order.indexOf(item); return i !== -1 ? `<button class="available-item selected" onclick="removeRankingItem('${cat.key}', '${item}')">${i + 1}. ${item}</button>` : `<button class="available-item" onclick="addRankingItemInOrder('${cat.key}', '${item}')">${item}</button>`; }).join('')}</div></div>`; }).join('')}</div>`; default: return ''; } }).join(''); }
+        function updateProfileData(key, value) { profileData[key] = value; }
+        function updateColorData(key, value) { profileData[key] = value; if (key === 'primaryColor') updateCSSVariables(); renderStep(); }
+        function updateCSSVariables() {
+            const primaryColor = profileData.primaryColor || '#3b82f6';
+            const darkenedColor = darkenColor(primaryColor, 15);
+            document.documentElement.style.setProperty('--primary-color', primaryColor);
+            document.documentElement.style.setProperty('--primary-color-dark', darkenedColor);
+            document.documentElement.style.setProperty('--primary-light', primaryColor + '20');
+            document.body.style.backgroundColor = primaryColor;
+        }
+        function handleImageUpload(event, key) { const file = event.target.files[0]; if (file) { const reader = new FileReader(); reader.onload = e => { profileData[key] = e.target.result; renderStep(); }; reader.readAsDataURL(file); } }
+        function addRankingItemInOrder(category, item) { if (!profileData.preferences) profileData.preferences = {}; const order = profileData.preferences[category] || []; if (!order.includes(item) && order.length < 5) { order.push(item); profileData.preferences[category] = order; renderStep(); } }
+        function removeRankingItem(category, item) { if (!profileData.preferences) profileData.preferences = {}; const order = profileData.preferences[category] || []; const index = order.indexOf(item); if (index > -1) { order.splice(index, 1); profileData.preferences[category] = order; renderStep(); } }
+        function updateProgressBar() { document.getElementById('progressFill').style.width = (currentStep / (steps.length - 1)) * 100 + '%'; }
+        function updateButtons() { document.getElementById('prevBtn').disabled = currentStep === 0; document.getElementById('nextBtn').textContent = currentStep === steps.length - 1 ? '완료' : '다음'; }
+        function goToStep(stepIndex) { if (stepIndex >= 0 && stepIndex < steps.length) { currentStep = stepIndex; renderProgressNav(); renderStep(); updateButtons(); } }
+        function prevStep() { if (currentStep > 0) { currentStep--; renderProgressNav(); renderStep(); updateButtons(); } }
+        function nextStep() { if (currentStep < steps.length - 1) { currentStep++; renderProgressNav(); renderStep(); updateButtons(); } else { generateProfile(); } }
+        function createImageDiv(src) { if (!src) return ''; return `<div class="image-bg-div" style="background-image: url('${src}');"></div>`; }
+        function generateProfile() {
+            document.getElementById('generator').style.display = 'none'; document.getElementById('profileResult').style.display = 'block';
+            const moeLabel = `<span class="info-label">모에화</span>`;
+            const pastStoriesHTML = [ {key: 'childhoodDream', label: '어린 시절 꿈'}, {key: 'firstLove', label: '첫사랑'}, {key: 'schoolStory', label: '학창시절 일화'}, {key: 'turningPoint', label: '인생 터닝포인트'} ].map(item => `<div class="tmi-item"><div class="item-label">${item.label}</div><div class="item-value">${profileData[item.key] || ''}</div></div>`).join('');
+            const profileHTML = `<div class="profile-container" id="profileContainer"><div id="profilePart1"><div class="profile-header"><div class="profile-image-section"><div class="profile-image">${createImageDiv(profileData.profileImage)}</div><div class="character-name">${profileData.characterName || ''}</div></div><div class="basic-info"><div class="info-group"><h3>기본 정보</h3><div class="info-item"><span class="info-label">나이</span><span class="info-value">${profileData.age || ''}</span></div><div class="info-item"><span class="info-label">생일</span><span class="info-value">${profileData.birthdate || ''}</span></div><div class="info-item"><span class="info-label">혈액형</span><span class="info-value">${profileData.bloodType || ''}</span></div><div class="info-item"><span class="info-label">MBTI</span><span class="info-value">${profileData.mbti || ''}</span></div><div class="info-item"><span class="info-label">직업</span><span class="info-value">${profileData.job || ''}</span></div></div><div class="info-group"><h3>신체 정보</h3><div class="info-item"><span class="info-label">키</span><span class="info-value">${profileData.height || ''}</span></div><div class="info-item"><span class="info-label">몸무게</span><span class="info-value">${profileData.weight || ''}</span></div><div class="info-item"><span class="info-label">시력</span><span class="info-value">${profileData.vision || ''}</span></div><div class="info-item"><span class="info-label">발 사이즈</span><span class="info-value">${profileData.footSize || ''}</span></div><div class="info-item"><span class="info-label">가슴 사이즈</span><span class="info-value">${profileData.chestSize || ''}</span></div></div><div class="info-group"><h3>외형 정보</h3><div class="info-item">${moeLabel}<span class="info-value">${profileData.animalMoe || ''}</span></div><div class="info-item"><span class="info-label">머리색</span><span class="info-value"><span style="width:16px;height:16px;background-color:${profileData.hairColor||'transparent'};border-radius:4px;display:inline-block;"></span></span></div><div class="info-item"><span class="info-label">눈색</span><span class="info-value"><span style="width:16px;height:16px;background-color:${profileData.eyeColor||'transparent'};border-radius:4px;display:inline-block;"></span></span></div><div class="info-item"><span class="info-label">피부색</span><span class="info-value"><span style="width:16px;height:16px;background-color:${profileData.skinColor||'transparent'};border-radius:4px;display:inline-block;"></span></span></div><div class="info-item"><span class="info-label">스타일</span><span class="info-value">${profileData.style || ''}</span></div></div></div></div><div class="profile-content-top"><div class="content-section"><h2 class="section-title">Likes</h2><div class="content-item"><div class="item-label">색깔</div><div class="item-value">${profileData.favoriteColor || ''}</div></div><div class="content-item"><div class="item-label">계절</div><div class="item-value">${profileData.favoriteSeason || ''}</div></div><div class="content-item"><div class="item-label">음식</div><div class="item-value">${profileData.favoriteFood || ''}</div></div><div class="content-item"><div class="item-label">음악</div><div class="item-value">${profileData.favoriteMusic || ''}</div></div><div class="content-item"><div class="item-label">취미</div><div class="item-value">${profileData.favoriteHobby || ''}</div></div></div><div class="content-section"><h2 class="section-title">Dislikes</h2><div class="content-item"><div class="item-label">음식</div><div class="item-value">${profileData.dislikeFood || ''}</div></div><div class="content-item"><div class="item-label">상황</div><div class="item-value">${profileData.dislikeSituation || ''}</div></div><div class="content-item"><div class="item-label">날씨</div><div class="item-value">${profileData.dislikeWeather || ''}</div></div><div class="content-item"><div class="item-label">사람 타입</div><div class="item-value">${profileData.dislikePeople || ''}</div></div><div class="content-item"><div class="item-label">기타</div><div class="item-value">${profileData.dislikeEtc || ''}</div></div></div><div class="content-section"><h2 class="section-title">Life Best</h2><div class="content-item"><div class="item-label">영화</div><div class="item-value">${profileData.bestMovie || ''}</div></div><div class="content-item"><div class="item-label">음식</div><div class="item-value">${profileData.bestFood || ''}</div></div><div class="content-item"><div class="item-label">책</div><div class="item-value">${profileData.bestBook || ''}</div></div><div class="content-item"><div class="item-label">기억에 남는 순간</div><div class="item-value">${profileData.bestMoment || ''}</div></div><div class="content-item"><div class="item-label">꿈</div><div class="item-value">${profileData.dream || ''}</div></div></div></div><div class="preferences-section"><h2 class="section-title">Preferences</h2><div class="preferences-container">${generatePreferencesHTML()}</div></div></div><div id="profilePart2"><div class="profile-content-middle"><div class="bottom-section"><h2 class="section-title">Past Stories</h2>${pastStoriesHTML}</div><div class="bottom-section"><h2 class="section-title">TMI</h2><div class="tmi-item"><div class="item-label">특이한 습관</div><div class="item-value">${profileData.habit || ''}</div></div><div class="tmi-item"><div class="item-label">창피했던 경험</div><div class="item-value">${profileData.embarrassing || ''}</div></div><div class="tmi-item"><div class="item-label">숨기고 싶은 과거</div><div class="item-value">${profileData.secret || ''}</div></div><div class="tmi-item"><div class="item-label">남들이 모르는 사실</div><div class="item-value">${profileData.unknown || ''}</div></div></div></div><div class="backstory-section"><h2 class="section-title">Backstory</h2><div class="backstory-text">${profileData.backstory || ''}</div></div><div class="profile-bottom"><div class="bottom-section"><h2 class="section-title">Music Player</h2><div class="music-player"><div class="album-cover">${createImageDiv(profileData.albumCoverImage)}</div><div class="song-info"><div class="song-title">${profileData.songTitle || ''}</div><div class="artist-name">${profileData.artistName || ''}</div></div></div></div><div class="bottom-section"><h2 class="section-title">Motive Character</h2><div class="mood-board">${createImageDiv(profileData.motiveCharacter)}</div></div><div class="bottom-section"><h2 class="section-title">Mood Images</h2><div class="mood-board">${createImageDiv(profileData.moodImages)}</div></div></div></div></div>`;
+            document.getElementById('profileContainerWrapper').innerHTML = profileHTML;
+        }
+        function generatePreferencesHTML() { const cats = [ { key: 'values', title: '가치관' }, { key: 'residence', title: '거주 환경' }, { key: 'bookGenre', title: '도서 장르' }, { key: 'vacation', title: '휴가 스타일' }, { key: 'weather', title: '날씨' }, { key: 'fashion', title: '옷 스타일' } ]; return cats.map(cat => { const items = (profileData.preferences && profileData.preferences[cat.key]) || []; if (items.length === 0) return ''; return `<div class="preference-category"><div class="preference-title">${cat.title}</div><div class="preference-list">${items.map((item, index) => `<div class="preference-item" data-rank="${index + 1}">${item}</div>`).join('')}</div></div>`; }).join(''); }
+        
+        async function downloadProfile(elementId, fileNamePart) {
+            const sourceElement = document.getElementById(elementId); if (!sourceElement) return;
+            const tempContainer = document.createElement('div');
+            tempContainer.style.width = '800px'; tempContainer.style.background = 'var(--bg-white)';
+            tempContainer.style.borderRadius = '16px'; tempContainer.style.overflow = 'hidden';
+            tempContainer.innerHTML = sourceElement.innerHTML;
+            
+            const wrapper = document.createElement('div');
+            wrapper.style.position = 'absolute'; wrapper.style.left = '-9999px';
+            wrapper.style.top = '0';
+            wrapper.appendChild(tempContainer);
+            document.body.appendChild(wrapper);
+            
+            try {
+                const contentCanvas = await html2canvas(tempContainer, {
+                    scale: 2,
+                    useCORS: true,
+                    backgroundColor: null,
+                    windowWidth: 800 // 모바일에서도 데스크탑 레이아웃으로 캡처
+                });
+
+                const PADDING = 50; const SHADOW_BLUR = 30; const SHADOW_OFFSET_Y = 10;
+                const finalCanvas = document.createElement('canvas');
+                finalCanvas.width = contentCanvas.width + PADDING * 2;
+                finalCanvas.height = contentCanvas.height + PADDING * 2;
+                const ctx = finalCanvas.getContext('2d');
+                ctx.fillStyle = getComputedStyle(document.body).backgroundColor;
+                ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.15)';
+                ctx.shadowBlur = SHADOW_BLUR;
+                ctx.shadowOffsetY = SHADOW_OFFSET_Y;
+                ctx.drawImage(contentCanvas, PADDING, PADDING - (SHADOW_OFFSET_Y / 2));
+                const link = document.createElement('a');
+                link.download = `${profileData.characterName || '캐릭터'}_프로필_${fileNamePart}.png`;
+                link.href = finalCanvas.toDataURL('image/png'); link.click();
+            } catch (error) { alert('프로필 다운로드에 실패했습니다.'); console.error('Download error:', error); } finally { document.body.removeChild(wrapper); }
+        }
+        
+        function editProfile() {
+            document.getElementById('profileResult').style.display = 'none';
+            document.getElementById('generator').style.display = 'block';
+        }
+
+        function restartGenerator() { currentStep = 0; profileData = {}; document.getElementById('generator').style.display = 'block'; document.getElementById('profileResult').style.display = 'none'; document.body.style.backgroundColor = 'var(--bg-gray-50)'; initializeGenerator(); }
+        document.addEventListener('DOMContentLoaded', initializeGenerator);
+    </script>
+</body>
+</html>
