@@ -69,13 +69,15 @@
         .profile-image-section { display: flex; flex-direction: column; align-items: center; }
         .profile-image { width: 160px; height: 160px; border-radius: 12px; background: var(--bg-gray-100); display: flex; align-items: center; justify-content: center; font-size: 48px; color: var(--text-secondary); margin-bottom: 15px; position: relative; overflow: hidden; }
         .image-bg-div { width: 100%; height: 100%; background-size: cover; background-position: center; }
-        .character-name { font-size: 18px; font-weight: 700; text-align: center; padding: 8px 16px; background: var(--primary-light); border-radius: 20px; margin-top: 10px; }
+        /* 1, 4. 이름 글씨 색상 고정 */
+        .character-name { font-size: 18px; font-weight: 700; text-align: center; padding: 8px 16px; background: var(--primary-light); border-radius: 20px; margin-top: 10px; color: var(--text-secondary); }
         .basic-info { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
         .info-group { background: var(--bg-gray-50); padding: 20px; border-radius: 12px; }
         .info-group h3 { font-size: 14px; font-weight: 600; color: var(--primary-color); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 15px; text-align: left; }
         .info-item { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; text-align: left; }
         .info-label { color: var(--text-secondary); font-weight: 500; }
-        .info-value { color: var(--text-primary); font-weight: 600; word-break: break-all; text-align: right; }
+        /* 2. 정보 내용 글씨 색상 변경 */
+        .info-value { color: #b1b1b1; font-weight: 600; word-break: break-all; text-align: right; }
         .profile-content-top { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; border-bottom: 1px solid var(--border-gray); }
         .content-section { padding: 30px; border-right: 1px solid var(--border-gray); }
         .content-section:last-child { border-right: none; }
@@ -103,6 +105,11 @@
         .preference-item::before { content: attr(data-rank); width: 14px; height: 14px; background: var(--text-secondary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: bold; flex-shrink: 0; }
         .preference-list .preference-item:first-child { background-color: var(--primary-color); color: white; }
         .preference-list .preference-item:first-child::before { background-color: white; color: var(--primary-color); }
+        
+        /* 3. 밝은 배경일 때 텍스트 색상 변경 (우선순위 수정) */
+        .preference-list .preference-item.is-light-bg:first-child { color: var(--text-primary); }
+        .preference-list .preference-item.is-light-bg:first-child::before { background-color: var(--text-primary); color: white; }
+
         .music-player, .mood-board { background: linear-gradient(135deg, var(--bg-gray-100) 0%, var(--bg-gray-50) 100%); border-radius: 12px; padding: 15px; border: 1px solid var(--border-gray); height: 200px; }
         .music-player { text-align: center; display: flex; flex-direction: column; justify-content: center; }
         .album-cover { width: 80px; height: 80px; background: var(--bg-gray-100); border-radius: 8px; margin: 0 auto 15px; border: 1px solid var(--border-gray); overflow: hidden; }
@@ -111,16 +118,7 @@
         .artist-name { font-size: 12px; color: var(--text-secondary); }
         .mood-board { display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .result-actions { margin-bottom: 30px; display: flex; justify-content: center; flex-wrap: wrap; }
-        @media (max-width: 768px) { .generator-container { margin: 10px; width: calc(100% - 20px); } .step-container, .navigation-buttons { padding: 20px; } 
-        /* 모바일 미리보기 강제 데스크탑 레이아웃 */
-        .profile-result .profile-container { width: 800px; max-width: none; }
-        .profile-result .profile-header { grid-template-columns: 200px 1fr; text-align: left; }
-        .profile-result .basic-info { grid-template-columns: 1fr 1fr 1fr; }
-        .profile-result .profile-content-top { grid-template-columns: 1fr 1fr 1fr; }
-        .profile-result .profile-content-middle { grid-template-columns: 1fr 1fr; }
-        .profile-result .profile-bottom { grid-template-columns: 1fr 1fr 1fr; }
-        .profile-result .preferences-container { grid-template-columns: repeat(6, 1fr); }
-        }
+        @media (max-width: 768px) { .generator-container { margin: 10px; width: calc(100% - 20px); } .step-container, .navigation-buttons { padding: 20px; } .profile-result .profile-container { width: 800px; max-width: none; } .profile-result .profile-header { grid-template-columns: 200px 1fr; text-align: left; } .profile-result .basic-info { grid-template-columns: 1fr 1fr 1fr; } .profile-result .profile-content-top { grid-template-columns: 1fr 1fr 1fr; } .profile-result .profile-content-middle { grid-template-columns: 1fr 1fr; } .profile-result .profile-bottom { grid-template-columns: 1fr 1fr 1fr; } .profile-result .preferences-container { grid-template-columns: repeat(6, 1fr); } }
     </style>
 </head>
 <body>
@@ -146,6 +144,7 @@
         ];
 
         function darkenColor(hex, percent) { let [r, g, b] = hex.match(/\w\w/g).map(x => parseInt(x, 16)); const amount = Math.floor(255 * (percent / 100)); r = Math.max(0, r - amount); g = Math.max(0, g - amount); b = Math.max(0, b - amount); return "#" + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join(''); }
+        function isColorLight(hexColor) { const hex = hexColor.replace('#', ''); const r = parseInt(hex.substring(0, 2), 16); const g = parseInt(hex.substring(2, 4), 16); const b = parseInt(hex.substring(4, 6), 16); const luminance = (0.299 * r + 0.587 * g + 0.114 * b); return luminance > 186; }
         function initializeGenerator() { profileData.primaryColor = steps[0].fields.find(f => f.key === 'primaryColor').defaultValue; steps[1].fields.forEach(field => { if (field.type === 'color') profileData[field.key] = field.defaultValue; }); updateCSSVariables(); renderProgressNav(); renderStep(); updateButtons(); }
         function renderProgressNav() { const nav = document.getElementById('progressNav'); nav.innerHTML = ''; steps.forEach((step, index) => { const navStep = document.createElement('div'); navStep.className = 'nav-step'; if (index < currentStep) navStep.classList.add('completed'); if (index === currentStep) navStep.classList.add('current'); navStep.textContent = index + 1; navStep.onclick = () => goToStep(index); nav.appendChild(navStep); }); }
         function renderStep() { const container = document.getElementById('stepContainer'); const step = steps[currentStep]; container.innerHTML = `<div class="step-title">${step.title}</div><div class="step-description">${step.description || ''}</div><div class="step-form">${renderFields(step.fields)}</div>`; updateProgressBar(); }
@@ -176,7 +175,11 @@
             const profileHTML = `<div class="profile-container" id="profileContainer"><div id="profilePart1"><div class="profile-header"><div class="profile-image-section"><div class="profile-image">${createImageDiv(profileData.profileImage)}</div><div class="character-name">${profileData.characterName || ''}</div></div><div class="basic-info"><div class="info-group"><h3>기본 정보</h3><div class="info-item"><span class="info-label">나이</span><span class="info-value">${profileData.age || ''}</span></div><div class="info-item"><span class="info-label">생일</span><span class="info-value">${profileData.birthdate || ''}</span></div><div class="info-item"><span class="info-label">혈액형</span><span class="info-value">${profileData.bloodType || ''}</span></div><div class="info-item"><span class="info-label">MBTI</span><span class="info-value">${profileData.mbti || ''}</span></div><div class="info-item"><span class="info-label">직업</span><span class="info-value">${profileData.job || ''}</span></div></div><div class="info-group"><h3>신체 정보</h3><div class="info-item"><span class="info-label">키</span><span class="info-value">${profileData.height || ''}</span></div><div class="info-item"><span class="info-label">몸무게</span><span class="info-value">${profileData.weight || ''}</span></div><div class="info-item"><span class="info-label">시력</span><span class="info-value">${profileData.vision || ''}</span></div><div class="info-item"><span class="info-label">발 사이즈</span><span class="info-value">${profileData.footSize || ''}</span></div><div class="info-item"><span class="info-label">가슴 사이즈</span><span class="info-value">${profileData.chestSize || ''}</span></div></div><div class="info-group"><h3>외형 정보</h3><div class="info-item">${moeLabel}<span class="info-value">${profileData.animalMoe || ''}</span></div><div class="info-item"><span class="info-label">머리색</span><span class="info-value"><span style="width:16px;height:16px;background-color:${profileData.hairColor||'transparent'};border-radius:4px;display:inline-block;"></span></span></div><div class="info-item"><span class="info-label">눈색</span><span class="info-value"><span style="width:16px;height:16px;background-color:${profileData.eyeColor||'transparent'};border-radius:4px;display:inline-block;"></span></span></div><div class="info-item"><span class="info-label">피부색</span><span class="info-value"><span style="width:16px;height:16px;background-color:${profileData.skinColor||'transparent'};border-radius:4px;display:inline-block;"></span></span></div><div class="info-item"><span class="info-label">스타일</span><span class="info-value">${profileData.style || ''}</span></div></div></div></div><div class="profile-content-top"><div class="content-section"><h2 class="section-title">Likes</h2><div class="content-item"><div class="item-label">색깔</div><div class="item-value">${profileData.favoriteColor || ''}</div></div><div class="content-item"><div class="item-label">계절</div><div class="item-value">${profileData.favoriteSeason || ''}</div></div><div class="content-item"><div class="item-label">음식</div><div class="item-value">${profileData.favoriteFood || ''}</div></div><div class="content-item"><div class="item-label">음악</div><div class="item-value">${profileData.favoriteMusic || ''}</div></div><div class="content-item"><div class="item-label">취미</div><div class="item-value">${profileData.favoriteHobby || ''}</div></div></div><div class="content-section"><h2 class="section-title">Dislikes</h2><div class="content-item"><div class="item-label">음식</div><div class="item-value">${profileData.dislikeFood || ''}</div></div><div class="content-item"><div class="item-label">상황</div><div class="item-value">${profileData.dislikeSituation || ''}</div></div><div class="content-item"><div class="item-label">날씨</div><div class="item-value">${profileData.dislikeWeather || ''}</div></div><div class="content-item"><div class="item-label">사람 타입</div><div class="item-value">${profileData.dislikePeople || ''}</div></div><div class="content-item"><div class="item-label">기타</div><div class="item-value">${profileData.dislikeEtc || ''}</div></div></div><div class="content-section"><h2 class="section-title">Life Best</h2><div class="content-item"><div class="item-label">영화</div><div class="item-value">${profileData.bestMovie || ''}</div></div><div class="content-item"><div class="item-label">음식</div><div class="item-value">${profileData.bestFood || ''}</div></div><div class="content-item"><div class="item-label">책</div><div class="item-value">${profileData.bestBook || ''}</div></div><div class="content-item"><div class="item-label">기억에 남는 순간</div><div class="item-value">${profileData.bestMoment || ''}</div></div><div class="content-item"><div class="item-label">꿈</div><div class="item-value">${profileData.dream || ''}</div></div></div></div><div class="preferences-section"><h2 class="section-title">Preferences</h2><div class="preferences-container">${generatePreferencesHTML()}</div></div></div><div id="profilePart2"><div class="profile-content-middle"><div class="bottom-section"><h2 class="section-title">Past Stories</h2>${pastStoriesHTML}</div><div class="bottom-section"><h2 class="section-title">TMI</h2><div class="tmi-item"><div class="item-label">특이한 습관</div><div class="item-value">${profileData.habit || ''}</div></div><div class="tmi-item"><div class="item-label">창피했던 경험</div><div class="item-value">${profileData.embarrassing || ''}</div></div><div class="tmi-item"><div class="item-label">숨기고 싶은 과거</div><div class="item-value">${profileData.secret || ''}</div></div><div class="tmi-item"><div class="item-label">남들이 모르는 사실</div><div class="item-value">${profileData.unknown || ''}</div></div></div></div><div class="backstory-section"><h2 class="section-title">Backstory</h2><div class="backstory-text">${profileData.backstory || ''}</div></div><div class="profile-bottom"><div class="bottom-section"><h2 class="section-title">Music Player</h2><div class="music-player"><div class="album-cover">${createImageDiv(profileData.albumCoverImage)}</div><div class="song-info"><div class="song-title">${profileData.songTitle || ''}</div><div class="artist-name">${profileData.artistName || ''}</div></div></div></div><div class="bottom-section"><h2 class="section-title">Motive Character</h2><div class="mood-board">${createImageDiv(profileData.motiveCharacter)}</div></div><div class="bottom-section"><h2 class="section-title">Mood Images</h2><div class="mood-board">${createImageDiv(profileData.moodImages)}</div></div></div></div></div>`;
             document.getElementById('profileContainerWrapper').innerHTML = profileHTML;
         }
-        function generatePreferencesHTML() { const cats = [ { key: 'values', title: '가치관' }, { key: 'residence', title: '거주 환경' }, { key: 'bookGenre', title: '도서 장르' }, { key: 'vacation', title: '휴가 스타일' }, { key: 'weather', title: '날씨' }, { key: 'fashion', title: '옷 스타일' } ]; return cats.map(cat => { const items = (profileData.preferences && profileData.preferences[cat.key]) || []; if (items.length === 0) return ''; return `<div class="preference-category"><div class="preference-title">${cat.title}</div><div class="preference-list">${items.map((item, index) => `<div class="preference-item" data-rank="${index + 1}">${item}</div>`).join('')}</div></div>`; }).join(''); }
+        function generatePreferencesHTML() {
+            const isPrimaryColorLight = isColorLight(profileData.primaryColor || '#3b82f6');
+            const categories = [ { key: 'values', title: '가치관' }, { key: 'residence', title: '거주 환경' }, { key: 'bookGenre', title: '도서 장르' }, { key: 'vacation', title: '휴가 스타일' }, { key: 'weather', title: '날씨' }, { key: 'fashion', title: '옷 스타일' } ];
+            return categories.map(cat => { const items = (profileData.preferences && profileData.preferences[cat.key]) || []; if (items.length === 0) return ''; return `<div class="preference-category"><div class="preference-title">${cat.title}</div><div class="preference-list">${items.map((item, index) => { const itemClass = index === 0 && isPrimaryColorLight ? 'preference-item is-light-bg' : 'preference-item'; return `<div class="${itemClass}" data-rank="${index + 1}">${item}</div>`; }).join('')}</div></div>`; }).join('');
+        }
         
         async function downloadProfile(elementId, fileNamePart) {
             const sourceElement = document.getElementById(elementId); if (!sourceElement) return;
@@ -193,10 +196,7 @@
             
             try {
                 const contentCanvas = await html2canvas(tempContainer, {
-                    scale: 2,
-                    useCORS: true,
-                    backgroundColor: null,
-                    windowWidth: 800 // 모바일에서도 데스크탑 레이아웃으로 캡처
+                    scale: 2, useCORS: true, backgroundColor: null, windowWidth: 800
                 });
 
                 const PADDING = 50; const SHADOW_BLUR = 30; const SHADOW_OFFSET_Y = 10;
