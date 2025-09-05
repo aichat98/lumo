@@ -69,14 +69,12 @@
         .profile-image-section { display: flex; flex-direction: column; align-items: center; }
         .profile-image { width: 160px; height: 160px; border-radius: 12px; background: var(--bg-gray-100); display: flex; align-items: center; justify-content: center; font-size: 48px; color: var(--text-secondary); margin-bottom: 15px; position: relative; overflow: hidden; }
         .image-bg-div { width: 100%; height: 100%; background-size: cover; background-position: center; }
-        /* 1, 4. 이름 글씨 색상 고정 */
         .character-name { font-size: 18px; font-weight: 700; text-align: center; padding: 8px 16px; background: var(--primary-light); border-radius: 20px; margin-top: 10px; color: var(--text-secondary); }
         .basic-info { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
         .info-group { background: var(--bg-gray-50); padding: 20px; border-radius: 12px; }
         .info-group h3 { font-size: 14px; font-weight: 600; color: var(--primary-color); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 15px; text-align: left; }
         .info-item { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; text-align: left; }
         .info-label { color: var(--text-secondary); font-weight: 500; }
-        /* 2. 정보 내용 글씨 색상 변경 */
         .info-value { color: #b1b1b1; font-weight: 600; word-break: break-all; text-align: right; }
         .profile-content-top { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; border-bottom: 1px solid var(--border-gray); }
         .content-section { padding: 30px; border-right: 1px solid var(--border-gray); }
@@ -105,11 +103,8 @@
         .preference-item::before { content: attr(data-rank); width: 14px; height: 14px; background: var(--text-secondary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: bold; flex-shrink: 0; }
         .preference-list .preference-item:first-child { background-color: var(--primary-color); color: white; }
         .preference-list .preference-item:first-child::before { background-color: white; color: var(--primary-color); }
-        
-        /* 3. 밝은 배경일 때 텍스트 색상 변경 (우선순위 수정) */
         .preference-list .preference-item.is-light-bg:first-child { color: var(--text-primary); }
         .preference-list .preference-item.is-light-bg:first-child::before { background-color: var(--text-primary); color: white; }
-
         .music-player, .mood-board { background: linear-gradient(135deg, var(--bg-gray-100) 0%, var(--bg-gray-50) 100%); border-radius: 12px; padding: 15px; border: 1px solid var(--border-gray); height: 200px; }
         .music-player { text-align: center; display: flex; flex-direction: column; justify-content: center; }
         .album-cover { width: 80px; height: 80px; background: var(--bg-gray-100); border-radius: 8px; margin: 0 auto 15px; border: 1px solid var(--border-gray); overflow: hidden; }
@@ -182,7 +177,13 @@
         }
         
         async function downloadProfile(elementId, fileNamePart) {
-            const sourceElement = document.getElementById(elementId); if (!sourceElement) return;
+            const sourceElement = document.getElementById(elementId);
+            const viewport = document.querySelector('meta[name="viewport"]');
+            if (!sourceElement || !viewport) return;
+            
+            const originalContent = viewport.getAttribute('content');
+            viewport.setAttribute('content', 'width=800');
+
             const tempContainer = document.createElement('div');
             tempContainer.style.width = '800px'; tempContainer.style.background = 'var(--bg-white)';
             tempContainer.style.borderRadius = '16px'; tempContainer.style.overflow = 'hidden';
@@ -196,7 +197,7 @@
             
             try {
                 const contentCanvas = await html2canvas(tempContainer, {
-                    scale: 2, useCORS: true, backgroundColor: null, windowWidth: 800
+                    scale: 2, useCORS: true, backgroundColor: null
                 });
 
                 const PADDING = 50; const SHADOW_BLUR = 30; const SHADOW_OFFSET_Y = 10;
@@ -213,7 +214,10 @@
                 const link = document.createElement('a');
                 link.download = `${profileData.characterName || '캐릭터'}_프로필_${fileNamePart}.png`;
                 link.href = finalCanvas.toDataURL('image/png'); link.click();
-            } catch (error) { alert('프로필 다운로드에 실패했습니다.'); console.error('Download error:', error); } finally { document.body.removeChild(wrapper); }
+            } catch (error) { alert('프로필 다운로드에 실패했습니다.'); console.error('Download error:', error); } finally {
+                viewport.setAttribute('content', originalContent);
+                document.body.removeChild(wrapper); 
+            }
         }
         
         function editProfile() {
