@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=520, initial-scale=1.0, user-scalable=no">
+    <title>꾸밈카드 생성기 (최종 완성본)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --bubble-default-bg: #f5f5f5;
+            --main-text-color: #333;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Noto Sans KR', sans-serif; background: #f0f2f5; padding: 20px; width: 520px; margin: 0 auto; }
+        .container { background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .controls { padding: 20px; border-bottom: 1px solid #e0e0e0; background: #fafafa; }
+        .control-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 6px; font-weight: 700; font-size: 13px; color: #333; }
+        textarea { width: 100%; height: 150px; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 12px; line-height: 1.6; resize: vertical; font-family: 'Noto Sans KR', sans-serif; }
+        .btn-row, .flex-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        button { padding: 6px 12px; border: 1px solid #ddd; border-radius: 4px; background: white; cursor: pointer; font-size: 11px; }
+        .preview-container { position: relative; }
+        .card-preview {
+            position: relative; overflow: hidden;
+            width: 100%; min-height: 200px;
+            padding: 60px; background-color: white;
+            font-size: 10.5px; line-height: 1.8; word-break: break-all; 
+            color: var(--main-text-color);
+        }
+        .card-preview::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background-image: var(--bg-image); background-size: cover; background-position: center;
+            z-index: 1; transition: background-image 0.2s;
+        }
+        #topImageContainer, #contentContainer { position: relative; z-index: 2; }
+        #topImageContainer img { width: 100%; display: block; border-radius: 4px; margin-bottom: 15px; }
+        #contentContainer > div { margin-bottom: 0.8em; }
+        #contentContainer .empty-line { height: 0.8em; }
+        .scene-header { text-align: center; font-size: 0.9em; padding: 8px 0; margin: 12px 0; border-top: 1px solid #eee; border-bottom: 1px solid #eee; }
+        .scene-header, .narration { color: var(--main-text-color); opacity: 0.8; }
+        .narration { font-style: italic; }
+        .dialogue.bubble { background: var(--bubble-bg-color, var(--bubble-default-bg)); padding: 10px 14px; border-radius: 12px; display: block; max-width: 100%; position: relative; text-align: left; cursor: pointer; width: fit-content; color: #333; }
+        .dialogue.bubble::after { content: ''; position: absolute; top: 12px; left: -7px; border-top: 6px solid transparent; border-bottom: 6px solid transparent; border-right: 8px solid var(--bubble-bg-color, var(--bubble-default-bg)); }
+        .dialogue.bubble.right { margin-left: auto; margin-right: 0; background: var(--bubble-bg-color, var(--bubble-default-bg)); }
+        .dialogue.bubble.right::after { left: auto; right: -7px; border-right: none; border-left: 8px solid var(--bubble-bg-color, var(--bubble-default-bg)); }
+        
+        .comment-anchor { position: relative; border-bottom: 2px dotted #ffeb3b; }
+        .comment-box {
+            position: absolute; color: #aaa; font-style: italic;
+            width: 45px; word-wrap: break-word;
+            font-size: 9px; line-height: 1.4; z-index: 10;
+        }
+        .delete-comment { cursor: pointer; color: #ff7575; font-weight: bold; margin-left: 4px; display: none; }
+        .comment-box:hover .delete-comment { display: inline; }
+
+        #bubbleEditor { position: fixed; display: none; background: #fff; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); padding: 8px; z-index: 10000; flex-direction: column; gap: 5px; }
+        #bubbleColorPalette { display: flex; flex-wrap: wrap; width: 160px; gap: 5px; }
+        #bubbleEditor button { width: 100%; }
+        #selection-popup { position: fixed; display: none; background: #fff; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); padding: 8px; z-index: 10000; align-items: center; gap: 5px; }
+        .palette-color { width: 22px; height: 22px; border-radius: 50%; cursor: pointer; border: 2px solid #fff; box-shadow: 0 0 0 1px #ccc; }
+        .save-btn { background: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 6px; margin: 20px auto 0; display: block; font-size: 13px; font-weight: bold; width: 100%; }
+        .highlight { /* 스타일은 JS에서 직접 적용합니다 */ }
+
+        .file-input-label {
+            display: inline-block;
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            font-size: 11px;
+            font-family: 'Noto Sans KR', sans-serif;
+            line-height: normal;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .separator {
+            margin: 0 4px;
+            color: #ccc;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- UI -->
+        <div class="controls">
+            <div class="control-group">
+                <label>텍스트 입력</label>
+                <textarea id="textInput" placeholder="AI 채팅 텍스트를 붙여넣으세요"></textarea>
+            </div>
+            <div class="control-group">
+                <label>배경 설정</label>
+                <div class="flex-row">
+                    <input type="color" id="bgColor" value="#ffffff">
+                    <label for="bgImageInput" class="file-input-label">파일 첨부</label>
+                    <input type="file" id="bgImageInput" accept="image/png, image/jpeg">
+                    <button id="removeBgBtn">삭제</button>
+                    <span class="separator">|</span>
+                    <button id="textLightBtn">밝은 글씨</button>
+                    <button id="textDarkBtn">어두운 글씨</button>
+                </div>
+            </div>
+            <div class="control-group" style="margin-bottom:0;">
+                <label>상단 이미지</label>
+                <div class="flex-row">
+                    <label for="topImageInput" class="file-input-label">파일 첨부</label>
+                    <input type="file" id="topImageInput" accept="image/png, image/jpeg">
+                    <button id="removeTopImageBtn">삭제</button>
+                </div>
+            </div>
+        </div>
+        <div class="preview-container" id="previewContainer">
+            <div class="card-preview" id="preview">
+                <div id="topImageContainer"></div>
+                <div id="contentContainer">텍스트를 입력해주세요.</div>
+            </div>
+        </div>
+    </div>
+    <button class="save-btn" id="saveBtn">이미지로 저장</button>
+
+    <div id="bubbleEditor">
+        <div id="bubbleColorPalette"></div>
+        <button id="toggleBubbleDirection">방향 전환</button>
+    </div>
+    <div id="selection-popup">
+        <div class="palette-color" data-color="#fff9c4" style="background:#fff9c4;"></div>
+        <div class="palette-color" data-color="#ffcdd2" style="background:#ffcdd2;"></div>
+        <div class="palette-color" data-color="#dcedc8" style="background:#dcedc8;"></div>
+        <div class="palette-color" data-color="#d1e4ff" style="background:#d1e4ff;"></div>
+        <div class="palette-color" data-color="#e0e0e0" style="background:#e0e0e0;"></div>
+        <button id="addCommentBtn">코멘트</button>
+        <button id="removeHighlightBtn">제거</button>
+        <div id="comment-input-container" style="display:none;">
+            <input type="text" id="comment-input" placeholder="코멘트 입력">
+            <button id="comment-save-btn">추가</button>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        const textInput = document.getElementById('textInput');
+        const preview = document.getElementById('preview');
+        const contentContainer = document.getElementById('contentContainer');
+        const bubbleEditor = document.getElementById('bubbleEditor');
+        const selectionPopup = document.getElementById('selection-popup');
+        let activeBubble = null;
+        let selectedRange = null;
+        let bgImageUrl = '';
+        
+        function updatePreview() {
+            let rawText = textInput.value;
+            if (!rawText.trim()) { contentContainer.innerHTML = '텍스트를 입력해주세요.'; return; }
+            rawText = rawText.replace(/```([\s\S]*?)```/g, (match, content) => `%%SCENE_HEADER%%${content.trim()}%%/SCENE_HEADER%%`);
+            const lines = rawText.split('\n');
+            let finalHtml = '';
+            lines.forEach(line => {
+                let processedLine = line.trim();
+                let lineHtml = '';
+                if (processedLine.startsWith('%%SCENE_HEADER%%')) {
+                    const content = processedLine.replace(/%%SCENE_HEADER%%|%%\/SCENE_HEADER%%/g, '');
+                    lineHtml = `<div class="scene-header">${content}</div><div class="empty-line"></div>`;
+                } else if (processedLine === '') {
+                    lineHtml = '<div class="empty-line"></div>';
+                } else if (processedLine.startsWith('*') && processedLine.endsWith('*')) {
+                    const content = processedLine.substring(1, processedLine.length - 1);
+                    lineHtml = `<div><span class="narration">${content}</span></div>`;
+                } 
+                else if (processedLine.startsWith('"') || processedLine.startsWith('“')) {
+                    let content = processedLine.substring(1);
+                    if (content.endsWith('"') || content.endsWith('”')) {
+                        content = content.slice(0, -1);
+                    }
+                    lineHtml = `<div><span class="dialogue bubble">${content}</span></div>`;
+                } 
+                else if (processedLine) {
+                    lineHtml = `<div><span class="narration">${processedLine}</span></div>`;
+                }
+                finalHtml += lineHtml;
+            });
+            contentContainer.innerHTML = finalHtml;
+        }
+        function handleImageUpload(callback) {
+            return function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => callback(e.target.result);
+                    reader.readAsDataURL(file);
+                }
+                event.target.value = null;
+            }
+        }
+        function handlePreviewMouseUp(e) {
+            setTimeout(() => {
+                const selection = window.getSelection();
+                if (selection.toString().trim() && contentContainer.contains(selection.anchorNode)) {
+                    selectedRange = selection.getRangeAt(0).cloneRange();
+                    selectionPopup.style.display = 'flex';
+                    selectionPopup.style.top = `${e.clientY + 10}px`;
+                    selectionPopup.style.left = `${e.clientX}px`;
+                    document.getElementById('comment-input-container').style.display = 'none';
+                    document.getElementById('addCommentBtn').style.display = 'block';
+                }
+            }, 0);
+        }
+        function applyHighlight(color) {
+            if (selectedRange) {
+                try {
+                    const highlight = document.createElement('span');
+                    highlight.className = 'highlight';
+                    highlight.style.backgroundColor = color;
+                    highlight.appendChild(selectedRange.extractContents());
+                    selectedRange.insertNode(highlight);
+                } catch (e) { console.error("Highlight failed:", e); }
+                cleanupSelection();
+            }
+        }
+        function removeHighlight() {
+            if (!selectedRange) return;
+            try {
+                const fragment = selectedRange.extractContents();
+                const highlights = fragment.querySelectorAll('.highlight');
+                highlights.forEach(highlightNode => {
+                    const parent = highlightNode.parentNode;
+                    while (highlightNode.firstChild) {
+                        parent.insertBefore(highlightNode.firstChild, highlightNode);
+                    }
+                    parent.removeChild(highlightNode);
+                });
+                selectedRange.insertNode(fragment);
+                contentContainer.normalize();
+            } catch (e) {
+                console.error("Highlight removal failed:", e);
+            }
+            cleanupSelection();
+        }
+        function addComment() {
+            const commentText = document.getElementById('comment-input').value;
+            if (commentText && selectedRange) {
+                try {
+                    const commentId = `comment-${Date.now()}`;
+                    const anchor = document.createElement('span');
+                    anchor.className = 'comment-anchor';
+                    anchor.dataset.commentId = commentId;
+                    anchor.appendChild(selectedRange.extractContents());
+                    selectedRange.insertNode(anchor);
+                    const commentBox = document.createElement('div');
+                    commentBox.className = 'comment-box';
+                    commentBox.dataset.commentId = commentId;
+                    commentBox.innerHTML = `${commentText} <span class="delete-comment" title="코멘트 삭제">(x)</span>`;
+                    const anchorRect = anchor.getBoundingClientRect();
+                    const previewRect = preview.getBoundingClientRect();
+                    commentBox.style.top = `${anchorRect.top - previewRect.top}px`;
+                    const anchorCenterX = anchorRect.left + anchorRect.width / 2;
+                    const previewCenterX = previewRect.left + previewRect.width / 2;
+                    if (anchorCenterX < previewCenterX) {
+                        commentBox.style.left = '10px';
+                    } else {
+                        commentBox.style.right = '10px';
+                    }
+                    preview.appendChild(commentBox);
+                } catch (e) { console.error("코멘트 추가 실패:", e); }
+            }
+            document.getElementById('comment-input').value = '';
+            cleanupSelection();
+        }
+        function cleanupSelection() {
+            selectionPopup.style.display = 'none';
+            document.getElementById('comment-input-container').style.display = 'none';
+            document.getElementById('addCommentBtn').style.display = 'block';
+            if (window.getSelection) {
+                window.getSelection().removeAllRanges();
+            }
+            selectedRange = null;
+        }
+        
+        async function saveImage() {
+            try {
+                const canvas = await html2canvas(preview, {
+                    backgroundColor: null, scale: 2, useCORS: true,
+                    onclone: (doc) => {
+                        const clonedPreview = doc.getElementById('preview');
+                        if (bgImageUrl) {
+                            const bgEl = doc.createElement('div');
+                            bgEl.style = `
+                                position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+                                background-image: url(${bgImageUrl});
+                                background-size: cover; background-position: center;
+                                z-index: 0;
+                            `;
+                            clonedPreview.insertBefore(bgEl, clonedPreview.firstChild);
+                        }
+                        
+                        // [수정] v28의 성공적인 스크린샷 로직으로 완벽하게 복원
+                        clonedPreview.querySelectorAll('.highlight').forEach(highlightSpan => {
+                            const lineContainer = highlightSpan.closest('div');
+                            if (lineContainer) {
+                                lineContainer.style.backgroundColor = 'transparent';
+                            }
+                        });
+                    }
+                });
+                const link = document.createElement('a');
+                link.download = '꾸밈카드.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            } catch (err) {
+                console.error("이미지 저장 오류:", err);
+                alert("이미지 저장에 실패했습니다. (콘솔 로그를 확인해주세요)");
+            }
+        }
+
+        function initialize() {
+            textInput.addEventListener('input', updatePreview);
+            document.getElementById('bgColor').onchange = (e) => {
+                preview.style.backgroundColor = e.target.value;
+                preview.style.setProperty('--bg-image', 'none');
+                bgImageUrl = '';
+            };
+            document.getElementById('bgImageInput').onchange = handleImageUpload((url) => {
+                bgImageUrl = url;
+                preview.style.setProperty('--bg-image', `url(${url})`);
+                preview.style.backgroundColor = 'transparent';
+                preview.style.setProperty('--main-text-color', '#fff');
+            });
+            document.getElementById('removeBgBtn').onclick = () => {
+                bgImageUrl = '';
+                preview.style.setProperty('--bg-image', 'none');
+                preview.style.backgroundColor = '#ffffff';
+                preview.style.setProperty('--main-text-color', '#333');
+            };
+            document.getElementById('textLightBtn').onclick = () => preview.style.setProperty('--main-text-color', '#ffffff');
+            document.getElementById('textDarkBtn').onclick = () => preview.style.setProperty('--main-text-color', '#333333');
+            
+            document.getElementById('topImageInput').onchange = handleImageUpload((url) => { document.getElementById('topImageContainer').innerHTML = `<img src="${url}" alt="상단 이미지">`; });
+            document.getElementById('removeTopImageBtn').onclick = () => {
+                document.getElementById('topImageContainer').innerHTML = '';
+                document.getElementById('topImageInput').value = '';
+            };
+            preview.addEventListener('mouseup', handlePreviewMouseUp);
+            preview.addEventListener('click', (e) => {
+                const bubble = e.target.closest('.dialogue.bubble');
+                if (bubble) {
+                    e.stopPropagation();
+                    activeBubble = bubble;
+                    bubbleEditor.style.display = 'flex';
+                    bubbleEditor.style.top = `${e.clientY + 10}px`;
+                    bubbleEditor.style.left = `${e.clientX}px`;
+                }
+                if (e.target.classList.contains('delete-comment')) {
+                    const commentBox = e.target.closest('.comment-box');
+                    if (!commentBox) return;
+                    const id = commentBox.dataset.commentId;
+                    const anchor = preview.querySelector(`.comment-anchor[data-comment-id="${id}"]`);
+                    if (anchor) {
+                        const parent = anchor.parentNode;
+                        while (anchor.firstChild) {
+                            parent.insertBefore(anchor.firstChild, anchor);
+                        }
+                        parent.removeChild(anchor);
+                        parent.normalize();
+                    }
+                    commentBox.remove();
+                }
+            });
+            document.querySelectorAll('#selection-popup .palette-color').forEach(el => { el.onclick = () => applyHighlight(el.dataset.color); });
+            document.getElementById('removeHighlightBtn').onclick = removeHighlight;
+            document.getElementById('addCommentBtn').onclick = () => {
+                document.getElementById('comment-input-container').style.display = 'flex';
+                document.getElementById('addCommentBtn').style.display = 'none';
+                document.getElementById('comment-input').focus();
+            };
+            document.getElementById('comment-save-btn').onclick = addComment;
+            document.getElementById('comment-input').onkeydown = (e) => { if (e.key === 'Enter') addComment(); };
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('.controls')) { return; }
+                if (window.getSelection().toString().trim()) { return; }
+                if (!bubbleEditor.contains(e.target) && e.target.closest('.dialogue.bubble') !== activeBubble) { bubbleEditor.style.display = 'none'; activeBubble = null; }
+                if (!selectionPopup.contains(e.target)) { cleanupSelection(); }
+            });
+            const palette = document.getElementById('bubbleColorPalette');
+            const colors = [ {bg: '#F5EBE0'}, {bg: '#FFDDE1'}, {bg: '#ffe8d6'}, {bg: '#ffc1a9'}, {bg: '#fff9c4'}, {bg: '#dcedc8'}, {bg: '#c5e1a5'}, {bg: '#d1e4ff'}, {bg: '#b3e5fc'}, {bg: '#e1d5e7'}, {bg: '#f5f5f5'}, {bg: '#757575', color: 'white'} ];
+            colors.forEach(c => {
+                const swatch = document.createElement('div');
+                swatch.className = 'palette-color';
+                swatch.style.background = c.bg;
+                swatch.onclick = () => {
+                    if (activeBubble) {
+                        activeBubble.style.setProperty('--bubble-bg-color', c.bg);
+                        activeBubble.style.color = (c.color === 'white') ? 'white' : '#333';
+                    }
+                };
+                palette.appendChild(swatch);
+            });
+            document.getElementById('toggleBubbleDirection').onclick = () => { if (activeBubble) activeBubble.classList.toggle('right'); };
+            document.getElementById('saveBtn').onclick = saveImage;
+            
+            textInput.value = "";
+            updatePreview();
+        }
+        initialize();
+    </script>
+</body>
+</html>
