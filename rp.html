@@ -150,6 +150,14 @@
         let selectedRange = null;
         let bgImageUrl = '';
         
+        function updatePreview() { /* ... */ }
+        function handleImageUpload(callback) { /* ... */ }
+        function applyHighlight(color) { /* ... */ }
+        function removeHighlight() { /* ... */ }
+        function addComment() { /* ... */ }
+        function cleanupSelection() { /* ... */ }
+        
+        // --- 함수 내용은 길어서 생략합니다. 실제 코드에는 모두 포함되어 있습니다. ---
         function updatePreview() {
             let rawText = textInput.value;
             if (!rawText.trim()) { contentContainer.innerHTML = '텍스트를 입력해주세요.'; return; }
@@ -193,19 +201,6 @@
                 event.target.value = null;
             }
         }
-        function handlePreviewMouseUp(e) {
-            setTimeout(() => {
-                const selection = window.getSelection();
-                if (selection.toString().trim() && contentContainer.contains(selection.anchorNode)) {
-                    selectedRange = selection.getRangeAt(0).cloneRange();
-                    selectionPopup.style.display = 'flex';
-                    selectionPopup.style.top = `${e.clientY + 10}px`;
-                    selectionPopup.style.left = `${e.clientX}px`;
-                    document.getElementById('comment-input-container').style.display = 'none';
-                    document.getElementById('addCommentBtn').style.display = 'block';
-                }
-            }, 0);
-        }
         function applyHighlight(color) {
             if (selectedRange) {
                 try {
@@ -232,9 +227,7 @@
                 });
                 selectedRange.insertNode(fragment);
                 contentContainer.normalize();
-            } catch (e) {
-                console.error("Highlight removal failed:", e);
-            }
+            } catch (e) { console.error("Highlight removal failed:", e); }
             cleanupSelection();
         }
         function addComment() {
@@ -276,36 +269,71 @@
             }
             selectedRange = null;
         }
-        
+
+        // [수정] 모바일 텍스트 선택을 위한 통합 이벤트 핸들러
+        function handlePreviewSelection(e) {
+            setTimeout(() => {
+                const selection = window.getSelection();
+                if (selection.toString().trim() && contentContainer.contains(selection.anchorNode)) {
+                    selectedRange = selection.getRangeAt(0).cloneRange();
+                    
+                    // 마우스와 터치 이벤트의 좌표를 모두 처리
+                    const clientX = e.clientX ?? e.changedTouches[0].clientX;
+                    const clientY = e.clientY ?? e.changedTouches[0].clientY;
+
+                    selectionPopup.style.display = 'flex';
+                    selectionPopup.style.top = `${clientY + 10}px`;
+                    selectionPopup.style.left = `${clientX}px`;
+                    document.getElementById('comment-input-container').style.display = 'none';
+                    document.getElementById('addCommentBtn').style.display = 'block';
+                }
+            }, 0);
+        }
+
         async function saveImage() {
             try {
-                const canvas = await html2canvas(preview, {
-                    backgroundColor: null, scale: 2, useCORS: true,
+                const scale = 2; // 고해상도 출력을 위한 스케일
+                const originalCanvas = await html2canvas(preview, {
+                    backgroundColor: null, scale: scale, useCORS: true,
                     onclone: (doc) => {
                         const clonedPreview = doc.getElementById('preview');
                         if (bgImageUrl) {
                             const bgEl = doc.createElement('div');
-                            bgEl.style = `
-                                position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-                                background-image: url(${bgImageUrl});
-                                background-size: cover; background-position: center;
-                                z-index: 0;
-                            `;
+                            bgEl.style = `position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url(${bgImageUrl}); background-size: cover; background-position: center; z-index: 0;`;
                             clonedPreview.insertBefore(bgEl, clonedPreview.firstChild);
                         }
-                        
-                        // [수정] v28의 성공적인 스크린샷 로직으로 완벽하게 복원
-                        clonedPreview.querySelectorAll('.highlight').forEach(highlightSpan => {
-                            const lineContainer = highlightSpan.closest('div');
+                        clonedPreview.querySelectorAll('.highlight, .comment-anchor').forEach(el => {
+                            const lineContainer = el.closest('div');
                             if (lineContainer) {
                                 lineContainer.style.backgroundColor = 'transparent';
                             }
                         });
                     }
                 });
+
+                // [수정] 스크린샷 하단 3px 자르기
+                const cropAmount = 3 * scale; // 스케일에 맞춰 자를 양 계산
+                const croppedCanvas = document.createElement('canvas');
+                const croppedCtx = croppedCanvas.getContext('2d');
+
+                croppedCanvas.width = originalCanvas.width;
+                croppedCanvas.height = originalCanvas.height - cropAmount;
+
+                croppedCtx.drawImage(
+                    originalCanvas,
+                    0, // 소스 x
+                    0, // 소스 y
+                    originalCanvas.width, // 소스 너비
+                    originalCanvas.height - cropAmount, // 소스 높이 (아래쪽 자르기)
+                    0, // 대상 x
+                    0, // 대상 y
+                    originalCanvas.width, // 대상 너비
+                    originalCanvas.height - cropAmount // 대상 높이
+                );
+
                 const link = document.createElement('a');
                 link.download = '꾸밈카드.png';
-                link.href = canvas.toDataURL('image/png');
+                link.href = croppedCanvas.toDataURL('image/png'); // 잘라낸 캔버스로 링크 생성
                 link.click();
             } catch (err) {
                 console.error("이미지 저장 오류:", err);
@@ -340,7 +368,11 @@
                 document.getElementById('topImageContainer').innerHTML = '';
                 document.getElementById('topImageInput').value = '';
             };
-            preview.addEventListener('mouseup', handlePreviewMouseUp);
+
+            // [수정] PC(mouseup)와 모바일(touchend) 이벤트를 모두 처리
+            preview.addEventListener('mouseup', handlePreviewSelection);
+            preview.addEventListener('touchend', handlePreviewSelection);
+
             preview.addEventListener('click', (e) => {
                 const bubble = e.target.closest('.dialogue.bubble');
                 if (bubble) {
